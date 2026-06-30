@@ -166,3 +166,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\obj\Debug\net10.0\Ordering.API.sourcelink.json

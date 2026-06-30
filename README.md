@@ -15,7 +15,7 @@ graph TB
     %% Clients
     Client([🌐 Client App / API Client])
 
-    subgraph Service Mesh (Docker Compose)
+    subgraph "Service Mesh (Docker Compose)"
         %% API Endpoints
         CatalogAPI["🛍️ Catalog.API <br> (Vertical Slice, Marten)"]
         BasketAPI["🛒 Basket.API <br> (Vertical Slice, Redis + Marten)"]
@@ -27,7 +27,7 @@ graph TB
     end
 
     %% Databases & Cache
-    subgraph Databases & Caching
+    subgraph "Databases & Caching"
         MartenPostgres[("🐘 Postgres <br> (Marten Doc Store)")]
         RedisCache[("🔴 Redis Cache <br> (Basket Caching)")]
         SQLiteDb[("💾 SQLite <br> (DiscountDb.db)")]

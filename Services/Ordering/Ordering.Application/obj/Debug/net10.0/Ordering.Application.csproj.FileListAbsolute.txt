@@ -15,3 +15,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Application\obj\Debug\net10.0\refint\Ordering.Application.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Application\obj\Debug\net10.0\Ordering.Application.pdb
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Application\obj\Debug\net10.0\ref\Ordering.Application.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Application\obj\Debug\net10.0\Ordering.Application.sourcelink.json

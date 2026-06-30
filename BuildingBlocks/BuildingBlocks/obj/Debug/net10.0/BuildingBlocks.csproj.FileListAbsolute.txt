@@ -10,3 +10,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\BuildingBlocks\BuildingBlocks\obj\Debug\net10.0\refint\BuildingBlocks.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\BuildingBlocks\BuildingBlocks\obj\Debug\net10.0\BuildingBlocks.pdb
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\BuildingBlocks\BuildingBlocks\obj\Debug\net10.0\ref\BuildingBlocks.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\BuildingBlocks\BuildingBlocks\obj\Debug\net10.0\BuildingBlocks.sourcelink.json
