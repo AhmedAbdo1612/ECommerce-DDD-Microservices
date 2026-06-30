@@ -1,0 +1,104 @@
+services:
+  baket.api:
+    image: baketapi:dev
+    build:
+      args:
+        LAUNCHING_FROM_VS: true
+        BUILD_CONFIGURATION: Debug
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "Baket.API"
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - NUGET_FALLBACK_PACKAGES=/.nuget/fallbackpackages
+    volumes:
+      - E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API:/app:rw
+      - E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop:/src:rw
+      - C:\Users\Ahmed\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\Ahmed\.nuget\packages:/.nuget/packages:ro
+      - C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages:/.nuget/fallbackpackages:ro
+      - C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+      - C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https:/home/app/.aspnet/https:ro
+      - C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+      - C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Sdks\Microsoft.Docker.Sdk\tools\linux-x64\net6.0:/VSTools:ro
+      - C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\extensions\Microsoft\managedprojectsystem\HotReload:/HotReloadAgent:ro
+
+    entrypoint: "dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --wait"
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      com.microsoft.visualstudio.debuggee.arguments: " --additionalProbingPath /.nuget/packages --additionalProbingPath /.nuget/fallbackpackages  \"/app/bin/Debug/net10.0/Baket.API.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --stop dotnet"
+    tty: true
+  catalog.api:
+    image: catalogapi:dev
+    build:
+      args:
+        LAUNCHING_FROM_VS: true
+        BUILD_CONFIGURATION: Debug
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "Catalog.API"
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - NUGET_FALLBACK_PACKAGES=/.nuget/fallbackpackages
+    volumes:
+      - E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API:/app:rw
+      - E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop:/src:rw
+      - C:\Users\Ahmed\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\Ahmed\.nuget\packages:/.nuget/packages:ro
+      - C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages:/.nuget/fallbackpackages:ro
+      - C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+      - C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https:/home/app/.aspnet/https:ro
+      - C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+      - C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Sdks\Microsoft.Docker.Sdk\tools\linux-x64\net6.0:/VSTools:ro
+      - C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\extensions\Microsoft\managedprojectsystem\HotReload:/HotReloadAgent:ro
+
+    entrypoint: "dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --wait"
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      com.microsoft.visualstudio.debuggee.arguments: " --additionalProbingPath /.nuget/packages --additionalProbingPath /.nuget/fallbackpackages  \"/app/bin/Debug/net10.0/Catalog.API.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --stop dotnet"
+    tty: true
+
+  discount.grpc:
+    image: discountgrpc:dev
+    build:
+      args:
+        LAUNCHING_FROM_VS: true
+        BUILD_CONFIGURATION: Debug
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "Discount.Grpc"
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - NUGET_FALLBACK_PACKAGES=/.nuget/fallbackpackages
+    volumes:
+      - E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc:/app:rw
+      - E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop:/src:rw
+      - C:\Users\Ahmed\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\Ahmed\.nuget\packages:/.nuget/packages:ro
+      - C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages:/.nuget/fallbackpackages:ro
+      - C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+      - C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https:/home/app/.aspnet/https:ro
+      - C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+      - C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Sdks\Microsoft.Docker.Sdk\tools\linux-x64\net6.0:/VSTools:ro
+      - C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\extensions\Microsoft\managedprojectsystem\HotReload:/HotReloadAgent:ro
+
+    entrypoint: "dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --wait"
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      com.microsoft.visualstudio.debuggee.arguments: " --additionalProbingPath /.nuget/packages --additionalProbingPath /.nuget/fallbackpackages  \"/app/bin/Debug/net10.0/Discount.Grpc.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --stop dotnet"
+    tty: true

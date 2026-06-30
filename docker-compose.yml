@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # تأكد أن خدمة الكاتالوج مكتوبة بالشكل ده وجواها الـ build context
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+
+  baket.api:
+    image: ${DOCKER_REGISTRY-}baketapi
+    build:
+      context: .
+      dockerfile: Services/Basket/Baket.API/Dockerfile
+
+  redis-cache:
+    image: redis:7.2-alpine
+    container_name: distributed_redis_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis_insight_ui
+    restart: always
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis_insight_data:/data
+    depends_on:
+      - redis-cache
+
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
+
+volumes:
+  redis_data:
+  redis_insight_data:

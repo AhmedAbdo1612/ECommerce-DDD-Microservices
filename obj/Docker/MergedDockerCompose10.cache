@@ -1,0 +1,267 @@
+name: dockercompose9206909980346131107
+services:
+  baket.api:
+    build:
+      context: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop
+      dockerfile: Services/Basket/Baket.API/Dockerfile
+      args:
+        BUILD_CONFIGURATION: Debug
+        LAUNCHING_FROM_VS: "true"
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: Baket.API
+      target: base
+    entrypoint:
+      - dotnet
+      - --roll-forward
+      - Major
+      - /VSTools/DistrolessHelper/DistrolessHelper.dll
+      - --wait
+    environment:
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      NUGET_FALLBACK_PACKAGES: /.nuget/fallbackpackages
+    image: baketapi:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /.nuget/packages --additionalProbingPath /.nuget/fallbackpackages  "/app/bin/Debug/net10.0/Baket.API.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --stop dotnet
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    networks:
+      default: null
+    tty: true
+    volumes:
+      - type: bind
+        source: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API
+        target: /app
+        bind: {}
+      - type: bind
+        source: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop
+        target: /src
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\.nuget\packages
+        target: /.nuget/packages
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /.nuget/fallbackpackages
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Sdks\Microsoft.Docker.Sdk\tools\linux-x64\net6.0
+        target: /VSTools
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\extensions\Microsoft\managedprojectsystem\HotReload
+        target: /HotReloadAgent
+        read_only: true
+        bind: {}
+  catalog.api:
+    build:
+      context: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+      args:
+        BUILD_CONFIGURATION: Debug
+        LAUNCHING_FROM_VS: "true"
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: Catalog.API
+      target: base
+    entrypoint:
+      - dotnet
+      - --roll-forward
+      - Major
+      - /VSTools/DistrolessHelper/DistrolessHelper.dll
+      - --wait
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTPS_PORTS: "8081"
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      NUGET_FALLBACK_PACKAGES: /.nuget/fallbackpackages
+    image: catalogapi:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /.nuget/packages --additionalProbingPath /.nuget/fallbackpackages  "/app/bin/Debug/net10.0/Catalog.API.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: dotnet --roll-forward Major /VSTools/DistrolessHelper/DistrolessHelper.dll --stop dotnet
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "6000"
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        published: "6060"
+        protocol: tcp
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\Microsoft\UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming\ASP.NET\Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind: {}
+      - type: bind
+        source: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API
+        target: /app
+        bind: {}
+      - type: bind
+        source: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop
+        target: /src
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\.nuget\packages
+        target: /.nuget/packages
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /.nuget/fallbackpackages
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Sdks\Microsoft.Docker.Sdk\tools\linux-x64\net6.0
+        target: /VSTools
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\extensions\Microsoft\managedprojectsystem\HotReload
+        target: /HotReloadAgent
+        read_only: true
+        bind: {}
+  discount.grpc:
+    build:
+      context: E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop
+      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTPS_PORTS: "8081"
+    image: discountgrpc
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8080
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming/Microsoft/UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming/ASP.NET/Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\Ahmed\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind: {}
+  redis-cache:
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+    container_name: distributed_redis_cache
+    image: redis:7.2-alpine
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 6379
+        published: "6379"
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: volume
+        source: redis_data
+        target: /data
+        volume: {}
+  redis-insight:
+    container_name: redis_insight_ui
+    depends_on:
+      redis-cache:
+        condition: service_started
+        required: true
+    image: redis/redisinsight:latest
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 5540
+        published: "5540"
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: volume
+        source: redis_insight_data
+        target: /data
+        volume: {}
+networks:
+  default:
+    name: dockercompose9206909980346131107_default
+volumes:
+  redis_data:
+    name: dockercompose9206909980346131107_redis_data
+  redis_insight_data:
+    name: dockercompose9206909980346131107_redis_insight_data

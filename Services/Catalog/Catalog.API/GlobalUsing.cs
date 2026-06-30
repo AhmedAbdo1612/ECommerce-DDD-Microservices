@@ -1,0 +1,13 @@
+﻿global using BuildingBlocks.CQRS;
+global using Catalog.API.Models;
+global using MediatR;
+global using Carter;
+global using Mapster;
+global using Catalog.API.Exceptions;
+global using Marten;
+global using FluentValidation;
+global using Catalog.API.Middlewares;
+global using Catalog.API.Data;
+global using BuildingBlocks.Behaviours;
+global using Marten.Pagination;
+global using Microsoft.AspNetCore.Diagnostics.HealthChecks;

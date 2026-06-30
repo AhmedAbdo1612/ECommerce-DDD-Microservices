@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "Ordering.API.GetOrderByCustomer.OrdersController",
+    "Method": "GetOrders",
+    "RelativePath": "api/Orders/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

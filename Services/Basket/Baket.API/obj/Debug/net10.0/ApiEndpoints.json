@@ -1,0 +1,73 @@
+[
+  {
+    "ContainingType": "StoreBasketEndpoint\u002B\u003C\u003Ec",
+    "Method": "\u003CAddRoutes\u003Eb__0_0",
+    "RelativePath": "basket",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "StoreBasketRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ],
+    "EndpointName": "StoreBasket"
+  },
+  {
+    "ContainingType": "Baket.API.Basket.GetBaket.GetBasketEndpoint\u002B\u003C\u003Ec",
+    "Method": "\u003CAddRoutes\u003Eb__0_0",
+    "RelativePath": "basket/{userName}",
+    "HttpMethod": "GET",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userName",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Baket.API.Basket.GetBaket.GetBasketReponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "EndpointName": "GetBasket"
+  },
+  {
+    "ContainingType": "Baket.API.Basket.DeleteBasket.DeleteBasketEndpoint\u002B\u003C\u003Ec",
+    "Method": "\u003CAddRoutes\u003Eb__0_0",
+    "RelativePath": "basket/{userName}",
+    "HttpMethod": "DELETE",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userName",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ],
+    "EndpointName": "DeleteBasket"
+  }
+]

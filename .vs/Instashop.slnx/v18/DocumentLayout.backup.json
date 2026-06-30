@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordershandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|solutionrelative:services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordershandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordersquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|solutionrelative:services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordersquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GetOrdersHandler.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
+              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
+              "RelativeToolTip": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-30T03:57:14.111Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GetOrdersQuery.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
+              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
+              "RelativeToolTip": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-30T03:53:34.856Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
