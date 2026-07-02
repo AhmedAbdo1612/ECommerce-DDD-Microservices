@@ -82,7 +82,6 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Abstractions.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Relational.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Humanizer.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Microsoft.Build.Framework.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Microsoft.CodeAnalysis.dll
@@ -167,3 +166,9 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\obj\Debug\net10.0\Ordering.API.sourcelink.json
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Carter.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\Carter.Analyzers.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\HealthChecks.NpgSql.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\HealthChecks.UI.Client.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.API\bin\Debug\net10.0\HealthChecks.UI.Core.dll

@@ -21,7 +21,6 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\staticwebassets.development.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\swae.build.ex.cache
-E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\Catalog.API.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\refint\Catalog.API.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\Catalog.API.pdb
@@ -98,3 +97,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\bin\Debug\net10.0\HealthChecks.NpgSql.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\bin\Debug\net10.0\HealthChecks.UI.Client.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\bin\Debug\net10.0\HealthChecks.UI.Core.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Catalog\Catalog.API\obj\Debug\net10.0\Catalog.API.sourcelink.json

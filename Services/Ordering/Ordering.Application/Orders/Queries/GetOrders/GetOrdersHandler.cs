@@ -7,11 +7,14 @@ public class GetOrdersHandler(IApplicationDbContext dbContext) : IQueryHandler<G
     public async Task<GetOrdersResult> Handle(GetOrdersQuery query, CancellationToken cancellationToken)
     {
         var totalOrdersCount = await dbContext.Orders.LongCountAsync();
+
         var orders = await dbContext.Orders
             .Include(o => o.OrderItems)
+            .AsNoTracking()
             .Skip(query.PaginationRequest.PageSize * query.PaginationRequest.PageIndex)
-            .Take(query.PaginationRequest.PageIndex)
+            .Take(query.PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);
+
         return new GetOrdersResult(new PaginationResult<OrderDto>(query.PaginationRequest.PageIndex,
             query.PaginationRequest.PageSize,
             totalOrdersCount,

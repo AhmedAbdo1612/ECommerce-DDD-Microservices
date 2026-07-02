@@ -21,7 +21,6 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\staticwebassets.development.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\swae.build.ex.cache
-E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\Baket.API.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\refint\Baket.API.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\Baket.API.pdb
@@ -110,3 +109,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Grpc.Net.Client.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Grpc.Net.ClientFactory.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Grpc.Net.Common.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\Baket.API.sourcelink.json

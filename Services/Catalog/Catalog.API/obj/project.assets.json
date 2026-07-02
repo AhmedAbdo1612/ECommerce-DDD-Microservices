@@ -748,7 +748,10 @@
         },
         "runtime": {
           "bin/placeholder/BuildingBlocks.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },

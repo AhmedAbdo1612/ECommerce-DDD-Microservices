@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordershandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|solutionrelative:services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordershandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|solutionrelative:services\\ordering\\ordering.api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordersquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F9A276AA-DD97-4D91-B8AF-3A11294E268C}|Services\\Ordering\\Ordering.Application\\Ordering.Application.csproj|solutionrelative:services\\ordering\\ordering.application\\orders\\queries\\getorders\\getordersquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|solutionrelative:services\\ordering\\ordering.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "GetOrdersHandler.cs",
-              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
-              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
-              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
-              "RelativeToolTip": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersHandler.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAPAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\Program.cs",
+              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.API\\Program.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\Program.cs",
+              "RelativeToolTip": "Services\\Ordering\\Ordering.API\\Program.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABEAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-30T03:57:14.111Z",
+              "WhenOpened": "2026-07-02T22:47:13.567Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GetOrdersQuery.cs",
-              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
-              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
-              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
-              "RelativeToolTip": "Services\\Ordering\\Ordering.Application\\Orders\\Queries\\GetOrders\\GetOrdersQuery.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
+              "RelativeToolTip": "Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAxwA4AAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-30T03:53:34.856Z",
+              "WhenOpened": "2026-07-02T22:40:33.587Z",
               "EditorCaption": ""
             }
           ]

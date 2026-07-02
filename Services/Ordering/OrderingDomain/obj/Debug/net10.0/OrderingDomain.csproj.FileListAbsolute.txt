@@ -10,3 +10,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\OrderingDomain\obj\Debug\net10.0\OrderingDomain.pdb
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\OrderingDomain\obj\Debug\net10.0\ref\OrderingDomain.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\OrderingDomain\obj\Debug\net10.0\OrderingDomain.csproj.AssemblyReference.cache
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\OrderingDomain\obj\Debug\net10.0\OrderingDomain.sourcelink.json

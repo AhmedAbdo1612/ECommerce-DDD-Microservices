@@ -29,7 +29,6 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\staticwebassets.development.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\swae.build.ex.cache
-E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\Discount.7F8E141D.Up2Date
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\Discount.Grpc.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\refint\Discount.Grpc.dll
@@ -170,3 +169,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\bin\Debug\net10.0\YamlDotNet.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\bin\Debug\net10.0\Mapster.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\bin\Debug\net10.0\Mapster.Core.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\Discount.Grpc.sourcelink.json
