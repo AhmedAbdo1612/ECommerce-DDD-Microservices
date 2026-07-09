@@ -9,4 +9,4 @@ global using Baket.API.Data;
 global using Baket.API.Middlewares;
 global using Microsoft.Extensions.Caching.Distributed;
 global using System.Text.Json;
-
+global using Baket.API.Dtos;

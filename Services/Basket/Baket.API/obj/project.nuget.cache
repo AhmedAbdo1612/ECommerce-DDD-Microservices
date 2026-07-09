@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "9w94JbcFoL4=",
+  "dgSpecHash": "TB0/RndXre4=",
   "success": true,
   "projectFilePath": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Baket.API.csproj",
   "expectedPackageFiles": [
@@ -31,6 +31,9 @@
     "C:\\Users\\Ahmed\\.nuget\\packages\\mapster\\10.0.7\\mapster.10.0.7.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\mapster.core\\10.0.7\\mapster.core.10.0.7.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\marten\\9.7.6\\marten.9.7.6.nupkg.sha512",
+    "C:\\Users\\Ahmed\\.nuget\\packages\\masstransit\\9.1.2\\masstransit.9.1.2.nupkg.sha512",
+    "C:\\Users\\Ahmed\\.nuget\\packages\\masstransit.abstractions\\9.1.2\\masstransit.abstractions.9.1.2.nupkg.sha512",
+    "C:\\Users\\Ahmed\\.nuget\\packages\\masstransit.rabbitmq\\9.1.2\\masstransit.rabbitmq.9.1.2.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\mediatr\\14.1.0\\mediatr.14.1.0.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\microsoft.bcl.timeprovider\\10.0.0\\microsoft.bcl.timeprovider.10.0.0.nupkg.sha512",
@@ -52,6 +55,7 @@
     "C:\\Users\\Ahmed\\.nuget\\packages\\npgsql.nettopologysuite\\9.0.4\\npgsql.nettopologysuite.9.0.4.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.8\\pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\polly.core\\8.6.5\\polly.core.8.6.5.nupkg.sha512",
+    "C:\\Users\\Ahmed\\.nuget\\packages\\rabbitmq.client\\7.2.1\\rabbitmq.client.7.2.1.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\scrutor\\7.0.0\\scrutor.7.0.0.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\spectre.console\\0.55.0\\spectre.console.0.55.0.nupkg.sha512",
     "C:\\Users\\Ahmed\\.nuget\\packages\\spectre.console.ansi\\0.55.0\\spectre.console.ansi.0.55.0.nupkg.sha512",

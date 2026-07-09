@@ -3,12 +3,24 @@
   "WorkspaceRootPath": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|solutionrelative:services\\ordering\\ordering.api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\basket\\baket.api\\basket\\checkoutbasket\\checkouthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|solutionrelative:services\\basket\\baket.api\\basket\\checkoutbasket\\checkouthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\ordering\\ordering.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{78E320FB-CE4A-4F8E-A7A2-ED8315F78AAF}|Services\\Ordering\\Ordering.API\\Ordering.API.csproj|solutionrelative:services\\ordering\\ordering.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\basket\\baket.api\\basket\\checkoutbasket\\checkoutendpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|solutionrelative:services\\basket\\baket.api\\basket\\checkoutbasket\\checkoutendpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\basket\\baket.api\\dtos\\basketcheckoutdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|solutionrelative:services\\basket\\baket.api\\dtos\\basketcheckoutdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\basket\\baket.api\\globalusings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|solutionrelative:services\\basket\\baket.api\\globalusings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\services\\basket\\baket.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FA31CAC-0AE1-4CDF-B131-692545881594}|Services\\Basket\\Baket.API\\Baket.API.csproj|solutionrelative:services\\basket\\baket.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +30,71 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\Program.cs",
-              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.API\\Program.cs",
-              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\Program.cs",
-              "RelativeToolTip": "Services\\Ordering\\Ordering.API\\Program.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABEAAAAkAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "GlobalUsings.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\GlobalUsings.cs",
+              "RelativeDocumentMoniker": "Services\\Basket\\Baket.API\\GlobalUsings.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\GlobalUsings.cs",
+              "RelativeToolTip": "Services\\Basket\\Baket.API\\GlobalUsings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-02T22:47:13.567Z",
+              "WhenOpened": "2026-07-09T05:40:14.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BasketCheckoutDto.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Dtos\\BasketCheckoutDto.cs",
+              "RelativeDocumentMoniker": "Services\\Basket\\Baket.API\\Dtos\\BasketCheckoutDto.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Dtos\\BasketCheckoutDto.cs",
+              "RelativeToolTip": "Services\\Basket\\Baket.API\\Dtos\\BasketCheckoutDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-09T05:30:16.977Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "DependencyInjection.cs",
-              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
-              "RelativeDocumentMoniker": "Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
-              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
-              "RelativeToolTip": "Services\\Ordering\\Ordering.API\\DependencyInjection.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAxwA4AAAAcAAAAAAAAAA==",
+              "Title": "CheckoutHandler.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutHandler.cs",
+              "RelativeDocumentMoniker": "Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutHandler.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutHandler.cs",
+              "RelativeToolTip": "Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutHandler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-02T22:40:33.587Z",
+              "WhenOpened": "2026-07-09T05:26:16.616Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CheckoutEndpoint.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutEndpoint.cs",
+              "RelativeDocumentMoniker": "Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutEndpoint.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutEndpoint.cs",
+              "RelativeToolTip": "Services\\Basket\\Baket.API\\Basket\\CheckoutBasket\\CheckoutEndpoint.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-09T05:25:56.958Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Program.cs",
+              "RelativeDocumentMoniker": "Services\\Basket\\Baket.API\\Program.cs",
+              "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\Services\\Basket\\Baket.API\\Program.cs",
+              "RelativeToolTip": "Services\\Basket\\Baket.API\\Program.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAAACoAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-09T04:50:17.948Z",
               "EditorCaption": ""
             }
           ]

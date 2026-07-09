@@ -415,6 +415,52 @@
           }
         }
       },
+      "MassTransit/9.1.2": {
+        "type": "package",
+        "dependencies": {
+          "MassTransit.Abstractions": "9.1.2"
+        },
+        "compile": {
+          "lib/net10.0/MassTransit.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "MassTransit.Abstractions/9.1.2": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/MassTransit.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "MassTransit.RabbitMQ/9.1.2": {
+        "type": "package",
+        "dependencies": {
+          "MassTransit": "9.1.2",
+          "RabbitMQ.Client": "7.2.1"
+        },
+        "compile": {
+          "lib/net10.0/MassTransit.RabbitMqTransport.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.RabbitMqTransport.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "MediatR/14.1.0": {
         "type": "package",
         "dependencies": {
@@ -795,6 +841,19 @@
           }
         }
       },
+      "RabbitMQ.Client/7.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/RabbitMQ.Client.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/RabbitMQ.Client.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Scrutor/7.0.0": {
         "type": "package",
         "dependencies": {
@@ -963,6 +1022,19 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "BuildingBlocks.Messaging/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "MassTransit.RabbitMQ": "9.1.2"
+        },
+        "compile": {
+          "bin/placeholder/BuildingBlocks.Messaging.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BuildingBlocks.Messaging.dll": {}
+        }
       }
     }
   },
@@ -1507,6 +1579,75 @@
         "lib/net9.0/Marten.xml",
         "marten.9.7.6.nupkg.sha512",
         "marten.nuspec"
+      ]
+    },
+    "MassTransit/9.1.2": {
+      "sha512": "7rHsXnvoQ+YpKBlWhkBPwkkbq9kK+mK2hro3Z7m1CfCqVUZPsDh/lmkuVkEXKsr+mY6fgG3rxQLaLTYVYaqsEw==",
+      "type": "package",
+      "path": "masstransit/9.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NuGet.README.md",
+        "lib/net10.0/MassTransit.dll",
+        "lib/net10.0/MassTransit.xml",
+        "lib/net472/MassTransit.dll",
+        "lib/net472/MassTransit.xml",
+        "lib/net8.0/MassTransit.dll",
+        "lib/net8.0/MassTransit.xml",
+        "lib/net9.0/MassTransit.dll",
+        "lib/net9.0/MassTransit.xml",
+        "lib/netstandard2.0/MassTransit.dll",
+        "lib/netstandard2.0/MassTransit.xml",
+        "masstransit.9.1.2.nupkg.sha512",
+        "masstransit.nuspec",
+        "mt-logo-small.png"
+      ]
+    },
+    "MassTransit.Abstractions/9.1.2": {
+      "sha512": "o2MymiTaxaJ0LUNm6W/8taD1u6Q/hyee1FwM/XvJ8l4IHgGBOVllPLuViYiI/XDu/t86ErjXOJqXrkOB/+ZrCg==",
+      "type": "package",
+      "path": "masstransit.abstractions/9.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NuGet.README.md",
+        "lib/net10.0/MassTransit.Abstractions.dll",
+        "lib/net10.0/MassTransit.Abstractions.xml",
+        "lib/net472/MassTransit.Abstractions.dll",
+        "lib/net472/MassTransit.Abstractions.xml",
+        "lib/net8.0/MassTransit.Abstractions.dll",
+        "lib/net8.0/MassTransit.Abstractions.xml",
+        "lib/net9.0/MassTransit.Abstractions.dll",
+        "lib/net9.0/MassTransit.Abstractions.xml",
+        "lib/netstandard2.0/MassTransit.Abstractions.dll",
+        "lib/netstandard2.0/MassTransit.Abstractions.xml",
+        "masstransit.abstractions.9.1.2.nupkg.sha512",
+        "masstransit.abstractions.nuspec",
+        "mt-logo-small.png"
+      ]
+    },
+    "MassTransit.RabbitMQ/9.1.2": {
+      "sha512": "yc6qZJdHl5M+7ceTbgUOXXQnl6csuv3Sguv/DWY5xtrkPk8uRwI9isGowDeMGjJgNmbWWy1K7LXjNw+xY+Y5XA==",
+      "type": "package",
+      "path": "masstransit.rabbitmq/9.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NuGet.README.md",
+        "lib/net10.0/MassTransit.RabbitMqTransport.dll",
+        "lib/net10.0/MassTransit.RabbitMqTransport.xml",
+        "lib/net472/MassTransit.RabbitMqTransport.dll",
+        "lib/net472/MassTransit.RabbitMqTransport.xml",
+        "lib/net8.0/MassTransit.RabbitMqTransport.dll",
+        "lib/net8.0/MassTransit.RabbitMqTransport.xml",
+        "lib/net9.0/MassTransit.RabbitMqTransport.dll",
+        "lib/net9.0/MassTransit.RabbitMqTransport.xml",
+        "lib/netstandard2.0/MassTransit.RabbitMqTransport.dll",
+        "lib/netstandard2.0/MassTransit.RabbitMqTransport.xml",
+        "masstransit.rabbitmq.9.1.2.nupkg.sha512",
+        "masstransit.rabbitmq.nuspec",
+        "mt-logo-small.png"
       ]
     },
     "MediatR/14.1.0": {
@@ -2767,6 +2908,23 @@
         "polly.core.nuspec"
       ]
     },
+    "RabbitMQ.Client/7.2.1": {
+      "sha512": "YKXEfg9fVQiTKgZlvIhAfPSFaamEgi8DsQmisCH0IAsU4FYLrtoguDrDj6JtJVGUt40QPnBLRH6fTQcAC4qsOg==",
+      "type": "package",
+      "path": "rabbitmq.client/7.2.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net8.0/RabbitMQ.Client.dll",
+        "lib/net8.0/RabbitMQ.Client.xml",
+        "lib/netstandard2.0/RabbitMQ.Client.dll",
+        "lib/netstandard2.0/RabbitMQ.Client.xml",
+        "rabbitmq.client.7.2.1.nupkg.sha512",
+        "rabbitmq.client.nuspec"
+      ]
+    },
     "Scrutor/7.0.0": {
       "sha512": "wHWaroody48jnlLoq/REwUltIFLxplXyHTP+sttrc8P7+jkiVqf38afDidJNv4qgD/6zz2NKOYg06xLZ1bG7wQ==",
       "type": "package",
@@ -2942,6 +3100,11 @@
       "type": "project",
       "path": "../../../BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj",
       "msbuildProject": "../../../BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj"
+    },
+    "BuildingBlocks.Messaging/1.0.0": {
+      "type": "project",
+      "path": "../../../BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj",
+      "msbuildProject": "../../../BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2950,6 +3113,7 @@
       "AspNetCore.HealthChecks.Redis >= 9.0.0",
       "AspNetCore.HealthChecks.UI.Client >= 9.0.0",
       "BuildingBlocks >= 1.0.0",
+      "BuildingBlocks.Messaging >= 1.0.0",
       "Carter >= 10.0.0",
       "FluentValidation.DependencyInjectionExtensions >= 12.1.1",
       "Grpc.AspNetCore >= 2.80.0",
@@ -2995,6 +3159,9 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
+            "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\BuildingBlocks\\BuildingBlocks.Messaging\\BuildingBlocks.Messaging.csproj": {
+              "projectPath": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\BuildingBlocks\\BuildingBlocks.Messaging\\BuildingBlocks.Messaging.csproj"
+            },
             "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\BuildingBlocks\\BuildingBlocks\\BuildingBlocks.csproj": {
               "projectPath": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\BuildingBlocks\\BuildingBlocks\\BuildingBlocks.csproj"
             }
