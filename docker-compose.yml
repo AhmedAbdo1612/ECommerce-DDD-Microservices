@@ -41,6 +41,18 @@ services:
       context: .
       dockerfile: Services/Discount/Discount.Grpc/Dockerfile
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_server
+    hostname: ecommerce-mq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
 volumes:
   redis_data:
   redis_insight_data:
