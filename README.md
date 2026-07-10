@@ -23,7 +23,7 @@ graph TB
         DiscountGrpc["🏷️ Discount.Grpc <br> (High-Perf gRPC, EF SQLite)"]
         
         %% Shared Abstraction
-        BuildingBlocks["🧩 BuildingBlocks <br> (Shared CQRS & Pipeling)"]
+        BuildingBlocks["🧩 BuildingBlocks <br> (Shared CQRS & Pipeline)"]
     end
 
     %% Databases & Cache
