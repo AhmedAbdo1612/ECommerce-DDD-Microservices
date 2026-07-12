@@ -20,3 +20,5 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Infrastructure\bin\Debug\net10.0\Ordering.Infrastructure.runtimeconfig.json
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Infrastructure\obj\Debug\net10.0\Ordering.Infrastructure.genruntimeconfig.cache
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Infrastructure\obj\Debug\net10.0\Ordering.Infrastructure.sourcelink.json
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Infrastructure\bin\Debug\net10.0\BuildingBlocks.Messaging.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Ordering\Ordering.Infrastructure\bin\Debug\net10.0\BuildingBlocks.Messaging.pdb

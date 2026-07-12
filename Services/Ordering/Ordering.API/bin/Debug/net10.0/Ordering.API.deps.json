@@ -199,6 +199,37 @@
           }
         }
       },
+      "MassTransit/9.1.2": {
+        "dependencies": {
+          "MassTransit.Abstractions": "9.1.2"
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.dll": {
+            "assemblyVersion": "9.1.2.0",
+            "fileVersion": "9.1.2.0"
+          }
+        }
+      },
+      "MassTransit.Abstractions/9.1.2": {
+        "runtime": {
+          "lib/net10.0/MassTransit.Abstractions.dll": {
+            "assemblyVersion": "9.1.2.0",
+            "fileVersion": "9.1.2.0"
+          }
+        }
+      },
+      "MassTransit.RabbitMQ/9.1.2": {
+        "dependencies": {
+          "MassTransit": "9.1.2",
+          "RabbitMQ.Client": "7.2.1"
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.RabbitMqTransport.dll": {
+            "assemblyVersion": "9.1.2.0",
+            "fileVersion": "9.1.2.0"
+          }
+        }
+      },
       "MediatR/14.1.0": {
         "dependencies": {
           "MediatR.Contracts": "2.0.1",
@@ -564,6 +595,28 @@
           }
         }
       },
+      "Microsoft.FeatureManagement/4.6.0": {
+        "dependencies": {
+          "Microsoft.Bcl.TimeProvider": "10.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.FeatureManagement.dll": {
+            "assemblyVersion": "4.6.0.0",
+            "fileVersion": "4.6.0.0"
+          }
+        }
+      },
+      "Microsoft.FeatureManagement.AspNetCore/4.6.0": {
+        "dependencies": {
+          "Microsoft.FeatureManagement": "4.6.0"
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.FeatureManagement.AspNetCore.dll": {
+            "assemblyVersion": "4.6.0.0",
+            "fileVersion": "4.6.0.0"
+          }
+        }
+      },
       "Microsoft.IdentityModel.Abstractions/8.14.0": {
         "runtime": {
           "lib/net9.0/Microsoft.IdentityModel.Abstractions.dll": {
@@ -838,6 +891,14 @@
           }
         }
       },
+      "RabbitMQ.Client/7.2.1": {
+        "runtime": {
+          "lib/net8.0/RabbitMQ.Client.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.2.1.0"
+          }
+        }
+      },
       "Spectre.Console/0.55.0": {
         "dependencies": {
           "Spectre.Console.Ansi": "0.55.0"
@@ -966,7 +1027,8 @@
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "Mapster": "10.0.7",
           "Marten": "9.6.0",
-          "MediatR": "14.1.0"
+          "MediatR": "14.1.0",
+          "Microsoft.FeatureManagement.AspNetCore": "4.6.0"
         },
         "runtime": {
           "BuildingBlocks.dll": {
@@ -975,9 +1037,21 @@
           }
         }
       },
+      "BuildingBlocks.Messaging/1.0.0": {
+        "dependencies": {
+          "MassTransit.RabbitMQ": "9.1.2"
+        },
+        "runtime": {
+          "BuildingBlocks.Messaging.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Ordering.Application/1.0.0": {
         "dependencies": {
           "BuildingBlocks": "1.0.0",
+          "BuildingBlocks.Messaging": "1.0.0",
           "Microsoft.EntityFrameworkCore": "10.0.9",
           "OrderingDomain": "1.0.0"
         },
@@ -1139,6 +1213,27 @@
       "path": "marten/9.6.0",
       "hashPath": "marten.9.6.0.nupkg.sha512"
     },
+    "MassTransit/9.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7rHsXnvoQ+YpKBlWhkBPwkkbq9kK+mK2hro3Z7m1CfCqVUZPsDh/lmkuVkEXKsr+mY6fgG3rxQLaLTYVYaqsEw==",
+      "path": "masstransit/9.1.2",
+      "hashPath": "masstransit.9.1.2.nupkg.sha512"
+    },
+    "MassTransit.Abstractions/9.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-o2MymiTaxaJ0LUNm6W/8taD1u6Q/hyee1FwM/XvJ8l4IHgGBOVllPLuViYiI/XDu/t86ErjXOJqXrkOB/+ZrCg==",
+      "path": "masstransit.abstractions/9.1.2",
+      "hashPath": "masstransit.abstractions.9.1.2.nupkg.sha512"
+    },
+    "MassTransit.RabbitMQ/9.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yc6qZJdHl5M+7ceTbgUOXXQnl6csuv3Sguv/DWY5xtrkPk8uRwI9isGowDeMGjJgNmbWWy1K7LXjNw+xY+Y5XA==",
+      "path": "masstransit.rabbitmq/9.1.2",
+      "hashPath": "masstransit.rabbitmq.9.1.2.nupkg.sha512"
+    },
     "MediatR/14.1.0": {
       "type": "package",
       "serviceable": true,
@@ -1236,6 +1331,20 @@
       "sha512": "sha512-SCDTQ6HubnRvTUjR7dgMKHZvNoCb03t44ttHL8trlFTGgfDteWn/0nRdOxDhcI+lTWhKgd/flCVJEtAOPhSLNg==",
       "path": "microsoft.extensions.dependencymodel/10.0.9",
       "hashPath": "microsoft.extensions.dependencymodel.10.0.9.nupkg.sha512"
+    },
+    "Microsoft.FeatureManagement/4.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kLjGgEhlzuKs6t7g8so1dqsmE5NaSURNPOWkKD056nF43G/6w/VK5Gd02WKgpuBRQ9mjl7odAe462bn3XKBXmg==",
+      "path": "microsoft.featuremanagement/4.6.0",
+      "hashPath": "microsoft.featuremanagement.4.6.0.nupkg.sha512"
+    },
+    "Microsoft.FeatureManagement.AspNetCore/4.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+0G11gpuGqggJ7nrB7jL/oT4bsRVqnM5q6+qgC5sO2oW4JWymXoUAkDNsuLsMB9La9Ota248x8dwhoL2erImwQ==",
+      "path": "microsoft.featuremanagement.aspnetcore/4.6.0",
+      "hashPath": "microsoft.featuremanagement.aspnetcore.4.6.0.nupkg.sha512"
     },
     "Microsoft.IdentityModel.Abstractions/8.14.0": {
       "type": "package",
@@ -1412,6 +1521,13 @@
       "path": "polly.core/8.6.5",
       "hashPath": "polly.core.8.6.5.nupkg.sha512"
     },
+    "RabbitMQ.Client/7.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YKXEfg9fVQiTKgZlvIhAfPSFaamEgi8DsQmisCH0IAsU4FYLrtoguDrDj6JtJVGUt40QPnBLRH6fTQcAC4qsOg==",
+      "path": "rabbitmq.client/7.2.1",
+      "hashPath": "rabbitmq.client.7.2.1.nupkg.sha512"
+    },
     "Spectre.Console/0.55.0": {
       "type": "package",
       "serviceable": true,
@@ -1497,6 +1613,11 @@
       "hashPath": "yamldotnet.16.3.0.nupkg.sha512"
     },
     "BuildingBlocks/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BuildingBlocks.Messaging/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

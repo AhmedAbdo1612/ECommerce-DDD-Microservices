@@ -11,7 +11,7 @@ public class CheckoutHandler(IBasketRespository repo, IPublishEndpoint publish) 
     {
         var basket = await repo.GetBasket(command.BasketCheckoutDto.UserName, cancellationToken);
         if (basket == null) return new CheckoutBasketResult(false);
-        var eventMessage = command.Adapt<BasketCheckoutEvent>();
+        var eventMessage = command.BasketCheckoutDto.Adapt<BasketCheckoutEvent>();
         eventMessage.TotalPrice = (decimal)basket.TotalPrice;
         await publish.Publish(eventMessage, cancellationToken);
         await repo.DeleteBasket(command.BasketCheckoutDto.UserName, cancellationToken);
@@ -25,5 +25,6 @@ public class CheckoutBasketCommandValidatior : AbstractValidator<CheckoutBasketC
     {
         RuleFor(x => x.BasketCheckoutDto).NotNull().WithMessage("BasketCheckoutDto cannot be null");
         RuleFor(x => x.BasketCheckoutDto.UserName).NotEmpty().WithMessage("UserName is required for checkout");
+        RuleFor(x => x.BasketCheckoutDto.ZipCode).MaximumLength(5).WithMessage("Please enter a valid zip code");
     }
 }

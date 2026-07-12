@@ -110,3 +110,12 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Grpc.Net.ClientFactory.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Grpc.Net.Common.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\Baket.API.sourcelink.json
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\MassTransit.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\MassTransit.Abstractions.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\MassTransit.RabbitMqTransport.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Microsoft.FeatureManagement.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\Microsoft.FeatureManagement.AspNetCore.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\RabbitMQ.Client.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\BuildingBlocks.Messaging.dll
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\bin\Debug\net10.0\BuildingBlocks.Messaging.pdb
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Basket\Baket.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

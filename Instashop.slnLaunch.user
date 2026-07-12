@@ -9,6 +9,18 @@
       {
         "Path": "Services\\Discount\\Discount.Grpc\\Discount.Grpc.csproj",
         "Action": "Start"
+      },
+      {
+        "Path": "Services\\Ordering\\Ordering.API\\Ordering.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Services\\Catalog\\Catalog.API\\Catalog.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj",
+        "Action": "Start"
       }
     ]
   }

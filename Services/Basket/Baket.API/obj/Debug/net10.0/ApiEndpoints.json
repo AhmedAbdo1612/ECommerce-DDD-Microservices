@@ -69,5 +69,27 @@
       }
     ],
     "EndpointName": "DeleteBasket"
+  },
+  {
+    "ContainingType": "Baket.API.Basket.CheckoutBasket.CheckoutEndpoint\u002B\u003C\u003Ec",
+    "Method": "\u003CCarter.ICarterModule.AddRoutes\u003Eb__0_0",
+    "RelativePath": "basket/Checkout",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Baket.API.Basket.CheckoutBasket.ChechoutBasketRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
   }
 ]
