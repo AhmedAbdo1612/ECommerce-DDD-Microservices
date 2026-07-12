@@ -44,6 +44,8 @@ The domain logic is isolated and modeled using:
 | **Distributed Cache** | **Redis** | Cached Basket Repository decorator |
 | **Validation** | **FluentValidation** | MediatR pipeline automatic request validation |
 | **Mapping** | **Mapster** | Request/Response and Entity/DTO mapping |
+| **Message Broker** | **RabbitMQ & MassTransit** | Asynchronous event-driven communication |
+| **API Gateway** | **YARP** | Centralized routing to backend microservices |
 | **Service Mesh** | **Docker Compose** | Local orchestrations of microservices |
 
 ---
@@ -81,8 +83,11 @@ The domain logic is isolated and modeled using:
 
 ```text
 Instashop/
+├── ApiGateways/                    # API Gateways routing requests to internal microservices
+│   └── YarpApiGateway/             # Central entry point using YARP
 ├── BuildingBlocks/                 # Shared abstractions, CQRS interfaces, and pipeline behaviors
-│   └── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination)
+│   ├── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination)
+│   └── BuildingBlocks.Messaging/   # Async messaging abstractions (MassTransit, RabbitMQ)
 ├── Services/
 │   ├── Catalog/
 │   │   └── Catalog.API/            # Catalog Microservice (Vertical Slice, Marten)
@@ -102,7 +107,7 @@ Instashop/
 │       ├── Ordering.Application/   # Application logic (Commands, Queries, DTOs, IApplicationDbContext)
 │       ├── Ordering.Infrastructure/# Infra (ApplicationDbContext, Configurations, Interceptors)
 │       └── Ordering.API/           # Presentation layer (Controllers, Endpoints)
-└── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, pgAdmin)
+└── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, pgAdmin, RabbitMQ)
 ```
 
 ---
@@ -111,8 +116,9 @@ Instashop/
 
 ```mermaid
 graph TD
-    Client[Client Request] -->|REST/HTTP| API[Carter Minimal API / Controllers]
-    Client -->|gRPC/RPC| RPC[gRPC Discount Service]
+    Client[Client Request] -->|REST/HTTP| Gateway[YARP API Gateway]
+    Gateway -->|REST/HTTP| API[Carter Minimal API / Controllers]
+    API -->|gRPC/RPC| RPC[gRPC Discount Service]
     API -->|Mapster| Map[Map Request to Command/Query]
     Map -->|MediatR Send| Pipe[Pipeline Behaviors]
     Pipe -->|1. LoggingBehavior| PipeVal[2. ValidationBehavior]
@@ -120,8 +126,10 @@ graph TD
     Handler -->|Domain Operations| Domain[Domain Entities & Rules]
     Domain -->|Save| DB[(Marten / PostgreSQL / SQLite / Redis)]
     DB -->|Return Status/Data| Handler
+    Handler -.->|Publish Event| MQ((RabbitMQ / MassTransit))
     Handler -->|Mapster| DTO[Map Entity to DTO / Response]
-    DTO -->|HTTP Response| Client
+    DTO -->|HTTP Response| Gateway
+    Gateway -->|HTTP Response| Client
 ```
 
 ---
