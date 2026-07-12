@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|solutionrelative:apigateways\\yarpapigateway\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\apigateways\\yarpapigateway\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|solutionrelative:apigateways\\yarpapigateway\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\apigateways\\yarpapigateway\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|solutionrelative:apigateways\\yarpapigateway\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|e:\\c#-courses\\microservices_ddd_cqrs_verticalclean_architecture_2024\\instashop\\instashop\\apigateways\\yarpapigateway\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A1328B98-1F73-4823-A52A-2263421EB09C}|ApiGateways\\YarpApiGateway\\YarpApiGateway.csproj|solutionrelative:apigateways\\yarpapigateway\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -32,14 +32,14 @@
               "RelativeDocumentMoniker": "ApiGateways\\YarpApiGateway\\appsettings.json",
               "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\ApiGateways\\YarpApiGateway\\appsettings.json",
               "RelativeToolTip": "ApiGateways\\YarpApiGateway\\appsettings.json",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAADwAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABgAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-07-12T05:21:35.435Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "launchSettings.json",
               "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\ApiGateways\\YarpApiGateway\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "ApiGateways\\YarpApiGateway\\Properties\\launchSettings.json",
@@ -47,18 +47,17 @@
               "RelativeToolTip": "ApiGateways\\YarpApiGateway\\Properties\\launchSettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-07-11T15:14:24.624Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T15:14:24.624Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\ApiGateways\\YarpApiGateway\\Program.cs",
               "RelativeDocumentMoniker": "ApiGateways\\YarpApiGateway\\Program.cs",
               "ToolTip": "E:\\C#-courses\\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\\Instashop\\Instashop\\ApiGateways\\YarpApiGateway\\Program.cs",
               "RelativeToolTip": "ApiGateways\\YarpApiGateway\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-11T15:13:44.461Z",
               "EditorCaption": ""
