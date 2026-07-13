@@ -170,3 +170,4 @@ E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\I
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\bin\Debug\net10.0\Mapster.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\bin\Debug\net10.0\Mapster.Core.dll
 E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\Discount.Grpc.sourcelink.json
+E:\C#-courses\Microservices_DDD_CQRS_VerticalClean_Architecture_2024\Instashop\Instashop\Services\Discount\Discount.Grpc\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

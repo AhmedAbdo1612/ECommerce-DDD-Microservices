@@ -1,18 +1,32 @@
 version: '3.8'
 
 services:
-  # تأكد أن خدمة الكاتالوج مكتوبة بالشكل ده وجواها الـ build context
-  catalog.api:
-    image: ${DOCKER_REGISTRY-}catalogapi
-    build:
-      context: .
-      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+  # Databases & Infrastructure
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=InstashopDb
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
+    restart: always
 
-  baket.api:
-    image: ${DOCKER_REGISTRY-}baketapi
-    build:
-      context: .
-      dockerfile: Services/Basket/Baket.API/Dockerfile
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_ui
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@instashop.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    restart: always
+    depends_on:
+      - postgres
 
   redis-cache:
     image: redis:7.2-alpine
@@ -35,12 +49,6 @@ services:
     depends_on:
       - redis-cache
 
-  discount.grpc:
-    image: ${DOCKER_REGISTRY-}discountgrpc
-    build:
-      context: .
-      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq_server
@@ -53,6 +61,51 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  # Microservices
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+    depends_on:
+      - postgres
+
+  baket.api:
+    image: ${DOCKER_REGISTRY-}baketapi
+    build:
+      context: .
+      dockerfile: Services/Basket/Baket.API/Dockerfile
+    depends_on:
+      - postgres
+      - redis-cache
+      - discount.grpc
+
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: .
+      dockerfile: Services/Ordering/Ordering.API/Dockerfile
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  yarpapigateway:
+    image: ${DOCKER_REGISTRY-}yarpapigateway
+    build:
+      context: .
+      dockerfile: ApiGateways/YarpApiGateway/Dockerfile
+    depends_on:
+      - catalog.api
+      - baket.api
+      - ordering.api
+
 volumes:
+  postgres_data:
   redis_data:
   redis_insight_data:

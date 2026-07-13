@@ -2,7 +2,7 @@ using BuildingBlocks.Messaging.MassTransit;
 using Discount.Grpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
 var assembly = typeof(Program).Assembly;

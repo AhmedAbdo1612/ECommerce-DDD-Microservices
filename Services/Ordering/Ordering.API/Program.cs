@@ -12,7 +12,7 @@ builder.Services
     .AddInfrastructureServices(builder.Configuration)
     .AddApiServices(builder.Configuration);
 
-
+builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 app.UseApiServices();
 if (app.Environment.IsDevelopment())
