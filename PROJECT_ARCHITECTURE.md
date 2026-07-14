@@ -44,6 +44,7 @@ The system is designed around domain models that encapsulate business logic and 
 | **Mapping** | **Mapster** | Request/Response and Entity/DTO mapping |
 | **Message Broker** | **RabbitMQ & MassTransit** | Asynchronous event-driven communication |
 | **API Gateway** | **YARP** | Centralized routing to backend microservices |
+| **Web Frontend** | **Razor Pages & Refit** | Shopping.Web UI and API consumption |
 | **Containerization**| **Docker & Docker Compose** | Local orchestrations of microservices |
 
 ---
@@ -74,6 +75,10 @@ The system is designed around domain models that encapsulate business logic and 
     *   `Ordering.Application`: MediatR commands/queries, mapping (Mapster), DTO definitions, and data abstractions (`IApplicationDbContext`).
     *   `Ordering.Infrastructure`: Data access implementations (`ApplicationDbContext` with EF configurations, migrators, entity interceptors).
     *   `Ordering.API`: Web controllers delivering endpoints and calling the MediatR pipeline.
+
+### 🌐 Web Application (`Shopping.Web`)
+*   **Pattern:** Razor Pages Web Application
+*   **Responsibilities:** Client-facing user interface, consuming backend microservices via Refit and YARP API Gateway.
 
 ---
 
@@ -118,6 +123,8 @@ Instashop/
 │       ├── Ordering.Application/   # Application logic (Commands, Queries, DTOs, IApplicationDbContext)
 │       ├── Ordering.Infrastructure/# Infra (ApplicationDbContext, Configurations, Interceptors)
 │       └── Ordering.API/           # Presentation layer (Controllers, Endpoints)
+├── WebApps/                        # Frontend web applications
+│   └── Shopping.Web/               # Razor Pages UI consuming the microservices via Refit
 └── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, pgAdmin, RabbitMQ)
 ```
 
