@@ -149,3 +149,16 @@ graph TD
     DTO -->|HTTP Response| Gateway
     Gateway -->|HTTP Response| Client
 ```
+
+---
+
+## 💡 Key Coding Guidelines
+
+1.  **Do Not Bypass MediatR:** Keep endpoints thin. API controllers/minimal APIs must only receive requests, translate/validate, send commands/queries to MediatR, and return HTTP status codes.
+2.  **Ensure Colocation in Slices:** When adding/modifying features in `Catalog.API` or `Baket.API`, keep endpoints, models, handlers, and validators inside the feature's vertical slice folder (e.g., `Services/Catalog/Catalog.API/Products/CreateProduct/`).
+3.  **Strict Clean Architecture Isolation in Ordering:** 
+    *   Do not reference `Ordering.Infrastructure` in `Ordering.Application` or `OrderingDomain`.
+    *   Do not reference `Ordering.Application` in `OrderingDomain`.
+    *   Any infrastructure dependency must be registered through dependency injection using abstractions defined in the `Application` layer.
+4.  **Save Changes Interceptors:** Always leverage `AuditableEntityInterceptor` for automatic creation/modification timestamps, and `DispatchDomainEventInterceptor` for dispatching aggregate events.
+5.  **Use Primary Constructors:** Utilize C# 12+ primary constructor syntax for dependency injection where applicable (e.g., `public class Handler(IApplicationDbContext dbContext) : ...`).

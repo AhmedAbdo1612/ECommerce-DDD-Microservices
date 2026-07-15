@@ -46,6 +46,7 @@ The domain logic is isolated and modeled using:
 | **Mapping** | **Mapster** | Request/Response and Entity/DTO mapping |
 | **Message Broker** | **RabbitMQ & MassTransit** | Asynchronous event-driven communication |
 | **API Gateway** | **YARP** | Centralized routing to backend microservices |
+| **Web Frontend** | **Razor Pages & Refit** | Shopping.Web UI and API consumption |
 | **Service Mesh** | **Docker Compose** | Local orchestrations of microservices |
 
 ---
@@ -77,6 +78,10 @@ The domain logic is isolated and modeled using:
     *   `Ordering.Infrastructure`: Data access implementations (`ApplicationDbContext` with EF configurations, migrators, entity interceptors).
     *   `Ordering.API`: Web controllers delivering endpoints and calling the MediatR pipeline.
 
+### 🌐 Web Application (`Shopping.Web`)
+*   **Pattern:** Razor Pages Web Application
+*   **Responsibilities:** Client-facing user interface, consuming backend microservices via Refit and YARP API Gateway.
+
 ---
 
 ## 📂 Directory Structure
@@ -107,6 +112,8 @@ Instashop/
 │       ├── Ordering.Application/   # Application logic (Commands, Queries, DTOs, IApplicationDbContext)
 │       ├── Ordering.Infrastructure/# Infra (ApplicationDbContext, Configurations, Interceptors)
 │       └── Ordering.API/           # Presentation layer (Controllers, Endpoints)
+├── WebApps/                        # Frontend web applications
+│   └── Shopping.Web/               # Razor Pages UI consuming the microservices via Refit
 └── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, pgAdmin, RabbitMQ)
 ```
 
