@@ -1,3 +1,25 @@
+@using Shopping.Web.Services
+@using Refit
+@inject IBasketService BasketService
+@{
+    int cartCount = 0;
+    try
+    {
+        var basketResponse = await BasketService.GetBasket("swn");
+        if (basketResponse?.Cart?.Items != null)
+        {
+            cartCount = basketResponse.Cart.Items.Sum(i => i.Quantity);
+        }
+    }
+    catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+    {
+        cartCount = 0;
+    }
+    catch (Exception)
+    {
+        cartCount = 0;
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +59,7 @@
                             <a href="#" class="nav-link position-relative" style="color: #f8fafc;">
                                 <i class="bi bi-cart3 fs-5"></i>
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); font-size: 0.65rem; margin-top: 5px;">
-                                    0
+                                    @cartCount
                                     <span class="visually-hidden">items in cart</span>
                                 </span>
                             </a>

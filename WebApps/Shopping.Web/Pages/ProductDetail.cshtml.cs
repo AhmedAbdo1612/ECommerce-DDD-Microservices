@@ -6,7 +6,7 @@ using Shopping.Web.Services;
 
 namespace Shopping.Web.Pages
 {
-    public class ProductDetailModel(ICatalogService catalogService, ILogger<ProductDetailModel> logger) : PageModel
+    public class ProductDetailModel(ICatalogService catalogService, IBasketService basketService, ILogger<ProductDetailModel> logger) : PageModel
     {
         public ProductModel? Product { get; set; }
 
@@ -40,13 +40,61 @@ namespace Shopping.Web.Pages
             }
         }
 
-        public IActionResult OnPostAddToBasket(Guid productId)
+        public async Task<IActionResult> OnPostAddToBasketAsync(Guid productId)
         {
-            // Placeholder for Add to Basket logic.
-            // Normally this would call an IBasketService and update the cart.
-            // For now, we will set a TempData message to simulate success.
-            TempData["CartMessage"] = $"Successfully added {Quantity} item(s) to your basket!";
-            return RedirectToPage(new { id = productId });
+            try
+            {
+                var productResponse = await catalogService.GetProductById(productId);
+                if (productResponse?.Product == null)
+                {
+                    return RedirectToPage("/Index");
+                }
+
+                var userName = "swn"; // default user for now
+                ShoppingCartModel basket;
+                try
+                {
+                    var basketResponse = await basketService.GetBasket(userName);
+                    basket = basketResponse.Cart;
+                }
+                catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    basket = new ShoppingCartModel { UserName = userName };
+                }
+
+                if (basket == null)
+                {
+                    basket = new ShoppingCartModel { UserName = userName };
+                }
+
+                var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == productId);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += Quantity;
+                }
+                else
+                {
+                    basket.Items.Add(new ShoppingCartItemModel
+                    {
+                        ProductId = productId,
+                        ProductName = productResponse.Product.Name,
+                        Price = (float)productResponse.Product.Price,
+                        Quantity = Quantity,
+                        Color = "Black" // default color
+                    });
+                }
+
+                await basketService.StoreBasket(new StoreBasketRequest(basket));
+
+                TempData["CartMessage"] = $"Successfully added {Quantity} item(s) to your basket!";
+                return RedirectToPage(new { id = productId });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error adding product to basket.");
+                TempData["CartMessage"] = "Failed to add item to basket.";
+                return RedirectToPage(new { id = productId });
+            }
         }
     }
 }

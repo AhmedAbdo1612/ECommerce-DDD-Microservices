@@ -45,7 +45,7 @@ The system is designed around domain models that encapsulate business logic and 
 | **Message Broker** | **RabbitMQ & MassTransit** | Asynchronous event-driven communication |
 | **API Gateway** | **YARP** | Centralized routing to backend microservices |
 | **Web Frontend** | **Razor Pages & Refit** | Shopping.Web UI and API consumption |
-| **Containerization**| **Docker & Docker Compose** | Local orchestrations of microservices |
+| **Containerization**| **Docker & Docker Compose** | Local orchestrations of backend microservices |
 
 ---
 
@@ -54,7 +54,7 @@ The system is designed around domain models that encapsulate business logic and 
 ### 🛍️ Catalog Service (`Catalog.API`)
 *   **Pattern:** Vertical Slice Architecture
 *   **Database:** Marten (PostgreSQL Document Store)
-*   **Responsibilities:** Inventory, category management, product listings, pagination.
+*   **Responsibilities:** Inventory, category management, product listings, pagination, and static file hosting (e.g., product images).
 
 ### 🛒 Basket Service (`Baket.API`)
 *   **Pattern:** Vertical Slice Architecture
@@ -79,6 +79,7 @@ The system is designed around domain models that encapsulate business logic and 
 ### 🌐 Web Application (`Shopping.Web`)
 *   **Pattern:** Razor Pages Web Application
 *   **Responsibilities:** Client-facing user interface, consuming backend microservices via Refit and YARP API Gateway.
+*   **Hosting:** Runs natively (outside of Docker Compose) for faster local UI development.
 
 ---
 
@@ -125,7 +126,7 @@ Instashop/
 │       └── Ordering.API/           # Presentation layer (Controllers, Endpoints)
 ├── WebApps/                        # Frontend web applications
 │   └── Shopping.Web/               # Razor Pages UI consuming the microservices via Refit
-└── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, pgAdmin, RabbitMQ)
+└── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, RabbitMQ, and backend microservices)
 ```
 
 ---

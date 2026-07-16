@@ -28,4 +28,7 @@ RUN dotnet publish "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER root
+RUN mkdir -p /app/wwwroot/images && chown -R app:app /app/wwwroot
+USER app
 ENTRYPOINT ["dotnet", "Catalog.API.dll"]

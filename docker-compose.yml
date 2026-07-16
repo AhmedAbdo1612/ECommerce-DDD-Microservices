@@ -82,14 +82,6 @@ services:
       - baket.api
       - ordering.api
 
-  shopping.web:
-    image: ${DOCKER_REGISTRY-}shoppingweb
-    build:
-      context: .
-      dockerfile: WebApps/Shopping.Web/Dockerfile
-    depends_on:
-      - yarpapigateway
-
 volumes:
   postgres_data:
   redis_data:
