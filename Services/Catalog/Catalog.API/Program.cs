@@ -1,4 +1,5 @@
 
+using Catalog.API.Common;
 using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +25,11 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddValidatorsFromAssembly(assembly);
 builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddScoped<IStorageService, LocalStorageService>();
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
+
+app.UseStaticFiles(); // Enable static file serving for wwwroot
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapCarter();

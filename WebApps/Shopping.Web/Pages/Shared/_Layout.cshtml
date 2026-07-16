@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,28 +11,49 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Shopping.Web</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow" style="background-color: #06050c; border-color: rgba(255, 255, 255, 0.05) !important;">
+            <div class="container-fluid px-4 py-2">
+                <a class="navbar-brand fw-bold fs-4" style="color: #f8fafc;" asp-area="" asp-page="/Index">Instashop</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                <div class="navbar-collapse collapse d-sm-inline-flex">
+                    <!-- Centered Links -->
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-semibold">
+                        <li class="nav-item px-2">
+                            <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/CreateProduct">Create Product</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <!-- Far-Right Icons -->
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item me-3">
+                            <a href="#" class="nav-link position-relative" style="color: #f8fafc;">
+                                <i class="bi bi-cart3 fs-5"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); font-size: 0.65rem; margin-top: 5px;">
+                                    0
+                                    <span class="visually-hidden">items in cart</span>
+                                </span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a href="#" class="nav-link" style="color: #f8fafc;">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container-fluid px-0">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
