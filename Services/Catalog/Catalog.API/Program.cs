@@ -1,5 +1,5 @@
 
-using Catalog.API.Common;
+
 using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +25,7 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddValidatorsFromAssembly(assembly);
 builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<IStorageService, LocalStorageService>();
+builder.Services.AddHttpClient<Catalog.API.Clients.MediaClient>(c => c.BaseAddress = new Uri(builder.Configuration["MediaApiUrl:Url"] ?? "http://localhost:5005"));
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

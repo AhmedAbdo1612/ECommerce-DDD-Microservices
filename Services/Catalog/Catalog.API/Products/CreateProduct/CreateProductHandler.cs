@@ -1,5 +1,5 @@
 
-using Catalog.API.Common;
+
 
 
 namespace Catalog.API.Products.CreateProduct;
@@ -27,7 +27,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
 
 internal class CreateProductHandler(
     IDocumentSession session,
-    IStorageService storageService
+    Catalog.API.Clients.MediaClient mediaClient
     )
     : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
@@ -40,7 +40,7 @@ internal class CreateProductHandler(
             for (int i = 0; i < command.Files.Count; i++)
             {
                 var file = command.Files[i];
-                var fileUrl = await storageService.UploadFileAsync(file);
+                var fileUrl = await mediaClient.UploadFileAsync(file);
                 if (!string.IsNullOrEmpty(fileUrl))
                 {
                     bool isPrimary = (i == command.PrimaryImageIndex);

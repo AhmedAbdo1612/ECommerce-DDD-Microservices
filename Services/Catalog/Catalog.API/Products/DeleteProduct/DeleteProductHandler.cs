@@ -1,4 +1,4 @@
-using Catalog.API.Common;
+
 
 namespace Catalog.API.Products.DeleteProduct
 {
@@ -16,7 +16,7 @@ namespace Catalog.API.Products.DeleteProduct
     internal class DeleteProductCommandHandler(
         IDocumentSession session, 
         ILogger<DeleteProductCommandHandler> logger,
-        IStorageService storageService) 
+        Catalog.API.Clients.MediaClient mediaClient) 
         : ICommandHandler<DeleteProductCommand, DeleteProductResult>
     {
         public async Task<DeleteProductResult> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ namespace Catalog.API.Products.DeleteProduct
             {
                 foreach (var image in product.Images)
                 {
-                    storageService.DeleteFile(image.Url);
+                    await mediaClient.DeleteFileAsync(image.Url);
                 }
             }
 

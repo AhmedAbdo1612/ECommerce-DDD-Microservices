@@ -16,6 +16,9 @@
   <Folder Name="/Services/Discount/">
     <Project Path="Services/Discount/Discount.Grpc/Discount.Grpc.csproj" Id="17e82e4e-dbe8-4a7e-b748-2a5f60e61b40" />
   </Folder>
+  <Folder Name="/Services/Media/">
+    <Project Path="Services/Media/Media.API/Media.API.csproj" />
+  </Folder>
   <Folder Name="/Services/Ordering/">
     <Project Path="Services/Ordering/Ordering.API/Ordering.API.csproj" Id="78e320fb-ce4a-4f8e-a7a2-ed8315f78aaf" />
     <Project Path="Services/Ordering/Ordering.Application/Ordering.Application.csproj" Id="f9a276aa-dd97-4d91-b8af-3a11294e268c" />

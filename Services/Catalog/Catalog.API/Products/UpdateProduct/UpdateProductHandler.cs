@@ -1,4 +1,4 @@
-using Catalog.API.Common;
+
 using Catalog.API.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -7,7 +7,7 @@ namespace Catalog.API.Products.UpdateProduct
     public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, decimal Price, IFormFileCollection? NewFiles, List<string>? ImagesToDelete, string? PrimaryImageUrl)
        : ICommand<UpdateProductResult>;
     public record UpdateProductResult(bool IsSuccess);
-    
+
     public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
     {
         public UpdateProductCommandValidator()
@@ -21,9 +21,9 @@ namespace Catalog.API.Products.UpdateProduct
     }
 
     internal class UpdateProductCommandHandler(
-        IDocumentSession session, 
+        IDocumentSession session,
         ILogger<UpdateProductCommandHandler> logger,
-        IStorageService storageService)
+        Catalog.API.Clients.MediaClient mediaClient)
         : ICommandHandler<UpdateProductCommand, UpdateProductResult>
     {
         public async Task<UpdateProductResult> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
@@ -41,7 +41,7 @@ namespace Catalog.API.Products.UpdateProduct
             {
                 foreach (var url in command.ImagesToDelete)
                 {
-                    storageService.DeleteFile(url);
+                    await mediaClient.DeleteFileAsync(url);
                     product.Images.RemoveAll(i => i.Url == url);
                 }
             }
@@ -50,10 +50,11 @@ namespace Catalog.API.Products.UpdateProduct
             {
                 foreach (var file in command.NewFiles)
                 {
-                    var fileUrl = await storageService.UploadFileAsync(file);
+                    var fileUrl = await mediaClient.UploadFileAsync(file);
+                    Console.WriteLine($"the image url===================>\n{fileUrl}");
                     if (!string.IsNullOrEmpty(fileUrl))
                     {
-                        product.Images.Add(new ProductImage(fileUrl,  false));
+                        product.Images.Add(new ProductImage(fileUrl, false));
                     }
                 }
             }
@@ -63,7 +64,7 @@ namespace Catalog.API.Products.UpdateProduct
                 for (int i = 0; i < product.Images.Count; i++)
                     product.Images[i] = product.Images[i] with { IsPrimary = false };
 
-                var primaryImageIndex = product.Images.FindIndex(i => i.Url == command.PrimaryImageUrl );
+                var primaryImageIndex = product.Images.FindIndex(i => i.Url == command.PrimaryImageUrl);
                 if (primaryImageIndex >= 0)
                 {
                     product.Images[primaryImageIndex] = product.Images[primaryImageIndex] with { IsPrimary = true };

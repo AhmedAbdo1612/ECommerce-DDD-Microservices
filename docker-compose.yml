@@ -57,6 +57,12 @@ services:
       - redis-cache
       - discount.grpc
 
+  media.api:
+    image: ${DOCKER_REGISTRY-}mediaapi
+    build:
+      context: .
+      dockerfile: Services/Media/Media.API/Dockerfile
+
   discount.grpc:
     image: ${DOCKER_REGISTRY-}discountgrpc
     build:
