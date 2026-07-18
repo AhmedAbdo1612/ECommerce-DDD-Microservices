@@ -1,0 +1,99 @@
+@page
+@model Shopping.Web.Pages.CartModel
+@{
+    ViewData["Title"] = "Your Basket";
+}
+
+<div class="container my-5" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+    <h1 class="mb-4 fw-bold">Your Shopping Basket</h1>
+
+    @if (Model.Cart.Items != null && Model.Cart.Items.Any())
+    {
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px;">
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light" style="border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th scope="col" class="ps-4 py-3 text-muted fw-semibold">Product</th>
+                                    <th scope="col" class="py-3 text-muted fw-semibold">Price</th>
+                                    <th scope="col" class="py-3 text-muted fw-semibold">Quantity</th>
+                                    <th scope="col" class="py-3 text-muted fw-semibold">Total</th>
+                                    <th scope="col" class="pe-4 py-3 text-muted fw-semibold text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Cart.Items)
+                                {
+                                    <tr>
+                                        <td class="ps-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <img src="https://via.placeholder.com/80?text=Img" alt="@item.ProductName" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover; background-color: #f8fafc;">
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <a href="/ProductDetail/@item.ProductId" class="text-decoration-none">
+                                                        <h6 class="mb-1 fw-bold text-dark">@item.ProductName</h6>
+                                                    </a>
+                                                    <small class="text-muted">Color: @item.Color</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 fw-semibold">@item.Price.ToString("C")</td>
+                                        <td class="py-3">
+                                            <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill px-3 py-2 border border-secondary border-opacity-25">@item.Quantity</span>
+                                        </td>
+                                        <td class="py-3 fw-bold" style="color: #1e3a8a;">@((item.Price * item.Quantity).ToString("C"))</td>
+                                        <td class="pe-4 py-3 text-end">
+                                            <form method="post" asp-page-handler="RemoveFromCart">
+                                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" title="Remove">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0" style="border-radius: 16px; background-color: #f8fafc;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4 fw-bold">Order Summary</h4>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted fw-semibold">Subtotal</span>
+                            <span class="fw-bold">@Model.Cart.TotalPrice.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted fw-semibold">Shipping</span>
+                            <span class="text-success fw-bold">Free</span>
+                        </div>
+                        <hr class="my-4" style="border-color: #cbd5e1;">
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="fs-5 fw-bold">Total</span>
+                            <span class="fs-4 fw-black" style="color: #1e3a8a;">@Model.Cart.TotalPrice.ToString("C")</span>
+                        </div>
+                        <a href="/Checkout" class="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5" style="background-color: #1e3a8a; border-color: #1e3a8a;">
+                            Proceed to Checkout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-cart-x text-muted mb-4" style="font-size: 6rem; opacity: 0.5;"></i>
+            <h2 class="fw-bold mb-3">Your basket is empty</h2>
+            <p class="text-muted mb-4 fs-5">Looks like you haven't added anything to your basket yet.</p>
+            <a asp-page="/Index" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold" style="background-color: #1e3a8a; border-color: #1e3a8a;">
+                Start Shopping
+            </a>
+        </div>
+    }
+</div>

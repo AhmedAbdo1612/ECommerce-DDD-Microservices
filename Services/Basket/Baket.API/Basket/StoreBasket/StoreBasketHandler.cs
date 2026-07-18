@@ -1,4 +1,4 @@
-﻿using Discount.Grpc.Protos;
+using Discount.Grpc.Protos;
 using JasperFx.Events.Daemon;
 
 namespace Baket.API.Basket.StoreBasket
@@ -26,8 +26,15 @@ namespace Baket.API.Basket.StoreBasket
         {
             foreach (var item in cart.Items)
             {
-                var coupon = await discountProto.GetDescountAsync(new GetDescountRequest { ProductName = item.ProductName }, cancellationToken: cancellationToken);
-                item.Price -= coupon.Amount;
+                try
+                {
+                    var coupon = await discountProto.GetDescountAsync(new GetDescountRequest { ProductName = item.ProductName }, cancellationToken: cancellationToken);
+                    item.Price -= coupon.Amount;
+                }
+                catch (Exception)
+                {
+                    // Discount not found or service unavailable, proceed without discount
+                }
             }
         }
     }

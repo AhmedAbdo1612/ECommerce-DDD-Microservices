@@ -34,7 +34,7 @@ The domain logic is isolated and modeled using:
 | Component | Technology | Bounded Context / Purpose |
 | :--- | :--- | :--- |
 | **Framework** | .NET 10 | Core runtime for all services |
-| **Minimal APIs** | **Carter** | Catalog & Basket API endpoint routing |
+| **Minimal APIs** | **Carter** | Catalog, Basket & Media API endpoint routing |
 | **REST APIs** | **Controllers** | Ordering API endpoint routing |
 | **RPC Communication** | **gRPC** | Discount.Grpc service communication |
 | **Mediator** | **MediatR** | Decoupling endpoints from feature handlers |
@@ -78,6 +78,11 @@ The domain logic is isolated and modeled using:
     *   `Ordering.Infrastructure`: Data access implementations (`ApplicationDbContext` with EF configurations, migrators, entity interceptors).
     *   `Ordering.API`: Web controllers delivering endpoints and calling the MediatR pipeline.
 
+### 📸 Media Service (`Media.API`)
+*   **Pattern:** Minimal APIs
+*   **Database:** Local File System (`wwwroot/images`)
+*   **Responsibilities:** Handling file uploads and serving static media assets (e.g., product images).
+
 ### 🌐 Web Application (`Shopping.Web`)
 *   **Pattern:** Razor Pages Web Application
 *   **Responsibilities:** Client-facing user interface, consuming backend microservices via Refit and YARP API Gateway.
@@ -108,6 +113,9 @@ Instashop/
 │   │       ├── Data/               # DiscountContext & Extensions
 │   │       ├── Protos/             # Protocol Buffer contract (discount.proto)
 │   │       └── Services/           # Discount gRPC Service Handlers
+│   ├── Media/
+│   │   └── Media.API/              # Media Microservice (Carter, Static Files)
+│   │       └── Endpoints/          # File upload and deletion endpoints
 │   └── Ordering/                   # Ordering Microservice (Clean Architecture + DDD)
 │       ├── OrderingDomain/         # Domain (Models, ValueObjects, Events, Exceptions)
 │       ├── Ordering.Application/   # Application logic (Commands, Queries, DTOs, IApplicationDbContext)

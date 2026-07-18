@@ -21,6 +21,7 @@ graph TB
         BasketAPI["🛒 Basket.API <br> (Vertical Slice, Redis + Marten)"]
         OrderingAPI["📦 Ordering.API <br> (Clean Architecture Controllers)"]
         DiscountGrpc["🏷️ Discount.Grpc <br> (High-Perf gRPC, EF SQLite)"]
+        MediaAPI["📸 Media.API <br> (Minimal API, Local Storage)"]
         
         %% Shared Abstraction
         BuildingBlocks["🧩 BuildingBlocks <br> (Shared CQRS & Pipeline)"]
@@ -38,6 +39,7 @@ graph TB
     Client -->|REST HTTP / Carter| CatalogAPI
     Client -->|REST HTTP / Carter| BasketAPI
     Client -->|REST HTTP / Controllers| OrderingAPI
+    Client -->|REST HTTP / Carter| MediaAPI
     
     BasketAPI -->|gRPC Call| DiscountGrpc
     DiscountGrpc -->|EF Core SQLite| SQLiteDb
@@ -58,7 +60,7 @@ graph TB
     classDef grpc fill:#2C7A7B,stroke:#319795,stroke-width:2px,color:#fff;
     classDef shared fill:#742A2A,stroke:#9B2C2C,stroke-width:2px,color:#fff;
     
-    class CatalogAPI,BasketAPI,OrderingAPI api;
+    class CatalogAPI,BasketAPI,OrderingAPI,MediaAPI api;
     class MartenPostgres,RedisCache,SQLiteDb,EFPostgres db;
     class DiscountGrpc grpc;
     class BuildingBlocks shared;
@@ -73,6 +75,7 @@ graph TB
 | **`Catalog.API`** | Vertical Slice | .NET 10 Minimal APIs (Carter) | Marten (PostgreSQL Doc Store) | Inventory, catalog pagination |
 | **`Baket.API`** | Vertical Slice | .NET 10 Minimal APIs (Carter) | Redis Cache + Marten (PostgreSQL) | Shopping Cart, Caching Decorator |
 | **`Discount.Grpc`** | RPC Service | gRPC Server | EF Core + SQLite | High-speed discount coupon lookup |
+| **`Media.API`** | Minimal API | .NET 10 Minimal APIs (Carter) | Local File System | Media upload & static asset serving |
 | **`Ordering`** | Clean Architecture | ASP.NET Core Controllers | EF Core + PostgreSQL | Enterprise DDD, Domain Events, Orders |
 | **`BuildingBlocks`** | Shared Core | Library Abstractions | N/A | Cross-cutting concerns, CQRS behaviors |
 
@@ -163,6 +166,11 @@ The system's most complex service, implemented using **Clean Architecture** and 
   * **`Ordering.Application`**: Declares CQRS Commands/Queries, MediatR handlers, and database abstractions (`IApplicationDbContext`).
   * **`Ordering.Infrastructure`**: Handles EF Core mapping configurations, custom database migrators, database seed extension, and save changes interceptors (`AuditableEntityInterceptor` and `DispatchDomainEventInterceptor`).
   * **`Ordering.API`**: Exposes standard controllers forwarding payloads to the Application core.
+
+### 5. Media Service (`Media.API`)
+A streamlined minimal API service utilizing Carter for handling media file operations.
+* **Storage:** Local File System (serves static content from `wwwroot/images`).
+* **Responsibilities:** Exposes endpoints for uploading (`POST /api/media/upload`) and deleting (`DELETE /api/media/{fileName}`) image assets used across the e-commerce platform.
 
 ---
 

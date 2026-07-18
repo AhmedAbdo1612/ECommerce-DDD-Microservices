@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 
@@ -43,6 +43,12 @@ namespace Baket.API.Middlewares
                 title = exception.Message;
 
                 detail = validationException.Message;
+            }
+            else if (exception is BuildingBlocks.Exceptions.NotFoundException notFoundException)
+            {
+                statusCode = HttpStatusCode.NotFound;
+                title = "Not Found";
+                detail = notFoundException.Message;
             }
 
             context.Response.StatusCode = (int)statusCode;
