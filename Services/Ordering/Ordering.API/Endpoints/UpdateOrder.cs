@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using Mapster;
 using MediatR;
 using Ordering.Application.Dtos;
@@ -18,7 +18,7 @@ namespace Ordering.API.Endpoints
                 var result = await sender.Send(command);
                 var response = result.Adapt<UpdateOrderResponse>();
                 return Results.Ok(response);
-            });
+            }).RequireAuthorization("ManagerOrAdmin");
         }
     }
 }

@@ -1,6 +1,7 @@
 using Ordering.API;
 using Ordering.Application;
 using Ordering.Infrastructure;
+using BuildingBlocks.Authentication;
 using Ordering.Infrastructure.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,13 @@ builder.Services
     .AddApiServices(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseApiServices();
 if (app.Environment.IsDevelopment())
 {

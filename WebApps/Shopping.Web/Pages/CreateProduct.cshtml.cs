@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Refit;
 using Shopping.Web.Services;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using Shopping.Web.Models.Catalog;
 
 namespace Shopping.Web.Pages
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Manager,Admin")]
     public class CreateProductModel(ICatalogService catalogService, ILogger<CreateProductModel> logger) : PageModel
     {
         [BindProperty]

@@ -1,4 +1,4 @@
-﻿using Baket.API.Basket.StoreBasket;
+using Baket.API.Basket.StoreBasket;
 
 public record StoreBasketRequest(ShoppingCart Cart);
 public record StoreBasketResponse(string UserName);
@@ -6,8 +6,13 @@ public class StoreBasketEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket", async (StoreBasketRequest request, ISender sender) =>
+        app.MapPost("/basket", async (StoreBasketRequest request, ISender sender, Microsoft.AspNetCore.Http.HttpContext context) =>
         {
+            if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != request.Cart.UserName)
+            {
+                return Microsoft.AspNetCore.Http.Results.Forbid();
+            }
+
             var command = request.Adapt<StoreBasketCommand>();
             var result = await sender.Send(command);
             var response = result.Adapt<StoreBasketResponse>();

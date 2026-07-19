@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using Mapster;
 using MediatR;
 using Ordering.Application.Dtos;
@@ -13,8 +13,14 @@ public class CreateOrder : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/orders", async (CreateOrderRequest request, ISender sender) =>
+        app.MapPost("/orders", async (CreateOrderRequest request, ISender sender, Microsoft.AspNetCore.Http.HttpContext context) =>
         {
+            if (!context.User.IsInRole("Admin") && !context.User.IsInRole("Manager") && 
+                context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value != request.Order.CustomerId.ToString())
+            {
+                return Microsoft.AspNetCore.Http.Results.Forbid();
+            }
+
             var command = request.Adapt<CreateOrderCommand>();
             var result = await sender.Send(command);
             var response = result.Adapt<CreateOrderResponse>();

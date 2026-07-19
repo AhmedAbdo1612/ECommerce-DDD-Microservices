@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Pagination;
+using BuildingBlocks.Pagination;
 using Carter;
 using Mapster;
 using MediatR;
@@ -17,6 +17,6 @@ public class GetOrders : ICarterModule
         {
             var result = await sender.Send(new GetOrdersQuery(request));
             return Results.Ok(result.Adapt<GetOrdersResponse>());
-        });
+        }).RequireAuthorization("ManagerOrAdmin");
     }
 }

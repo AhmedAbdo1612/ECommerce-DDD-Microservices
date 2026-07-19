@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using Mapster;
 using MediatR;
 using Ordering.Application.Dtos;
@@ -17,6 +17,7 @@ public class GetOrdersByName : ICarterModule
             var result = await sender.Send(new GetOrdersByNameQuery(orderName));
             var response = result.Adapt<GetOrderByNameResponse>();
             return Results.Ok(response);
-        });
+        })
+        .RequireAuthorization("ManagerOrAdmin");
     }
 }

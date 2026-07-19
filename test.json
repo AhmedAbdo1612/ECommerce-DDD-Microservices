@@ -1,0 +1,14 @@
+{
+  "cart": {
+    "userName": "swn",
+    "items": [
+      {
+        "quantity": 1,
+        "color": "Black",
+        "price": 500,
+        "productId": "5334c996-8457-4cf0-815c-ed2b77c4ef61",
+        "productName": "Phone"
+      }
+    ]
+  }
+}

@@ -3,21 +3,26 @@
 @inject IBasketService BasketService
 @{
     int cartCount = 0;
-    try
+    string? userName = User.Identity?.Name;
+
+    if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(userName))
     {
-        var basketResponse = await BasketService.GetBasket("swn");
-        if (basketResponse?.Cart?.Items != null)
+        try
         {
-            cartCount = basketResponse.Cart.Items.Sum(i => i.Quantity);
+            var basketResponse = await BasketService.GetBasket(userName);
+            if (basketResponse?.Cart?.Items != null)
+            {
+                cartCount = basketResponse.Cart.Items.Sum(i => i.Quantity);
+            }
         }
-    }
-    catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-    {
-        cartCount = 0;
-    }
-    catch (Exception)
-    {
-        cartCount = 0;
+        catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            cartCount = 0;
+        }
+        catch (Exception)
+        {
+            cartCount = 0;
+        }
     }
 }
 <!DOCTYPE html>
@@ -30,6 +35,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Shopping.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
     <header>
@@ -46,29 +52,46 @@
                         <li class="nav-item px-2">
                             <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/CreateProduct">Create Product</a>
-                        </li>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                        {
+                            <li class="nav-item px-2">
+                                <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/CreateProduct">Create Product</a>
+                            </li>
+                        }
                         <li class="nav-item px-2">
                             <a class="nav-link" style="color: #94a3b8;" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                     </ul>
                     <!-- Far-Right Icons -->
                     <ul class="navbar-nav align-items-center">
-                        <li class="nav-item me-3">
-                            <a asp-page="/Cart" class="nav-link position-relative" style="color: #f8fafc;">
-                                <i class="bi bi-cart3 fs-5"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); font-size: 0.65rem; margin-top: 5px;">
-                                    @cartCount
-                                    <span class="visually-hidden">items in cart</span>
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" style="color: #f8fafc;">
-                                <i class="bi bi-person-circle fs-4"></i>
-                            </a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item me-3">
+                                <a asp-page="/Cart" class="nav-link position-relative" style="color: #f8fafc;">
+                                    <i class="bi bi-cart3 fs-5"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%); font-size: 0.65rem; margin-top: 5px;">
+                                        @cartCount
+                                        <span class="visually-hidden">items in cart</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="nav-item text-white me-3 d-flex align-items-center">
+                                <span class="badge bg-secondary me-2">@(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value)</span> @User.Identity.Name
+                            </li>
+                            <li class="nav-item">
+                                <a asp-page="/Logout" class="nav-link" style="color: #f8fafc;" title="Logout">
+                                    <i class="bi bi-box-arrow-right fs-5"></i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a asp-page="/Login" class="nav-link" style="color: #f8fafc;">
+                                    Login / Register
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

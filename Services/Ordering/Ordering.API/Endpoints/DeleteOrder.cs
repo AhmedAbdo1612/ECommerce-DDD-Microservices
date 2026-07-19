@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using Mapster;
 using MediatR;
 using Ordering.Application.Orders.Commands.DeleteOrder;
@@ -16,6 +16,6 @@ public class DeleteOrder : ICarterModule
             var result = await sender.Send(command);
             var response = result.Adapt<DeleteOrderResponse>();
             return Results.Ok(response);
-        });
+        }).RequireAuthorization("ManagerOrAdmin");
     }
 }

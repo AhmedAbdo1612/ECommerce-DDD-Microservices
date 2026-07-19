@@ -1,5 +1,7 @@
 using BuildingBlocks.Messaging.MassTransit;
 using Discount.Grpc.Protos;
+using BuildingBlocks.Authentication;
+using BuildingBlocks.Exceptions.Handler;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -40,8 +42,17 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
         opt.Address = new Uri(builder.Configuration["GrpcSttgins:DiscountUrl"]!);
     }
     );
+
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 builder.Services.AddMessageBroker(builder.Configuration);
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHealthChecks("/health");
 app.UseSwagger();

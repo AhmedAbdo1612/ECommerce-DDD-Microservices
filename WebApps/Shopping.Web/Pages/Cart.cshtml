@@ -30,7 +30,13 @@
                                         <td class="ps-4 py-3">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0">
-                                                    <img src="https://via.placeholder.com/80?text=Img" alt="@item.ProductName" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover; background-color: #f8fafc;">
+                                                    @{
+                                                        var productDetails = Model.ProductDetails.ContainsKey(item.ProductId) ? Model.ProductDetails[item.ProductId] : null;
+                                                        var imgUrl = productDetails?.Images != null && productDetails.Images.Any() 
+                                                            ? productDetails.Images.OrderByDescending(x => x.IsPrimary).First().Url 
+                                                            : "https://via.placeholder.com/80?text=Img";
+                                                    }
+                                                    <img src="@imgUrl" alt="@item.ProductName" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover; background-color: #f8fafc;" onerror="this.onerror=null;this.src='https://via.placeholder.com/80?text=Img';">
                                                 </div>
                                                 <div class="flex-grow-1 ms-3">
                                                     <a href="/ProductDetail/@item.ProductId" class="text-decoration-none">
@@ -42,7 +48,25 @@
                                         </td>
                                         <td class="py-3 fw-semibold">@item.Price.ToString("C")</td>
                                         <td class="py-3">
-                                            <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill px-3 py-2 border border-secondary border-opacity-25">@item.Quantity</span>
+                                            <div class="d-flex align-items-center">
+                                                <form method="post" asp-page-handler="UpdateQuantity" class="m-0 p-0">
+                                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                                    <input type="hidden" name="newQuantity" value="@(item.Quantity - 1)" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" title="Decrease">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                </form>
+                                                
+                                                <span class="mx-3 fw-bold fs-6">@item.Quantity</span>
+                                                
+                                                <form method="post" asp-page-handler="UpdateQuantity" class="m-0 p-0">
+                                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                                    <input type="hidden" name="newQuantity" value="@(item.Quantity + 1)" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" title="Increase">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                         <td class="py-3 fw-bold" style="color: #1e3a8a;">@((item.Price * item.Quantity).ToString("C"))</td>
                                         <td class="pe-4 py-3 text-end">

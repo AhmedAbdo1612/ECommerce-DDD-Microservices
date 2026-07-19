@@ -40,61 +40,55 @@ namespace Shopping.Web.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostAddToBasketAsync(Guid productId)
+        public async Task<IActionResult> OnPostAddToCartAsync(Guid productId)
         {
+            if (User.Identity?.IsAuthenticated != true)
+                return RedirectToPage("/Login");
+
+            var userName = User.Identity?.Name;
             try
             {
                 var productResponse = await catalogService.GetProductById(productId);
-                if (productResponse?.Product == null)
+                if (productResponse?.Product != null)
                 {
-                    return RedirectToPage("/Index");
-                }
-
-                var userName = "swn"; // default user for now
-                ShoppingCartModel basket;
-                try
-                {
-                    var basketResponse = await basketService.GetBasket(userName);
-                    basket = basketResponse.Cart;
-                }
-                catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    basket = new ShoppingCartModel { UserName = userName };
-                }
-
-                if (basket == null)
-                {
-                    basket = new ShoppingCartModel { UserName = userName };
-                }
-
-                var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == productId);
-                if (existingItem != null)
-                {
-                    existingItem.Quantity += Quantity;
-                }
-                else
-                {
-                    basket.Items.Add(new ShoppingCartItemModel
+                    ShoppingCartModel cart;
+                    try
                     {
-                        ProductId = productId,
-                        ProductName = productResponse.Product.Name,
-                        Price = (float)productResponse.Product.Price,
-                        Quantity = Quantity,
-                        Color = "Black" // default color
-                    });
+                        var basketResponse = await basketService.GetBasket(userName!);
+                        cart = basketResponse.Cart ?? new ShoppingCartModel { UserName = userName! };
+                    }
+                    catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        cart = new ShoppingCartModel { UserName = userName! };
+                    }
+
+                    var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+                    if (existingItem != null)
+                    {
+                        existingItem.Quantity += Quantity;
+                    }
+                    else
+                    {
+                        cart.Items.Add(new ShoppingCartItemModel
+                        {
+                            ProductId = productResponse.Product.Id,
+                            ProductName = productResponse.Product.Name,
+                            Price = (float)productResponse.Product.Price,
+                            Quantity = Quantity,
+                            Color = "Black" // default color
+                        });
+                    }
+
+                    await basketService.StoreBasket(new StoreBasketRequest(cart));
+                    return RedirectToPage("/Cart");
                 }
-
-                await basketService.StoreBasket(new StoreBasketRequest(basket));
-
-                TempData["CartMessage"] = $"Successfully added {Quantity} item(s) to your basket!";
-                return RedirectToPage(new { id = productId });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error adding product to basket.");
-                TempData["CartMessage"] = "Failed to add item to basket.";
-                return RedirectToPage(new { id = productId });
+                logger.LogError(ex, "Error adding to cart");
             }
+
+            return RedirectToPage(new { productId });
         }
     }
 }

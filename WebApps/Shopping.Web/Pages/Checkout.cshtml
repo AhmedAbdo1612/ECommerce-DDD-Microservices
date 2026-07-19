@@ -1,0 +1,112 @@
+@page
+@model Shopping.Web.Pages.CheckoutModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container my-5" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+    <h1 class="mb-4 fw-bold">Checkout</h1>
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger" role="alert">
+            <div asp-validation-summary="All" class="mb-0"></div>
+        </div>
+    }
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px;">
+                <div class="card-body p-4">
+                    <h4 class="mb-4 fw-bold">Billing & Shipping Details</h4>
+                    <form method="post" id="checkoutForm">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label asp-for="Checkout.FirstName" class="form-label fw-semibold">First name</label>
+                                <input asp-for="Checkout.FirstName" class="form-control" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label asp-for="Checkout.LastName" class="form-label fw-semibold">Last name</label>
+                                <input asp-for="Checkout.LastName" class="form-control" required />
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Checkout.EmailAddress" class="form-label fw-semibold">Email</label>
+                                <input asp-for="Checkout.EmailAddress" type="email" class="form-control" required />
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Checkout.AddressLine" class="form-label fw-semibold">Address</label>
+                                <input asp-for="Checkout.AddressLine" class="form-control" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label asp-for="Checkout.Country" class="form-label fw-semibold">Country</label>
+                                <input asp-for="Checkout.Country" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Checkout.State" class="form-label fw-semibold">State</label>
+                                <input asp-for="Checkout.State" class="form-control" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Checkout.ZipCode" class="form-label fw-semibold">Zip</label>
+                                <input asp-for="Checkout.ZipCode" class="form-control" required maxlength="5" />
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h4 class="mb-3 fw-bold">Payment</h4>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Checkout.CardName" class="form-label fw-semibold">Name on card</label>
+                                <input asp-for="Checkout.CardName" class="form-control" required />
+                                <small class="text-muted">Full name as displayed on card</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Checkout.CardNumber" class="form-label fw-semibold">Credit card number</label>
+                                <input asp-for="Checkout.CardNumber" class="form-control" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Checkout.Expiration" class="form-label fw-semibold">Expiration</label>
+                                <input asp-for="Checkout.Expiration" class="form-control" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Checkout.CVV" class="form-label fw-semibold">CVV</label>
+                                <input asp-for="Checkout.CVV" class="form-control" required />
+                            </div>
+                            <!-- Hidden default payment method = 1 (Credit Card) -->
+                            <input type="hidden" asp-for="Checkout.PaymentMethod" value="1" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0" style="border-radius: 16px; background-color: #f8fafc;">
+                <div class="card-body p-4">
+                    <h4 class="mb-4 fw-bold">Order Summary</h4>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fw-semibold">Items (@(Model.Cart.Items?.Sum(x => x.Quantity) ?? 0))</span>
+                        <span class="fw-bold">@Model.Cart.TotalPrice.ToString("C")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fw-semibold">Shipping</span>
+                        <span class="text-success fw-bold">Free</span>
+                    </div>
+                    <hr class="my-4" style="border-color: #cbd5e1;">
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fs-5 fw-bold">Total</span>
+                        <span class="fs-4 fw-black" style="color: #1e3a8a;">@Model.Cart.TotalPrice.ToString("C")</span>
+                    </div>
+                    <button type="submit" form="checkoutForm" class="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5" style="background-color: #1e3a8a; border-color: #1e3a8a;">
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
