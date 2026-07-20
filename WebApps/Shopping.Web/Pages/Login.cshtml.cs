@@ -41,7 +41,11 @@ public class LoginModel : PageModel
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(response.AccessToken);
 
-            var claimsIdentity = new ClaimsIdentity(jwtToken.Claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(
+                jwtToken.Claims, 
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                nameType: "username",
+                roleType: "roles");
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = true,

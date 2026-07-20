@@ -1,4 +1,4 @@
-﻿namespace Catalog.API.Products.DeleteProduct
+namespace Catalog.API.Products.DeleteProduct
 {
     public record DeleteProductResponse(bool IsSuccess);
     public class DeleteProductEndpoint : ICarterModule
@@ -10,7 +10,8 @@
                 var result = await sender.Send(new DeleteProductCommand(id));
                 var response = result.Adapt<DeleteProductResponse>();
                 return Results.Ok(response);
-            }).WithName("DeleteProduct");
+            }).WithName("DeleteProduct")
+            .RequireAuthorization("ManagerOrAdmin");
         }
     }
 }

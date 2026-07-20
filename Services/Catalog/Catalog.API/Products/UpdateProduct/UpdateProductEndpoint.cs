@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Catalog.API.Products.UpdateProduct
 {
     public record UpdateProductResponse(bool IsSuccess);
-    
+
     public class UpdateProductRequest
     {
         public Guid Id { get; set; }
@@ -21,13 +21,22 @@ namespace Catalog.API.Products.UpdateProduct
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/products", async ([FromForm] UpdateProductRequest request, ISender sender) =>
+            app.MapPut("/products", async ([FromForm] UpdateProductRequest request,HttpContext context ,ISender sender) =>
             {
+                Console.WriteLine("\nfrom the update product point=================================");
+                var user = context.User;
+                foreach (var claim in user.Claims)
+                {
+                    Console.WriteLine($"{claim.Type}: {claim.Value}");
+                }
+                Console.WriteLine($"the user is admin {user.IsInRole("Admin")}");
+                Console.WriteLine("\nfrom the update product point=================================>");
                 var command = new UpdateProductCommand(request.Id, request.Name, request.Category, request.Description, request.Price, request.NewFiles, request.ImagesToDelete, request.PrimaryImageUrl);
                 var result = await sender.Send(command);
                 var response = result.Adapt<UpdateProductResponse>();
                 return Results.Ok(response);
             }).WithName("UpdateProduct")
+            .RequireAuthorization("Admin")
             .DisableAntiforgery();
         }
     }

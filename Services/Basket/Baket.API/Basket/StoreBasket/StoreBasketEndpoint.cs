@@ -6,11 +6,11 @@ public class StoreBasketEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket", async (StoreBasketRequest request, ISender sender, Microsoft.AspNetCore.Http.HttpContext context) =>
+        app.MapPost("/basket", async (StoreBasketRequest request, ISender sender, HttpContext context) =>
         {
             if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != request.Cart.UserName)
             {
-                return Microsoft.AspNetCore.Http.Results.Forbid();
+                return Results.Forbid();
             }
 
             var command = request.Adapt<StoreBasketCommand>();

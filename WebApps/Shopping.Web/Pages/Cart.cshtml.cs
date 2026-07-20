@@ -1,11 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Refit;
-using Shopping.Web.Models.Basket;
-using Shopping.Web.Services;
-using Shopping.Web.Models.Catalog;
-using Microsoft.AspNetCore.Authorization;
-
 namespace Shopping.Web.Pages
 {
     [Microsoft.AspNetCore.Authorization.Authorize]
@@ -17,12 +11,14 @@ namespace Shopping.Web.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             var userName = User.Identity?.Name;
+            Console.WriteLine($"================\n\n{userName}\n\n=====================");
             if (string.IsNullOrEmpty(userName)) return RedirectToPage("/Login");
             Cart.UserName = userName;
 
             try
             {
                 var response = await basketService.GetBasket(userName);
+                
                 if (response?.Cart != null)
                 {
                     Cart = response.Cart;
@@ -69,17 +65,8 @@ namespace Shopping.Web.Pages
 
             try
             {
-                var response = await basketService.GetBasket(userName);
-                if (response?.Cart != null)
-                {
-                    var item = response.Cart.Items.FirstOrDefault(x => x.ProductId == productId);
-                    if (item != null)
-                    {
-                        response.Cart.Items.Remove(item);
-                        await basketService.StoreBasket(new StoreBasketRequest(response.Cart));
-                        logger.LogInformation("Item {ProductId} removed from basket.", productId);
-                    }
-                }
+                await basketService.RemoveBasketItem(userName, productId);
+                logger.LogInformation("Item {ProductId} removed from basket.", productId);
             }
             catch (Exception ex)
             {
@@ -97,22 +84,13 @@ namespace Shopping.Web.Pages
 
             try
             {
-                var response = await basketService.GetBasket(userName);
-                if (response?.Cart != null)
+                if (quantity > 0)
                 {
-                    var item = response.Cart.Items.FirstOrDefault(x => x.ProductId == productId);
-                    if (item != null)
-                    {
-                        if (quantity > 0)
-                        {
-                            item.Quantity = quantity;
-                        }
-                        else
-                        {
-                            response.Cart.Items.Remove(item);
-                        }
-                        await basketService.StoreBasket(new StoreBasketRequest(response.Cart));
-                    }
+                    await basketService.UpdateBasketItemQuantity(userName, productId, new UpdateItemQuantityRequest(quantity));
+                }
+                else
+                {
+                    await basketService.RemoveBasketItem(userName, productId);
                 }
             }
             catch (Exception ex)

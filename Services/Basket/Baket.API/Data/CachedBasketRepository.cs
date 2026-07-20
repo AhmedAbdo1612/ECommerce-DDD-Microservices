@@ -5,7 +5,7 @@
         public async Task<ShoppingCart> GetBasket(string UserName, CancellationToken cancellationToken = default)
         {
             var cachedBasket = await cache.GetStringAsync(UserName, cancellationToken);
-            Console.WriteLine($"\nget from redis\n{cachedBasket}");
+            
             if (!string.IsNullOrEmpty(cachedBasket))
             {
                return JsonSerializer.Deserialize<ShoppingCart>(cachedBasket)!;

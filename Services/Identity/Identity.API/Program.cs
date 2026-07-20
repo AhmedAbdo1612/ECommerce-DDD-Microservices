@@ -23,7 +23,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<IdentityContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<RsaKeyService>();
+
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var issuer = jwtSettings.GetValue<string>("Issuer");
@@ -44,11 +44,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = issuer,
         ValidAudience = audience,
-        IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
-        {
-            var rsaService = builder.Services.BuildServiceProvider().GetRequiredService<RsaKeyService>();
-            return new[] { rsaService.GetKey() };
-        }
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.GetValue<string>("SecretKey")!)),
+        NameClaimType = "username",
+        RoleClaimType = "roles"
     };
 });
 

@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Identity.API.Services;
 
@@ -11,13 +12,10 @@ public class TokenService
 {
     private readonly IConfiguration _config;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RsaKeyService _rsaKeyService;
-
-    public TokenService(IConfiguration config, UserManager<ApplicationUser> userManager, RsaKeyService rsaKeyService)
+    public TokenService(IConfiguration config, UserManager<ApplicationUser> userManager)
     {
         _config = config;
         _userManager = userManager;
-        _rsaKeyService = rsaKeyService;
     }
 
     public async Task<string> GenerateAccessTokenAsync(ApplicationUser user)
@@ -39,13 +37,16 @@ public class TokenService
 
         foreach (var role in roles)
         {
-            claims.Add(new Claim("roles", role)); // Key as array or just multiple role claims
-            // Adding ClaimTypes.Role as well for ASP.NET Core compatibility if needed
+            Console.WriteLine(role);
+            claims.Add(new Claim("roles", role)); 
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-        var key = _rsaKeyService.GetKey();
-        var creds = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
+        var secretKey = jwtSettings.GetValue<string>("SecretKey");
+        if (string.IsNullOrEmpty(secretKey)) throw new ArgumentNullException("JwtSettings:SecretKey is missing");
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: issuer,
@@ -54,7 +55,7 @@ public class TokenService
             expires: DateTime.UtcNow.AddMinutes(minutes),
             signingCredentials: creds
         );
-
+        
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
@@ -81,6 +82,9 @@ public class TokenService
         var issuer = jwtSettings.GetValue<string>("Issuer");
         var audience = jwtSettings.GetValue<string>("Audience");
 
+        var secretKey = jwtSettings.GetValue<string>("SecretKey");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = true,
@@ -88,7 +92,7 @@ public class TokenService
             ValidIssuer = issuer,
             ValidAudience = audience,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = _rsaKeyService.GetKey(),
+            IssuerSigningKey = key,
             ValidateLifetime = false 
         };
 
@@ -96,7 +100,7 @@ public class TokenService
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
         if (securityToken is not JwtSecurityToken jwtSecurityToken || 
-            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256, StringComparison.InvariantCultureIgnoreCase))
+            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             throw new SecurityTokenException("Invalid token");
 
         return principal;

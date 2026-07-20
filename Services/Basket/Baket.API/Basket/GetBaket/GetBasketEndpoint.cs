@@ -6,16 +6,16 @@ namespace Baket.API.Basket.GetBaket
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/basket/{userName}", async (string userName, ISender sender, Microsoft.AspNetCore.Http.HttpContext context) =>
+            app.MapGet("/basket/{userName}", async (string userName, ISender sender, HttpContext context) =>
             {
                 if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != userName)
                 {
-                    return Microsoft.AspNetCore.Http.Results.Forbid();
+                    return Results.Forbid();
                 }
 
                 var result = await sender.Send(new GetBasketQuery(userName));
                 var response = result.Adapt<GetBasketReponse>();
-                return Microsoft.AspNetCore.Http.Results.Ok(response);
+                return Results.Ok(response);
             }).WithName("GetBasket");
         }
     }

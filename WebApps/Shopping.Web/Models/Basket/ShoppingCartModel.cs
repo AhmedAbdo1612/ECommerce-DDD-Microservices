@@ -36,3 +36,8 @@ public record GetBasketResponse([property: JsonPropertyName("cart")] ShoppingCar
 public record StoreBasketRequest([property: JsonPropertyName("cart")] ShoppingCartModel Cart);
 public record StoreBasketResponse(string UserName);
 public record DeleteBasketResponse(bool Issuccess);
+public record AddItemRequest([property: JsonPropertyName("item")] ShoppingCartItemModel Item);
+public record AddItemResponse([property: JsonPropertyName("cart")] ShoppingCartModel Cart);
+public record RemoveItemResponse([property: JsonPropertyName("cart")] ShoppingCartModel Cart);
+public record UpdateItemQuantityRequest([property: JsonPropertyName("quantity")] int Quantity);
+public record UpdateItemQuantityResponse([property: JsonPropertyName("cart")] ShoppingCartModel Cart);

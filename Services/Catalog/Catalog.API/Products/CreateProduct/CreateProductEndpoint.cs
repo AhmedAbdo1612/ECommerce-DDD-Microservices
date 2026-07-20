@@ -26,6 +26,7 @@ public class CreateProductEndpoint : ICarterModule
             var response = result.Adapt<CreateProductResponse>();
             return Results.Created($"/products/{response.id}", response);
         }).WithName("CreateProduct")
+        .RequireAuthorization("ManagerOrAdmin")
         .DisableAntiforgery();
     }
 }

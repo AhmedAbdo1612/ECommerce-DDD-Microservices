@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Refit;
+using Shopping.Web.Models.Basket;
 using Shopping.Web.Models.Catalog;
 using Shopping.Web.Services;
 
@@ -8,11 +10,13 @@ namespace Shopping.Web.Pages
     public class IndexModel : PageModel
     {
         private readonly ICatalogService _catalogService;
+        private readonly IBasketService _basketService;
         private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(ICatalogService catalogService, ILogger<IndexModel> logger)
+        public IndexModel(ICatalogService catalogService, IBasketService basketService, ILogger<IndexModel> logger)
         {
             _catalogService = catalogService;
+            _basketService = basketService;
             _logger = logger;
         }
 
@@ -46,6 +50,7 @@ namespace Shopping.Web.Pages
             {
                 int pageSize = 8; // Adjust to 8 for a nice 4-column grid (2 rows)
                 var response = await _catalogService.GetProducts(PageNumber, pageSize, SearchQuery, Category);
+                Console.WriteLine($"the products =======================>\n {response.Products.Count()}");
 
                 ProductList = response?.Products ?? new List<ProductModel>();
                 HasNextPage = ProductList.Count() == pageSize;
@@ -62,10 +67,36 @@ namespace Shopping.Web.Pages
             return Page();
         }
 
-        public IActionResult OnPostAddToBasket(Guid productId)
+        public async Task<IActionResult> OnPostAddToBasketAsync(Guid productId)
         {
-            // Placeholder for Add to Basket functionality
-            // Usually you'd call an IBasketService here
+            if (User.Identity?.IsAuthenticated != true)
+                return RedirectToPage("/Login");
+
+            var userName = User.Identity?.Name;
+            try
+            {
+                var productResponse = await _catalogService.GetProductById(productId);
+                if (productResponse?.Product != null)
+                {
+                    var item = new ShoppingCartItemModel
+                    {
+                        ProductId = productResponse.Product.Id,
+                        ProductName = productResponse.Product.Name,
+                        Price = (float)productResponse.Product.Price,
+                        Quantity = 1,
+                        Color = "Black" // default color
+                    };
+
+                    await _basketService.AddBasketItem(userName!, new AddItemRequest(item));
+                    TempData["CartMessage"] = "Item added to cart successfully!";
+                    return RedirectToPage();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding to cart");
+                ErrorMessage = "Failed to add item to cart.";
+            }
 
             return RedirectToPage();
         }

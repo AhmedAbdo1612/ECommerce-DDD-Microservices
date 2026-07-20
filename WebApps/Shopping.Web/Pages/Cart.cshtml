@@ -51,7 +51,7 @@
                                             <div class="d-flex align-items-center">
                                                 <form method="post" asp-page-handler="UpdateQuantity" class="m-0 p-0">
                                                     <input type="hidden" name="productId" value="@item.ProductId" />
-                                                    <input type="hidden" name="newQuantity" value="@(item.Quantity - 1)" />
+                                                    <input type="hidden" name="quantity" value="@(item.Quantity - 1)" />
                                                     <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" title="Decrease">
                                                         <i class="bi bi-dash"></i>
                                                     </button>
@@ -61,7 +61,7 @@
                                                 
                                                 <form method="post" asp-page-handler="UpdateQuantity" class="m-0 p-0">
                                                     <input type="hidden" name="productId" value="@item.ProductId" />
-                                                    <input type="hidden" name="newQuantity" value="@(item.Quantity + 1)" />
+                                                    <input type="hidden" name="quantity" value="@(item.Quantity + 1)" />
                                                     <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" title="Increase">
                                                         <i class="bi bi-plus"></i>
                                                     </button>

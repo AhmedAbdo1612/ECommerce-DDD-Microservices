@@ -43,6 +43,7 @@ The system is designed around domain models that encapsulate business logic and 
 | **Validation** | **FluentValidation** | MediatR pipeline automatic request validation |
 | **Mapping** | **Mapster** | Request/Response and Entity/DTO mapping |
 | **Message Broker** | **RabbitMQ & MassTransit** | Asynchronous event-driven communication |
+| **Identity/Auth** | **JWT & ASP.NET Identity** | Identity.API user management and authentication |
 | **API Gateway** | **YARP** | Centralized routing to backend microservices |
 | **Web Frontend** | **Razor Pages & Refit** | Shopping.Web UI and API consumption |
 | **Containerization**| **Docker & Docker Compose** | Local orchestrations of backend microservices |
@@ -75,6 +76,11 @@ The system is designed around domain models that encapsulate business logic and 
     *   `Ordering.Application`: MediatR commands/queries, mapping (Mapster), DTO definitions, and data abstractions (`IApplicationDbContext`).
     *   `Ordering.Infrastructure`: Data access implementations (`ApplicationDbContext` with EF configurations, migrators, entity interceptors).
     *   `Ordering.API`: Web controllers delivering endpoints and calling the MediatR pipeline.
+
+### 🔐 Identity Service (`Identity.API`)
+*   **Pattern:** Minimal APIs / Carter
+*   **Database:** EF Core (PostgreSQL)
+*   **Responsibilities:** User authentication, JWT token generation (using RSA keys), identity management (users and roles).
 
 ### 📸 Media Service (`Media.API`)
 *   **Pattern:** Minimal APIs
@@ -132,6 +138,8 @@ Instashop/
 │       ├── Ordering.Application/   # Application logic (Commands, Queries, DTOs, IApplicationDbContext)
 │       ├── Ordering.Infrastructure/# Infra (ApplicationDbContext, Configurations, Interceptors)
 │       └── Ordering.API/           # Presentation layer (Controllers, Endpoints)
+│   ├── Identity/
+│   │   └── Identity.API/           # Identity Microservice (JWT, ASP.NET Core Identity, PostgreSQL)
 ├── WebApps/                        # Frontend web applications
 │   └── Shopping.Web/               # Razor Pages UI consuming the microservices via Refit
 └── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, RabbitMQ, and backend microservices)

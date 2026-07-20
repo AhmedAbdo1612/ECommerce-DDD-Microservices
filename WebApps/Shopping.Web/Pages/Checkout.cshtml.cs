@@ -68,7 +68,7 @@ namespace Shopping.Web.Pages
             try
             {
                 Checkout.UserName = userName;
-                var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
                 if (Guid.TryParse(userIdStr, out var cId))
                     Checkout.CustomerId = cId;
                 else

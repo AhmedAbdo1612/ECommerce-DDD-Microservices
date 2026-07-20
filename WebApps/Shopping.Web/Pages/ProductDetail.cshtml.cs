@@ -42,44 +42,30 @@ namespace Shopping.Web.Pages
 
         public async Task<IActionResult> OnPostAddToCartAsync(Guid productId)
         {
+        
             if (User.Identity?.IsAuthenticated != true)
                 return RedirectToPage("/Login");
 
             var userName = User.Identity?.Name;
             try
-            {
+            { 
                 var productResponse = await catalogService.GetProductById(productId);
+                
                 if (productResponse?.Product != null)
                 {
-                    ShoppingCartModel cart;
-                    try
+                    var item = new ShoppingCartItemModel
                     {
-                        var basketResponse = await basketService.GetBasket(userName!);
-                        cart = basketResponse.Cart ?? new ShoppingCartModel { UserName = userName! };
-                    }
-                    catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    {
-                        cart = new ShoppingCartModel { UserName = userName! };
-                    }
+                        ProductId = productResponse.Product.Id,
+                        ProductName = productResponse.Product.Name,
+                        Price = (float)productResponse.Product.Price,
+                        Quantity = Quantity,
+                        Color = "Black" 
+                    };
 
-                    var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-                    if (existingItem != null)
-                    {
-                        existingItem.Quantity += Quantity;
-                    }
-                    else
-                    {
-                        cart.Items.Add(new ShoppingCartItemModel
-                        {
-                            ProductId = productResponse.Product.Id,
-                            ProductName = productResponse.Product.Name,
-                            Price = (float)productResponse.Product.Price,
-                            Quantity = Quantity,
-                            Color = "Black" // default color
-                        });
-                    }
-
-                    await basketService.StoreBasket(new StoreBasketRequest(cart));
+                    Console.WriteLine("\n\nbegin of the request=========================================>");
+                    var res = await basketService.AddBasketItem(userName!, new AddItemRequest(item));
+                    Console.WriteLine(res);
+                    Console.WriteLine("\n\n=========================================>");
                     return RedirectToPage("/Cart");
                 }
             }
