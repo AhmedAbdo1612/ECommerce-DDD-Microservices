@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Refit;
 using Shopping.Web.Models.Basket;
 using Shopping.Web.Services;
-using Microsoft.AspNetCore.Authorization;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Shopping.Web.Pages
 {
@@ -60,6 +61,27 @@ namespace Shopping.Web.Pages
                 logger.LogError(ex, "Error reloading basket on post checkout");
             }
 
+            Checkout.UserName = userName;
+            Console.WriteLine(Checkout.UserName);
+            Console.WriteLine(Checkout.CustomerId);
+            Console.WriteLine(Checkout.FirstName);
+            Console.WriteLine(Checkout.LastName);
+            Console.WriteLine(Checkout.TotalPrice);
+            Console.WriteLine(Checkout.EmailAddress);
+            Console.WriteLine(Checkout.Country);
+            Console.WriteLine(Checkout.AddressLine);
+            Console.WriteLine(Checkout.State);
+            Console.WriteLine(Checkout.ZipCode);
+            Console.WriteLine(Checkout.CardName);
+            Console.WriteLine(Checkout.CardNumber);
+            Console.WriteLine(Checkout.Expiration);
+            Console.WriteLine(Checkout.CVV);
+            Console.WriteLine(Checkout.PaymentMethod);
+    
+            ModelState.Remove("Checkout.UserName");
+            ModelState.Remove("Checkout.CustomerId");
+            ModelState.Remove("Checkout.TotalPrice");
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -67,7 +89,6 @@ namespace Shopping.Web.Pages
 
             try
             {
-                Checkout.UserName = userName;
                 var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
                 if (Guid.TryParse(userIdStr, out var cId))
                     Checkout.CustomerId = cId;
@@ -75,15 +96,15 @@ namespace Shopping.Web.Pages
                     Checkout.CustomerId = Guid.NewGuid();
 
                 var request = new CheckoutBasketRequest(Checkout);
-                await basketService.CheckoutBasket(request);
-                
-                return RedirectToPage("Confirmation", "OrderSubmitted");
+                var res = await basketService.CheckoutBasket(request);
+                return RedirectToPage("/Confirmation");
             }
             catch (ApiException ex)
             {
+               
                 logger.LogError(ex, "API Error checking out basket. Status code: {StatusCode}", ex.StatusCode);
                 logger.LogError("API Error Response Content: {Content}", ex.Content);
-                
+
                 ModelState.AddModelError("", $"Failed to checkout: {ex.Content}");
                 return Page();
             }

@@ -2,7 +2,7 @@
 using MassTransit;
 
 namespace Baket.API.Basket.CheckoutBasket;
-
+ 
 public record CheckoutBasketCommand(BasketCheckoutDto BasketCheckoutDto) : ICommand<CheckoutBasketResult>;
 public record CheckoutBasketResult(bool IsSuccess);
 public class CheckoutHandler(IBasketRespository repo, IPublishEndpoint publish) : ICommandHandler<CheckoutBasketCommand, CheckoutBasketResult>
@@ -25,6 +25,6 @@ public class CheckoutBasketCommandValidatior : AbstractValidator<CheckoutBasketC
     {
         RuleFor(x => x.BasketCheckoutDto).NotNull().WithMessage("BasketCheckoutDto cannot be null");
         RuleFor(x => x.BasketCheckoutDto.UserName).NotEmpty().WithMessage("UserName is required for checkout");
-        RuleFor(x => x.BasketCheckoutDto.ZipCode).MaximumLength(5).WithMessage("Please enter a valid zip code");
+        //RuleFor(x => x.BasketCheckoutDto.ZipCode).MaximumLength(5).WithMessage("Please enter a valid zip code");
     }
 }

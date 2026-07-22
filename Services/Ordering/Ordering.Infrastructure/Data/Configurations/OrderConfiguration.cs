@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderingDomain.Enums;
@@ -60,7 +60,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
           .HasMaxLength(50);
 
             d.Property(x => x.ZipCode)
-          .HasMaxLength(5);
+          .HasMaxLength(20);
 
         });
 
@@ -89,7 +89,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
           .HasMaxLength(50);
 
             d.Property(x => x.ZipCode)
-          .HasMaxLength(5);
+          .HasMaxLength(20);
 
         });
 
@@ -104,7 +104,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.Status)
             .HasDefaultValue(OrderStatus.Draft)
-            .HasConversion(s => s.ToString(), dbStatus => (OrderStatus)Enum.Parse(typeof(OrderStatus), dbStatus));
+            .HasSentinel((OrderStatus)0)
+            .HasConversion(
+                s    => s.ToString(),
+                // Case-insensitive parse guards against casing drift in existing rows
+                dbStr => (OrderStatus)Enum.Parse(typeof(OrderStatus), dbStr, ignoreCase: true));
 
         builder.Property(o => o.TotalPrice);
     }

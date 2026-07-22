@@ -1,4 +1,4 @@
-﻿namespace OrderingDomain.Models
+namespace OrderingDomain.Models
 {
     public class OrderItem : Entity<OrderItemId>
     {
@@ -13,5 +13,12 @@
         public ProductId ProductId { get; private set; } = default!;
         public int Quantity { get; private set; } = default!;
         public float Price { get; private set; } = default!;
+
+        /// <summary>Called by the Order aggregate's UpdateItem method.</summary>
+        internal void UpdateQuantityAndPrice(int quantity, float price)
+        {
+            Quantity = quantity;
+            Price    = price;
+        }
     }
 }

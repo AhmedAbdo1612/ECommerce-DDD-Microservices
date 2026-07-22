@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderingDomain.Models;
 using OrderingDomain.ValueObjects;
@@ -14,6 +14,10 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             orderId => orderId.Value,
             dbId => OrderItemId.Of(dbId)
             );
+        builder.Property(x => x.ProductId).HasConversion(
+            productId => productId.Value,
+            dbId => ProductId.Of(dbId)
+        );
         builder.HasOne<Product>()
             .WithMany()
             .HasForeignKey(x => x.ProductId);

@@ -8,11 +8,11 @@ public class CheckoutEndpoint : ICarterModule
 {
     void ICarterModule.AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket/Checkout", async (ChechoutBasketRequest request, ISender sender, Microsoft.AspNetCore.Http.HttpContext context) =>
+        app.MapPost("/basket/Checkout", async (ChechoutBasketRequest request, ISender sender,HttpContext context) =>
         {
             if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != request.BasketCheckoutDto.UserName)
             {
-                return Microsoft.AspNetCore.Http.Results.Forbid();
+                Results.Forbid();
             }
 
             var command = request.Adapt<CheckoutBasketCommand>();

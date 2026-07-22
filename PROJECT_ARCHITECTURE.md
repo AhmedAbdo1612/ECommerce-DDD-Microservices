@@ -103,6 +103,7 @@ The `BuildingBlocks` project provides shared abstractions and behaviors used acr
     *   **ValidationBehavior:** Automatically validates every `ICommand` using FluentValidation before it reaches the handler.
     *   **LoggingBehavior:** Provides standardized request/response logging and performance monitoring (logs warnings for requests taking longer than 3 seconds).
 *   **Exception Handling:** Centralized middleware for capturing and formatting API errors.
+*   **Authentication:** Centralized JWT bearer authentication and role-based authorization policies (`AuthenticationExtensions.cs`).
 *   **Messaging (`BuildingBlocks.Messaging`):** Integrates **MassTransit** and **RabbitMQ** for asynchronous event-driven communication across bounded contexts.
 
 ---
@@ -114,7 +115,7 @@ Instashop/
 ├── ApiGateways/                    # API Gateways routing requests to internal microservices
 │   └── YarpApiGateway/             # Central entry point using YARP
 ├── BuildingBlocks/                 # Shared abstractions, CQRS interfaces, and pipeline behaviors
-│   ├── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination)
+│   ├── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination, Authentication)
 │   └── BuildingBlocks.Messaging/   # Async messaging abstractions (MassTransit, RabbitMQ)
 ├── Services/
 │   ├── Catalog/
@@ -123,7 +124,7 @@ Instashop/
 │   │       └── Models/             # Catalog Entities
 │   ├── Basket/
 │   │   └── Baket.API/              # Basket Microservice (Vertical Slice, Marten + Redis)
-│   │       ├── Basket/             # Feature slices (e.g. StoreBasket, GetBasket)
+│   │       ├── Basket/             # Feature slices (e.g. StoreBasket, GetBasket, AddItem, RemoveItem, UpdateItemQuantity)
 │   │       └── Data/               # Repositories (Decorated Caching Logic)
 │   ├── Discount/
 │   │   └── Discount.Grpc/          # Discount RPC Service (gRPC, EF Core + SQLite)

@@ -50,8 +50,6 @@ namespace Shopping.Web.Pages
             {
                 int pageSize = 8; // Adjust to 8 for a nice 4-column grid (2 rows)
                 var response = await _catalogService.GetProducts(PageNumber, pageSize, SearchQuery, Category);
-                Console.WriteLine($"the products =======================>\n {response.Products.Count()}");
-
                 ProductList = response?.Products ?? new List<ProductModel>();
                 HasNextPage = ProductList.Count() == pageSize;
 

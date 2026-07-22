@@ -1,13 +1,25 @@
-﻿using Shopping.Web.Models.Ordering;
+using Shopping.Web.Models.Ordering;
+using Refit;
 
 namespace Shopping.Web.Services;
 
 public interface IOrderingService
 {
-    [Get("/order-service/orders?pageIndex={pageIndex}&pageSize={pageSize}")]
+    [Get("/orders?pageIndex={pageIndex}&pageSize={pageSize}")]
     Task<GetOrdersResponse> GetOrders(int? pageIndex = 1, int? pageSize = 10);
-    [Get("/order-service/orders/{orderName}")]
-    Task<GetOrdersResponse> GetOrdersByName(string orderName);
-    [Get("/order-service/orders/customer/{customerId}")]
+    
+    [Get("/orders/{orderName}")]
+    Task<GetOrdersByNameResponse> GetOrdersByName(string orderName);
+    
+    [Get("/orders/customer/{customerId}")]
     Task<GetOrdersByCustomerResponse> GetOrdersByCustomer(Guid customerId);
+
+    [Get("/orders/{id}")]
+    Task<GetOrderByIdResponse> GetOrderById(Guid id);
+
+    [Put("/orders")]
+    Task<UpdateOrderResponse> UpdateOrder([Body] UpdateOrderRequest request);
+
+    [Delete("/orders/{id}")]
+    Task<DeleteOrderResponse> DeleteOrder(Guid id);
 }

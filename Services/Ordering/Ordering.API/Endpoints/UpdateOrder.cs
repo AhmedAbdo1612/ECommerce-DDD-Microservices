@@ -14,6 +14,8 @@ namespace Ordering.API.Endpoints
         {
             app.MapPut("/orders", async (UpdateOrderRequest request, ISender sender) =>
             {
+                Console.WriteLine("\nupdate order hited===========================>");
+                Console.WriteLine(request);
                 var command = request.Adapt<UpdateOrderCommand>();
                 var result = await sender.Send(command);
                 var response = result.Adapt<UpdateOrderResponse>();

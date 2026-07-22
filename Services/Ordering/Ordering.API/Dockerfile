@@ -31,5 +31,9 @@ RUN dotnet publish "./Ordering.API.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+# Install missing system library for Kerberos (often required by PostgreSQL / EF Core networking)
+USER root
+RUN apt-get update && apt-get install -y libgssapi-krb5-2 && rm -rf /var/lib/apt/lists/*
+USER $APP_UID
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Ordering.API.dll"]

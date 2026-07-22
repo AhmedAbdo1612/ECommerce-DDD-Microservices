@@ -1,4 +1,5 @@
-﻿global using BuildingBlocks.CQRS;
+global using BuildingBlocks.CQRS;
+global using BuildingBlocks.Exceptions;
 global using Ordering.Application.Data;
 global using Ordering.Application.Dtos;
 global using OrderingDomain.Models;
@@ -11,4 +12,4 @@ global using OrderingDomain.Events;
 global using Ordering.Application.Extensions;
 global using BuildingBlocks.Messaging.Events;
 global using MassTransit;
-global using Microsoft.FeatureManagement;
+global using Microsoft.FeatureManagement;

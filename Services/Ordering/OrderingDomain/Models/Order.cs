@@ -1,4 +1,4 @@
-﻿namespace OrderingDomain.Models
+namespace OrderingDomain.Models
 {
     public class Order : Aggregate<OrderId>
     {
@@ -44,16 +44,12 @@
             OrderStatus status
             )
         {
-            var order = new Order
-            {
-                OrderName = orderName,
-                ShippingAddress = shippingAddress,
-                BillingAddress = billingAddress,
-                Payment = payment,
-                Status = status,
-            };
+            OrderName = orderName;
+            ShippingAddress = shippingAddress;
+            BillingAddress = billingAddress;
+            Payment = payment;
+            Status = status;
             AddDomainEvent(new OrderUpdateEvent(this));
-
         }
 
         public void Add(ProductId productId, int quantity, float price)
@@ -69,6 +65,21 @@
             if (orderItem is not null)
             {
                 _orderItems.Remove(orderItem);
+            }
+        }
+
+        /// <summary>
+        /// Updates the quantity and/or price of an existing order item identified by productId.
+        /// Does nothing if the product is not in the order.
+        /// </summary>
+        public void UpdateItem(ProductId productId, int quantity, float price)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(price);
+            var orderItem = _orderItems.FirstOrDefault(x => x.ProductId == productId);
+            if (orderItem is not null)
+            {
+                orderItem.UpdateQuantityAndPrice(quantity, price);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿
+
 
 namespace Ordering.Application.Orders.EventHandlers.Domain;
 
@@ -14,7 +14,7 @@ public class OrderCreatedEventHandler(
         logger.LogInformation($"The notification received for order create event {notification}");
         if (await featureManager.IsEnabledAsync("OrderFullfilment"))
         {
-            var orderCreatedEvent = notification.order.ToOrderDto();
+            var orderCreatedEvent = notification.order.ToSingleOrderDto();
             await publish.Publish(orderCreatedEvent, cancellationToken);
         }
     }

@@ -1,0 +1,903 @@
+@page "{id:Guid}"
+@using Shopping.Web.Models.Ordering
+@model Shopping.Web.Pages.Orders.DetailModel
+@{
+    ViewData["Title"] = "Order Details";
+
+    // ── Pre-compute sidebar tokens at page scope so they're usable everywhere ──
+    var heroClass = "sh-draft";
+    var heroIcon  = "bi-file-earmark-text";
+    var heroDesc  = "";
+    var currentStatusInt = 0;
+
+    if (Model.Order != null)
+    {
+        heroClass = Model.Order.Status switch {
+            OrderStatus.Draft     => "sh-draft",
+            OrderStatus.Pending   => "sh-pending",
+            OrderStatus.Completed => "sh-completed",
+            OrderStatus.Cancelled => "sh-cancelled",
+            _                     => "sh-draft"
+        };
+        heroIcon = Model.Order.Status switch {
+            OrderStatus.Draft     => "bi-file-earmark-text",
+            OrderStatus.Pending   => "bi-hourglass-split",
+            OrderStatus.Completed => "bi-patch-check-fill",
+            OrderStatus.Cancelled => "bi-x-circle-fill",
+            _                     => "bi-question-circle"
+        };
+        heroDesc = Model.Order.Status switch {
+            OrderStatus.Draft     => "Created but not yet submitted",
+            OrderStatus.Pending   => "Awaiting processing & fulfilment",
+            OrderStatus.Completed => "Successfully fulfilled",
+            OrderStatus.Cancelled => "Order has been cancelled",
+            _                     => ""
+        };
+        currentStatusInt = (int)Model.Order.Status;
+    }
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+/* ── Design tokens ───────────────────────────────────────────── */
+:root {
+    --bg:          #06050c;
+    --card:        #110f22;
+    --card2:       #16132a;
+    --border:      rgba(255,255,255,0.06);
+    --text:        #f1f5f9;
+    --muted:       #94a3b8;
+    --accent:      #a855f7;
+    --gradient:    linear-gradient(135deg,#a855f7 0%,#3b82f6 100%);
+    --font:        'Plus Jakarta Sans', sans-serif;
+    --radius-card: 20px;
+    --radius-sm:   12px;
+}
+
+body {
+    background: var(--bg) !important;
+    background-image:
+        radial-gradient(circle at 80% 10%, rgba(168,85,247,.06) 0%, transparent 45%),
+        radial-gradient(circle at 10% 90%, rgba(59,130,246,.05) 0%, transparent 45%);
+    color: var(--text) !important;
+    font-family: var(--font) !important;
+}
+
+/* ── Cards ──────────────────────────────────────────────────── */
+.card-d {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 1.75rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    transition: border-color .3s;
+}
+.card-d:hover { border-color: rgba(168,85,247,.15); }
+
+/* ── Label / value pairs ─────────────────────────────────────── */
+.lbl {
+    font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--muted); margin-bottom: .2rem;
+}
+.val { font-weight: 700; font-size: .92rem; margin-bottom: 0; }
+
+/* ── UUID badge ──────────────────────────────────────────────── */
+.uuid-badge {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .25rem .6rem;
+    font-family: monospace;
+    font-size: .78rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+    max-width: 100%;
+}
+.uuid-badge:hover { background: rgba(168,85,247,.1); border-color: rgba(168,85,247,.3); color: #c084fc; }
+.uuid-badge .uuid-copy { font-size: .7rem; opacity: .5; }
+.uuid-badge:hover .uuid-copy { opacity: 1; }
+
+/* ── Section header ──────────────────────────────────────────── */
+.sec-header {
+    display: flex; align-items: center; gap: .65rem; margin-bottom: 1.25rem;
+}
+.sec-icon {
+    width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(168,85,247,.12);
+    border: 1px solid rgba(168,85,247,.25);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem;
+}
+.sec-title   { font-weight: 800; font-size: 1rem; margin-bottom: 0; }
+.sec-subtitle { font-size: .75rem; color: var(--muted); margin-bottom: 0; }
+
+/* ── Stat pills (summary row) ────────────────────────────────── */
+.stat-pill {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: .9rem 1.1rem;
+    transition: border-color .25s;
+}
+.stat-pill:hover { border-color: rgba(168,85,247,.2); }
+.stat-pill .sp-val { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+.stat-pill .sp-lbl { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: .2rem; }
+
+/* ── Product item cards ──────────────────────────────────────── */
+.item-card {
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.2rem;
+    transition: all .25s;
+}
+.item-card:hover { background: rgba(255,255,255,.05); border-color: rgba(168,85,247,.2); transform: translateX(3px); }
+.item-num {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    background: rgba(168,85,247,.12);
+    border: 1px solid rgba(168,85,247,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: .75rem; color: var(--accent);
+}
+.item-icon {
+    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; color: var(--muted);
+}
+.item-info { flex: 1; min-width: 0; }
+.item-name { font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-id   { font-family: monospace; font-size: .72rem; color: var(--muted); margin-top: .1rem; }
+.item-qty  { font-size: .75rem; color: var(--muted); }
+.item-qty span { color: var(--text); font-weight: 700; }
+.item-price { text-align: right; flex-shrink: 0; }
+.item-price .unit { font-size: .72rem; color: var(--muted); }
+.item-price .total { font-weight: 800; font-size: .95rem; }
+
+.items-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.2rem;
+    border-top: 1px solid var(--border);
+    margin-top: .5rem;
+}
+.items-total .tot-lbl { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.items-total .tot-val { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+
+/* ── Address info grid ───────────────────────────────────────── */
+.addr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@@media (max-width: 640px) { .addr-grid { grid-template-columns: 1fr; } }
+.addr-card {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem 1.2rem;
+}
+.addr-name { font-weight: 700; font-size: .9rem; margin-bottom: .15rem; }
+.addr-email { font-size: .78rem; color: var(--muted); margin-bottom: .5rem; }
+.addr-line  { font-size: .84rem; line-height: 1.5; color: var(--text); }
+
+/* ── Payment card ────────────────────────────────────────────── */
+.payment-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.card-chip {
+    background: linear-gradient(135deg,#1e1b3a,#2a1f4e);
+    border: 1px solid rgba(168,85,247,.25);
+    border-radius: 12px;
+    padding: .65rem 1rem;
+    font-family: monospace;
+    letter-spacing: .15em;
+    font-size: .85rem;
+    color: var(--text);
+    flex-shrink: 0;
+}
+
+/* ── Status hero ─────────────────────────────────────────────── */
+.status-hero {
+    position: relative; border-radius: 16px;
+    padding: 1.25rem 1.4rem;
+    display: flex; align-items: center; gap: 1rem;
+    overflow: hidden;
+}
+.status-hero::before {
+    content:''; position:absolute; inset:0;
+    background: var(--sh-color); opacity:.06; border-radius:16px;
+}
+.sh-icon {
+    width: 48px; height: 48px; border-radius: 13px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    background: rgba(var(--sh-rgb),.15);
+    border: 1px solid rgba(var(--sh-rgb),.3);
+    color: var(--sh-color);
+    animation: shPulse 3s ease-in-out infinite;
+}
+@@keyframes shPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(var(--sh-rgb),.35); }
+    50%      { box-shadow: 0 0 0 8px rgba(var(--sh-rgb),0); }
+}
+.sh-draft     { --sh-color:#94a3b8; --sh-rgb:148,163,184; }
+.sh-pending   { --sh-color:#eab308; --sh-rgb:234,179,8; }
+.sh-completed { --sh-color:#4ade80; --sh-rgb:74,222,128; }
+.sh-cancelled { --sh-color:#ef4444; --sh-rgb:239,68,68; }
+.sh-lbl   { font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:.15rem; }
+.sh-val   { font-size:1.25rem; font-weight:800; color:var(--sh-color); line-height:1; }
+.sh-desc  { font-size:.76rem; color:var(--muted); margin-top:.2rem; }
+
+/* ── Lifecycle timeline ──────────────────────────────────────── */
+.tl { display:flex; flex-direction:column; }
+.tl-row {
+    display:flex; align-items:flex-start; gap:.7rem;
+    position:relative; padding-bottom:.9rem;
+}
+.tl-row:last-child { padding-bottom:0; }
+.tl-row::before {
+    content:''; position:absolute;
+    left:15px; top:32px;
+    width:2px; height:calc(100% - 16px);
+    background:var(--border);
+}
+.tl-row:last-child::before { display:none; }
+.tl-dot {
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.8rem;
+    border:2px solid var(--border);
+    background:var(--card);
+    color:var(--muted);
+    transition:all .3s;
+}
+.tl-dot.done   { border-color:rgba(74,222,128,.4); background:rgba(74,222,128,.1); color:#4ade80; }
+.tl-dot.active { border-color:var(--sh-color,#a855f7); background:rgba(var(--sh-rgb,168,85,247),.15); color:var(--sh-color,#a855f7); box-shadow:0 0 10px rgba(var(--sh-rgb,168,85,247),.3); }
+.tl-dot.cancel { border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.1); color:#ef4444; }
+.tl-info  { padding-top:.2rem; }
+.tl-name  { font-weight:700; font-size:.83rem; line-height:1.2; }
+.tl-desc  { font-size:.72rem; color:var(--muted); margin-top:.1rem; }
+.tl-badge { font-size:.65rem; font-weight:700; color:var(--accent); margin-top:.15rem; text-transform:uppercase; letter-spacing:.05em; }
+
+/* ── Status selector cards ───────────────────────────────────── */
+.sc-wrap { display:flex; flex-direction:column; gap:.45rem; }
+.sc {
+    display:flex; align-items:center; gap:.7rem;
+    padding:.7rem .9rem; border-radius:11px;
+    border:2px solid transparent;
+    background:rgba(255,255,255,.02);
+    cursor:pointer; transition:all .22s;
+}
+.sc:hover { background:rgba(255,255,255,.05); transform:translateX(3px); }
+.sc.sel { background:rgba(var(--sc-rgb),.08); border-color:rgba(var(--sc-rgb),.35); }
+.sc.sel .sc-dot { background:var(--sc-color); box-shadow:0 0 7px rgba(var(--sc-rgb),.5); }
+.sc input[type=radio] { position:absolute; opacity:0; pointer-events:none; }
+.sc-dot { width:9px; height:9px; border-radius:50%; background:var(--muted); flex-shrink:0; transition:all .25s; }
+.sc-n   { font-weight:700; font-size:.82rem; color:var(--sc-color); line-height:1.2; }
+.sc-d   { font-size:.7rem;  color:var(--muted); margin-top:.08rem; }
+.sc-ck  { color:var(--sc-color); font-size:.85rem; opacity:0; transition:opacity .2s; margin-left:auto; }
+.sc.sel .sc-ck { opacity:1; }
+.sc-draft     { --sc-color:#94a3b8; --sc-rgb:148,163,184; }
+.sc-pending   { --sc-color:#eab308; --sc-rgb:234,179,8; }
+.sc-completed { --sc-color:#4ade80; --sc-rgb:74,222,128; }
+.sc-cancelled { --sc-color:#ef4444; --sc-rgb:239,68,68; }
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-apply {
+    border:none; border-radius:50px;
+    font-weight:700; padding:.7rem 1.2rem; width:100%;
+    transition:all .3s; position:relative; overflow:hidden;
+}
+.btn-apply::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,.1); transform:scaleX(0); transform-origin:left; transition:transform .3s; }
+.btn-apply:hover::after { transform:scaleX(1); }
+.btn-apply:hover { transform:translateY(-2px); color:#fff; }
+.btn-safe   { background:var(--gradient); color:#fff; box-shadow:0 4px 18px rgba(168,85,247,.3); }
+.btn-danger { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; box-shadow:0 4px 18px rgba(239,68,68,.3); }
+.btn-safe:hover   { box-shadow:0 8px 28px rgba(168,85,247,.5); }
+.btn-danger:hover { box-shadow:0 8px 28px rgba(239,68,68,.5); }
+
+/* ── Customer chip ───────────────────────────────────────────── */
+.cust-chip { display:flex; align-items:center; gap:.85rem; }
+.cust-av {
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    background:var(--gradient);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1rem; color:#fff;
+    box-shadow:0 4px 12px rgba(168,85,247,.3);
+}
+.cust-name  { font-weight:700; font-size:.93rem; margin-bottom:.1rem; }
+.cust-email { font-size:.76rem; color:var(--muted); margin-bottom:0; }
+
+/* ── Confirm overlay ─────────────────────────────────────────── */
+.co {
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,.72); backdrop-filter:blur(10px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.co.show { opacity:1; pointer-events:all; }
+.cm {
+    background:#15122a; border:1px solid rgba(255,255,255,.08);
+    border-radius:22px; padding:2rem;
+    width:90%; max-width:390px;
+    transform:scale(.9) translateY(18px); transition:transform .3s;
+    box-shadow:0 28px 60px rgba(0,0,0,.55);
+}
+.co.show .cm { transform:scale(1) translateY(0); }
+.ci {
+    width:54px; height:54px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; margin:0 auto 1rem;
+}
+.ci-safe   { background:rgba(168,85,247,.15); color:#a855f7; border:1px solid rgba(168,85,247,.3); }
+.ci-danger { background:rgba(239,68,68,.15);  color:#ef4444; border:1px solid rgba(239,68,68,.3); }
+
+/* ── Alert banners ───────────────────────────────────────────── */
+.alert-d {
+    display:flex; align-items:flex-start; gap:.75rem;
+    border-radius:14px; padding:.9rem 1.1rem; margin-bottom:1.25rem;
+    font-size:.88rem; border:1px solid;
+    animation: fadeSlideIn .4s ease;
+}
+@@keyframes fadeSlideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.alert-d .ad-icon { font-size:1.1rem; flex-shrink:0; margin-top:.05rem; }
+.alert-d .ad-title { font-weight:700; margin-bottom:.15rem; }
+.alert-d .ad-msg   { color:var(--muted); font-size:.82rem; margin-bottom:0; }
+.alert-success { background:rgba(34,197,94,.08); border-color:rgba(34,197,94,.25); color:#4ade80; }
+.alert-error   { background:rgba(239,68,68,.08); border-color:rgba(239,68,68,.25); color:#ef4444; }
+
+/* ── Search ──────────────────────────────────────────────────── */
+.search-glass {
+    background:rgba(255,255,255,.03) !important;
+    border:1px solid rgba(255,255,255,.08) !important;
+    color:var(--text) !important;
+    border-radius:10px; font-size:.83rem;
+}
+.search-glass:focus { border-color:rgba(168,85,247,.4) !important; box-shadow:0 0 0 3px rgba(168,85,247,.1) !important; outline:none; }
+</style>
+
+<div class="container-fluid px-4 px-lg-5 pt-5" style="padding-bottom:5rem;">
+
+    <!-- Back link -->
+    <a asp-page="/Orders/Index" class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4"
+       style="color:var(--muted); font-size:.87rem; transition:color .2s;" onmouseover="this.style.color='#c084fc'" onmouseout="this.style.color='var(--muted)'">
+        <i class="bi bi-arrow-left"></i> Back to Orders
+    </a>
+
+    <!-- ── Feedback banners ── -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-d alert-success">
+            <i class="bi bi-check-circle-fill ad-icon"></i>
+            <div>
+                <p class="ad-title">Success</p>
+                <p class="ad-msg">@TempData["SuccessMessage"]</p>
+            </div>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-d alert-error">
+            <i class="bi bi-exclamation-circle-fill ad-icon"></i>
+            <div>
+                <p class="ad-title">Action Failed</p>
+                <p class="ad-msg">@TempData["ErrorMessage"]</p>
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert-d alert-error">
+            <i class="bi bi-bug-fill ad-icon"></i>
+            <div>
+                <p class="ad-title">Error Loading Order</p>
+                <p class="ad-msg">@Model.ErrorMessage</p>
+            </div>
+        </div>
+    }
+
+    @if (Model.Order == null)
+    {
+        <!-- Empty state -->
+        <div class="card-d text-center py-5">
+            <i class="bi bi-receipt" style="font-size:3rem;color:var(--muted);opacity:.4;"></i>
+            <h4 class="fw-bold mt-3">Order Not Found</h4>
+            <p class="text-muted-console">The order you're looking for doesn't exist or you don't have access to it.</p>
+            <a asp-page="/Orders/Index" class="btn btn-apply btn-safe mt-2" style="width:auto;padding:.6rem 2rem;">
+                <i class="bi bi-list-ul me-2"></i>View All Orders
+            </a>
+        </div>
+    }
+    else
+    {
+        var order       = Model.Order;
+        var itemCount   = order.OrderItems?.Count ?? 0;
+        var totalUnits  = order.OrderItems?.Sum(i => i.Quantity) ?? 0;
+        var orderTotal  = order.OrderItems?.Sum(i => i.Quantity * i.Price) ?? 0f;
+        var shortId     = order.Id.ToString().Substring(0, 8).ToUpper();
+        var custInitial = order.ShippingAddress?.FirstName?.Substring(0, 1).ToUpper() ?? "?";
+        var custName    = $"{order.ShippingAddress?.FirstName} {order.ShippingAddress?.LastName}".Trim();
+
+        <!-- Page header -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">@order.OrderName</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="uuid-badge" onclick="copyId('@order.Id', this)" title="Click to copy full ID">
+                        <i class="bi bi-hash"></i>@shortId
+                        <i class="bi bi-clipboard uuid-copy"></i>
+                    </span>
+                    @if (order.Status == OrderStatus.Draft)     { <span style="font-size:.78rem;background:rgba(148,163,184,.1);color:#94a3b8;border:1px solid rgba(148,163,184,.2);border-radius:50px;padding:.2rem .7rem;">Draft</span> }
+                    else if (order.Status == OrderStatus.Pending)   { <span style="font-size:.78rem;background:rgba(234,179,8,.1);color:#eab308;border:1px solid rgba(234,179,8,.2);border-radius:50px;padding:.2rem .7rem;">Pending</span> }
+                    else if (order.Status == OrderStatus.Completed) { <span style="font-size:.78rem;background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2);border-radius:50px;padding:.2rem .7rem;">Completed</span> }
+                    else if (order.Status == OrderStatus.Cancelled) { <span style="font-size:.78rem;background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2);border-radius:50px;padding:.2rem .7rem;">Cancelled</span> }
+                </div>
+            </div>
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
+                <a asp-page="/Orders/Edit" asp-route-id="@order.Id"
+                   style="display:inline-flex;align-items:center;gap:.5rem;
+                          background:linear-gradient(135deg,#a855f7,#3b82f6);
+                          color:#fff;border:none;border-radius:50px;
+                          padding:.6rem 1.5rem;font-weight:700;font-size:.85rem;
+                          text-decoration:none;
+                          box-shadow:0 4px 18px rgba(168,85,247,.3);
+                          transition:opacity .2s,transform .15s;"
+                   onmouseover="this.style.opacity='.88';this.style.transform='translateY(-1px)'"
+                   onmouseout="this.style.opacity='1';this.style.transform=''">
+                    <i class="bi bi-pencil-square"></i> Edit Order
+                </a>
+            }
+        </div>
+
+
+        <!-- ── Stats strip ── -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-pill">
+                    <p class="sp-val" style="color:var(--accent);">@itemCount</p>
+                    <p class="sp-lbl">Products</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-pill">
+                    <p class="sp-val">@totalUnits</p>
+                    <p class="sp-lbl">Total Units</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-pill">
+                    <p class="sp-val" style="color:#4ade80;">@orderTotal.ToString("C")</p>
+                    <p class="sp-lbl">Order Total</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-pill">
+                    <p class="sp-val @heroClass" style="color:var(--sh-color, var(--muted));">@order.Status</p>
+                    <p class="sp-lbl">Status</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- ═══════════════════ LEFT COLUMN ═══════════════════ -->
+            <div class="col-lg-8">
+
+                <!-- Order items -->
+                <div class="card-d mb-4">
+                    <div class="sec-header">
+                        <div class="sec-icon"><i class="bi bi-bag-check"></i></div>
+                        <div>
+                            <p class="sec-title">Order Items</p>
+                            <p class="sec-subtitle">@itemCount product(s) · @totalUnits total units</p>
+                        </div>
+                    </div>
+
+                    @if (order.OrderItems == null || !order.OrderItems.Any())
+                    {
+                        <div class="text-center py-5" style="border:1px dashed var(--border);border-radius:var(--radius-sm);">
+                            <i class="bi bi-box-seam" style="font-size:2.5rem;color:var(--muted);opacity:.4;display:block;margin-bottom:.75rem;"></i>
+                            <p style="color:var(--muted);font-size:.9rem;margin:0;">No items found for this order.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-2">
+                            @{ int ln = 0; }
+                            @foreach (var item in order.OrderItems)
+                            {
+                                ln++;
+                                var shortPid = item.ProductId.ToString().Substring(0, 8).ToUpper();
+                                var subtotal = item.Quantity * item.Price;
+                                <div class="item-card">
+                                    <div class="item-num">@ln</div>
+                                    <div class="item-icon"><i class="bi bi-box-seam"></i></div>
+                                    <div class="item-info">
+                                        <p class="item-name">@item.ProductName</p>
+                                        <div class="d-flex align-items-center gap-2 mt-1">
+                                            <span class="uuid-badge" onclick="copyId('@item.ProductId', this)" title="Click to copy Product ID" style="font-size:.68rem;padding:.15rem .45rem;">
+                                                <i class="bi bi-box"></i>#@shortPid
+                                                <i class="bi bi-clipboard uuid-copy"></i>
+                                            </span>
+                                            <span class="item-qty">Qty: <span>@item.Quantity</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="item-price">
+                                        <p class="unit">@item.Price.ToString("C") each</p>
+                                        <p class="total">@subtotal.ToString("C")</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="items-total">
+                            <span class="tot-lbl">Order Total</span>
+                            <span class="tot-val">@orderTotal.ToString("C")</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Shipping & Billing -->
+                <div class="card-d mb-4">
+                    <div class="sec-header">
+                        <div class="sec-icon"><i class="bi bi-geo"></i></div>
+                        <div>
+                            <p class="sec-title">Delivery Information</p>
+                            <p class="sec-subtitle">Shipping & billing addresses</p>
+                        </div>
+                    </div>
+
+                    <div class="addr-grid">
+                        <!-- Shipping -->
+                        <div class="addr-card">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-truck" style="color:var(--accent);font-size:.85rem;"></i>
+                                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Shipping</span>
+                            </div>
+                            @if (order.ShippingAddress != null)
+                            {
+                                <p class="addr-name">@order.ShippingAddress.FirstName @order.ShippingAddress.LastName</p>
+                                <p class="addr-email">@order.ShippingAddress.EmailAddress</p>
+                                <p class="addr-line">
+                                    @order.ShippingAddress.AddressLine<br>
+                                    @order.ShippingAddress.State, @order.ShippingAddress.Country
+                                    <span class="uuid-badge ms-1" style="font-size:.7rem;padding:.1rem .4rem;">
+                                        @order.ShippingAddress.ZipCode
+                                    </span>
+                                </p>
+                            }
+                            else { <p style="color:var(--muted);font-size:.85rem;">Not available</p> }
+                        </div>
+
+                        <!-- Billing -->
+                        <div class="addr-card">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-receipt" style="color:var(--accent);font-size:.85rem;"></i>
+                                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Billing</span>
+                            </div>
+                            @if (order.BillingAddress != null)
+                            {
+                                <p class="addr-name">@order.BillingAddress.FirstName @order.BillingAddress.LastName</p>
+                                <p class="addr-email">@order.BillingAddress.EmailAddress</p>
+                                <p class="addr-line">
+                                    @order.BillingAddress.AddressLine<br>
+                                    @order.BillingAddress.State, @order.BillingAddress.Country
+                                    <span class="uuid-badge ms-1" style="font-size:.7rem;padding:.1rem .4rem;">
+                                        @order.BillingAddress.ZipCode
+                                    </span>
+                                </p>
+                            }
+                            else { <p style="color:var(--muted);font-size:.85rem;">Not available</p> }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment -->
+                <div class="card-d">
+                    <div class="sec-header">
+                        <div class="sec-icon"><i class="bi bi-credit-card-2-front"></i></div>
+                        <div>
+                            <p class="sec-title">Payment Details</p>
+                            <p class="sec-subtitle">Card used for this order</p>
+                        </div>
+                    </div>
+
+                    @if (order.Payment != null)
+                    {
+                        <div class="payment-row">
+                            <div class="card-chip">
+                                **** **** ****
+                                @order.Payment.CardNumber?.Substring(Math.Max(0, order.Payment.CardNumber.Length - 4))
+                            </div>
+                            <div>
+                                <p class="lbl">Cardholder</p>
+                                <p class="val">@order.Payment.CardName</p>
+                            </div>
+                            <div>
+                                <p class="lbl">Expires</p>
+                                <p class="val font-monospace">@order.Payment.Expiration</p>
+                            </div>
+                            <div>
+                                <p class="lbl">Method</p>
+                                <p class="val">@(order.Payment.PaymentMethod == 1 ? "Credit Card" : order.Payment.PaymentMethod == 2 ? "Debit Card" : "Card")</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p style="color:var(--muted);font-size:.9rem;margin:0;">No payment information available.</p>
+                    }
+                </div>
+
+            </div><!-- /col-lg-8 -->
+
+            <!-- ═══════════════════ RIGHT SIDEBAR ═══════════════════ -->
+            <div class="col-lg-4">
+
+                <!-- Status hero card -->
+                <div class="card-d mb-4">
+                    <p class="lbl mb-3">Current Status</p>
+                    <div class="status-hero @heroClass">
+                        <div class="sh-icon"><i class="bi @heroIcon"></i></div>
+                        <div>
+                            <p class="sh-lbl">Order Status</p>
+                            <p class="sh-val">@order.Status</p>
+                            <p class="sh-desc">@heroDesc</p>
+                        </div>
+                    </div>
+
+                    <!-- Lifecycle timeline -->
+                    <div class="mt-4">
+                        <p class="lbl mb-3">Lifecycle</p>
+                        <div class="tl @heroClass">
+                            @{
+                                var tlSteps = new[] {
+                                    (v:1, name:"Draft",     icon:"bi-file-earmark-text", desc:"Order created"),
+                                    (v:2, name:"Pending",   icon:"bi-hourglass-split",   desc:"Awaiting processing"),
+                                    (v:3, name:"Completed", icon:"bi-patch-check-fill",  desc:"Fulfilled successfully"),
+                                };
+                                bool isCancelled = order.Status == OrderStatus.Cancelled;
+                            }
+
+                            @if (isCancelled)
+                            {
+                                <div class="tl-row">
+                                    <div class="tl-dot done"><i class="bi bi-check-lg"></i></div>
+                                    <div class="tl-info">
+                                        <p class="tl-name">Draft</p>
+                                        <p class="tl-desc">Order was created</p>
+                                    </div>
+                                </div>
+                                <div class="tl-row">
+                                    <div class="tl-dot cancel"><i class="bi bi-x-lg"></i></div>
+                                    <div class="tl-info">
+                                        <p class="tl-name" style="color:#ef4444;">Cancelled</p>
+                                        <p class="tl-desc">Order was cancelled</p>
+                                        <p class="tl-badge">● Terminal</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var step in tlSteps)
+                                {
+                                    var isDone   = currentStatusInt > step.v;
+                                    var isActive = currentStatusInt == step.v;
+                                    var dotCls   = isDone ? "done" : isActive ? "active" : "";
+                                    var nameColor = isActive ? "var(--sh-color)" : "";
+                                    <div class="tl-row">
+                                        <div class="tl-dot @dotCls">
+                                            @if (isDone)        { <i class="bi bi-check-lg"></i> }
+                                            else if (isActive)  { <i class="bi @heroIcon"></i> }
+                                            else                { <span style="font-size:.65rem;font-weight:800;">@step.v</span> }
+                                        </div>
+                                        <div class="tl-info">
+                                            <p class="tl-name" style="color:@nameColor;">@step.name</p>
+                                            <p class="tl-desc">@step.desc</p>
+                                            @if (isActive) { <p class="tl-badge">● Current</p> }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer card -->
+                <div class="card-d mb-4">
+                    <p class="lbl mb-3">Customer</p>
+                    <div class="cust-chip mb-3">
+                        <div class="cust-av">@custInitial</div>
+                        <div>
+                            <p class="cust-name">@custName</p>
+                            <p class="cust-email">@order.ShippingAddress?.EmailAddress</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="lbl">Customer ID</p>
+                        <span class="uuid-badge" onclick="copyId('@order.CustomerId', this)" title="Click to copy Customer ID">
+                            <i class="bi bi-person"></i>
+                            #@order.CustomerId.ToString().Substring(0,8).ToUpper()&nbsp;<span style="opacity:.4">@order.CustomerId.ToString().Substring(8,4)</span>…
+                            <i class="bi bi-clipboard uuid-copy"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Update lifecycle (admin/manager only) -->
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    <div class="card-d">
+                        <div class="sec-header">
+                            <div class="sec-icon"><i class="bi bi-lightning-fill"></i></div>
+                            <div>
+                                <p class="sec-title">Update Lifecycle</p>
+                                <p class="sec-subtitle">Select the next status</p>
+                            </div>
+                        </div>
+
+                        <form id="statusForm" method="post" asp-page-handler="UpdateStatus">
+                            <input type="hidden" name="id"        value="@order.Id" />
+                            <input type="hidden" name="newStatus" id="selStatus" value="@currentStatusInt" />
+
+                            <!-- Search -->
+                            <input type="text" id="scSearch" placeholder="Filter status…"
+                                   class="form-control search-glass mb-3"
+                                   autocomplete="off" />
+
+                            <!-- Status cards -->
+                            <div class="sc-wrap" id="scWrap">
+                                <div class="sc sc-draft @(order.Status==OrderStatus.Draft?"sel":"")"
+                                     data-value="1" data-name="Draft" onclick="pickStatus(this)" role="button" tabindex="0">
+                                    <input type="radio" name="_r" value="1" />
+                                    <span class="sc-dot"></span>
+                                    <div><p class="sc-n">Draft</p><p class="sc-d">Created, not submitted</p></div>
+                                    <i class="bi bi-check2 sc-ck"></i>
+                                </div>
+                                <div class="sc sc-pending @(order.Status==OrderStatus.Pending?"sel":"")"
+                                     data-value="2" data-name="Pending" onclick="pickStatus(this)" role="button" tabindex="0">
+                                    <input type="radio" name="_r" value="2" />
+                                    <span class="sc-dot"></span>
+                                    <div><p class="sc-n">Pending</p><p class="sc-d">Awaiting processing</p></div>
+                                    <i class="bi bi-check2 sc-ck"></i>
+                                </div>
+                                <div class="sc sc-completed @(order.Status==OrderStatus.Completed?"sel":"")"
+                                     data-value="3" data-name="Completed" onclick="pickStatus(this)" role="button" tabindex="0">
+                                    <input type="radio" name="_r" value="3" />
+                                    <span class="sc-dot"></span>
+                                    <div><p class="sc-n">Completed</p><p class="sc-d">Fulfilled successfully</p></div>
+                                    <i class="bi bi-check2 sc-ck"></i>
+                                </div>
+                                <div class="sc sc-cancelled @(order.Status==OrderStatus.Cancelled?"sel":"")"
+                                     data-value="4" data-name="Cancelled" onclick="pickStatus(this)" role="button" tabindex="0">
+                                    <input type="radio" name="_r" value="4" />
+                                    <span class="sc-dot"></span>
+                                    <div><p class="sc-n">Cancelled</p><p class="sc-d">Permanently cancelled</p></div>
+                                    <i class="bi bi-check2 sc-ck"></i>
+                                </div>
+                            </div>
+
+                            <button type="button" id="applyBtn"
+                                    class="btn btn-apply btn-safe mt-4"
+                                    onclick="openConfirm()">
+                                <i class="bi bi-arrow-repeat me-2"></i>Apply Status Change
+                            </button>
+                        </form>
+                    </div>
+                }
+
+            </div><!-- /col-lg-4 -->
+        </div><!-- /row -->
+    }
+
+</div><!-- /wrapper -->
+
+<!-- ── Confirmation modal ── -->
+<div class="co" id="coOverlay" onclick="backdropClose(event)">
+    <div class="cm text-center">
+        <div class="ci" id="coIcon"><i class="bi bi-arrow-repeat" id="coIconGlyph"></i></div>
+        <h5 class="fw-bold mb-1" id="coTitle">Confirm Status Change</h5>
+        <p style="font-size:.87rem;color:var(--muted);" id="coBody" class="mb-4"></p>
+        <div class="d-flex gap-3">
+            <button class="btn w-50 fw-semibold py-2"
+                    style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--text);border-radius:50px;"
+                    onclick="closeConfirm()">Cancel</button>
+            <button id="coOk" class="btn w-50 fw-bold py-2 btn-apply btn-safe"
+                    onclick="doSubmit()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Toast container ── -->
+<div id="toastArea" style="position:fixed;bottom:1.75rem;right:1.75rem;z-index:99998;display:flex;flex-direction:column;gap:.6rem;"></div>
+
+<script>
+/* ── UUID copy ─────────────────────────────── */
+function copyId(val, el) {
+    navigator.clipboard.writeText(val).then(() => {
+        toast('ID copied to clipboard', false);
+        const icon = el.querySelector('.uuid-copy');
+        if (icon) { icon.className = 'bi bi-check2 uuid-copy'; setTimeout(()=>{ icon.className='bi bi-clipboard uuid-copy'; }, 1800); }
+    });
+}
+
+/* ── Status picker ─────────────────────────── */
+function pickStatus(card) {
+    document.querySelectorAll('.sc').forEach(c => c.classList.remove('sel'));
+    card.classList.add('sel');
+    document.getElementById('selStatus').value = card.dataset.value;
+    const btn = document.getElementById('applyBtn');
+    if (btn) {
+        btn.className = btn.className.replace(/btn-(safe|danger)/, '');
+        btn.classList.add(card.dataset.value === '4' ? 'btn-danger' : 'btn-safe');
+    }
+}
+
+/* ── Status search filter ──────────────────── */
+const scSearch = document.getElementById('scSearch');
+if (scSearch) {
+    scSearch.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('.sc').forEach(c => {
+            c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none';
+        });
+    });
+}
+
+/* ── Status confirm modal ──────────────────── */
+const statusMeta = {
+    '1': { label:'Draft',     danger:false, icon:'bi-file-earmark-text' },
+    '2': { label:'Pending',   danger:false, icon:'bi-hourglass-split'   },
+    '3': { label:'Completed', danger:false, icon:'bi-patch-check-fill'  },
+    '4': { label:'Cancelled', danger:true,  icon:'bi-x-circle-fill'     }
+};
+
+function openConfirm() {
+    const val  = document.getElementById('selStatus').value;
+    const meta = statusMeta[val];
+    const cur  = '@(Model.Order?.Status.ToString() ?? "Unknown")';
+
+    if (val === '@currentStatusInt') {
+        toast('Order is already set to that status', false);
+        return;
+    }
+
+    document.getElementById('coTitle').textContent = `Change to "${meta.label}"?`;
+    document.getElementById('coBody').textContent  =
+        `Moving this order from ${cur} → ${meta.label}. This will be saved immediately.`;
+
+    const icon = document.getElementById('coIcon');
+    icon.className = 'ci ' + (meta.danger ? 'ci-danger' : 'ci-safe');
+    document.getElementById('coIconGlyph').className = 'bi ' + meta.icon;
+
+    const ok = document.getElementById('coOk');
+    ok.className = ok.className.replace(/btn-(safe|danger)/, '') + (meta.danger ? ' btn-danger' : ' btn-safe');
+
+    document.getElementById('coOverlay').classList.add('show');
+}
+function closeConfirm() { document.getElementById('coOverlay').classList.remove('show'); }
+function backdropClose(e) { if (e.target === document.getElementById('coOverlay')) closeConfirm(); }
+function doSubmit() { closeConfirm(); document.getElementById('statusForm').submit(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
+
+/* ── Toast ─────────────────────────────────── */
+function toast(msg, isErr) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    Object.assign(t.style, {
+        padding:'.75rem 1.25rem', borderRadius:'50px', fontWeight:'600',
+        fontSize:'.83rem', whiteSpace:'nowrap',
+        background: isErr ? 'rgba(239,68,68,.15)' : 'rgba(168,85,247,.15)',
+        border:     isErr ? '1px solid rgba(239,68,68,.4)' : '1px solid rgba(168,85,247,.4)',
+        color:      isErr ? '#ef4444' : '#c084fc',
+        backdropFilter:'blur(10px)',
+        opacity:'0', transition:'opacity .3s',
+        boxShadow:'0 4px 20px rgba(0,0,0,.4)'
+    });
+    document.getElementById('toastArea').appendChild(t);
+    requestAnimationFrame(() => t.style.opacity = '1');
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, 2800);
+}
+</script>

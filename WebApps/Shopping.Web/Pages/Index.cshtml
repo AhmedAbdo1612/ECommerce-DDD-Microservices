@@ -244,9 +244,12 @@
             <a asp-page="./Index" class="btn btn-outline-glass px-4 py-2 d-flex align-items-center">
                 <i class="bi bi-arrow-clockwise me-2"></i> Refresh
             </a>
-            <a asp-page="/CreateProduct" class="btn btn-gradient px-4 py-2 d-flex align-items-center">
-                <i class="bi bi-plus-circle-fill me-2"></i> Add Product
-            </a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
+                <a asp-page="/CreateProduct" class="btn btn-gradient px-4 py-2 d-flex align-items-center">
+                    <i class="bi bi-plus-circle-fill me-2"></i> Add Product
+                </a>
+            }
         </div>
     </div>
 
@@ -323,14 +326,17 @@
                         
                         <!-- Actions -->
                         <div class="card-footer bg-transparent border-top p-3" style="border-color: rgba(255,255,255,0.05) !important;">
-                            <div class="d-flex gap-2">
-                                <a asp-page="/UpdateProduct" asp-route-id="@product.Id" class="btn btn-outline-glass w-100 rounded-pill py-2" style="font-size: 0.9rem;">
-                                    <i class="bi bi-pencil me-1"></i> Edit
-                                </a>
-                                <button type="button" class="btn btn-outline-danger-glass w-100 rounded-pill py-2" style="font-size: 0.9rem;" onclick="confirmDelete('@product.Id', this.getAttribute('data-name'))" data-name="@product.Name">
-                                    <i class="bi bi-trash me-1"></i> Delete
-                                </button>
-                            </div>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                            {
+                                <div class="d-flex gap-2">
+                                    <a asp-page="/UpdateProduct" asp-route-id="@product.Id" class="btn btn-outline-glass w-100 rounded-pill py-2" style="font-size: 0.9rem;">
+                                        <i class="bi bi-pencil me-1"></i> Edit
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger-glass w-100 rounded-pill py-2" style="font-size: 0.9rem;" onclick="confirmDelete('@product.Id', this.getAttribute('data-name'))" data-name="@product.Name">
+                                        <i class="bi bi-trash me-1"></i> Delete
+                                    </button>
+                                </div>
+                            }
                             <form method="post" asp-page-handler="AddToBasket" class="mt-2">
                                 <input type="hidden" name="productId" value="@product.Id" />
                                 <button type="submit" class="btn btn-gradient w-100 rounded-pill py-2" style="font-size: 0.9rem;">

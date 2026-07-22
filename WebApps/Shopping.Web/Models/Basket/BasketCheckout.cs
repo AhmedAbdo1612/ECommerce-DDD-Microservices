@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace Shopping.Web.Models.Basket;
 
 public class BasketCheckoutModel
-{
+{ 
     [JsonPropertyName("userName")]
     public string UserName { get; set; } = default!;
     

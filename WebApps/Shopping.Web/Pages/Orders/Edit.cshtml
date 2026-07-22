@@ -1,0 +1,728 @@
+@page "/Orders/Edit/{id:guid}"
+@using Shopping.Web.Models.Ordering
+@model EditModel
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+/* ── tokens ───────────────────────────────────────────────────────────── */
+:root {
+    --bg:       #06050c;
+    --card:     #110f22;
+    --card2:    #16132a;
+    --border:   rgba(255,255,255,.07);
+    --text:     #f1f5f9;
+    --muted:    #94a3b8;
+    --accent:   #a855f7;
+    --grad:     linear-gradient(135deg,#a855f7 0%,#3b82f6 100%);
+    --danger:   #ef4444;
+    --success:  #22c55e;
+    --font:     'Plus Jakarta Sans', sans-serif;
+    --r-card:   20px;
+    --r-sm:     12px;
+    --r-inp:    10px;
+}
+
+/* ── page base ───────────────────────────────────────────────────────── */
+body {
+    background: var(--bg) !important;
+    background-image:
+        radial-gradient(circle at 80% 10%, rgba(168,85,247,.07) 0%, transparent 45%),
+        radial-gradient(circle at 10% 90%, rgba(59,130,246,.05) 0%, transparent 45%);
+    color: var(--text) !important;
+    font-family: var(--font) !important;
+    min-height: 100vh;
+}
+
+/* ── header bar ──────────────────────────────────────────────────────── */
+.eo-header {
+    background: linear-gradient(135deg,rgba(168,85,247,.12) 0%,rgba(59,130,246,.08) 100%);
+    border: 1px solid rgba(168,85,247,.18);
+    border-radius: var(--r-card);
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+.eo-header-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; color: #fff; flex-shrink: 0;
+}
+.eo-header h1 { font-size: 1.45rem; font-weight: 800; margin: 0; }
+.eo-header p  { font-size: .83rem; color: var(--muted); margin: 0; }
+
+/* ── card ────────────────────────────────────────────────────────────── */
+.eo-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    transition: border-color .25s;
+}
+.eo-card:hover { border-color: rgba(168,85,247,.18); }
+
+.section-label {
+    display: flex; align-items: center; gap: .6rem;
+    font-size: .75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    padding-bottom: .65rem;
+    border-bottom: 1px solid var(--border);
+}
+.section-label i { font-size: 1rem; }
+
+/* ── form controls ───────────────────────────────────────────────────── */
+label.eo-label {
+    font-size: .72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); margin-bottom: .35rem; display: block;
+}
+.eo-input, .eo-select {
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--r-inp) !important;
+    color: var(--text) !important;
+    padding: .6rem .9rem !important;
+    font-family: var(--font) !important;
+    font-size: .875rem !important;
+    width: 100%;
+    transition: border-color .2s, box-shadow .2s;
+}
+.eo-input:focus, .eo-select:focus {
+    outline: none !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(168,85,247,.15) !important;
+    background: rgba(168,85,247,.05) !important;
+}
+.eo-input::placeholder { color: rgba(148,163,184,.5) !important; }
+.eo-select option { background: #1e1b33; color: var(--text); }
+
+/* ── order items table ───────────────────────────────────────────────── */
+.items-table {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+}
+.items-table thead th {
+    font-size: .7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted);
+    padding: .6rem .75rem;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+}
+.items-table tbody tr {
+    transition: background .15s;
+}
+.items-table tbody tr:hover { background: rgba(255,255,255,.025); }
+.items-table td {
+    padding: .75rem .75rem;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    vertical-align: middle;
+}
+.items-table tbody tr:last-child td { border-bottom: none; }
+
+.product-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+}
+.product-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(135deg,rgba(168,85,247,.2),rgba(59,130,246,.2));
+    border: 1px solid rgba(168,85,247,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85rem; color: var(--accent); flex-shrink: 0;
+}
+.product-name { font-weight: 600; font-size: .875rem; }
+.product-id   { font-size: .68rem; color: var(--muted); font-family: monospace; }
+
+.qty-input {
+    background: rgba(255,255,255,.05) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    color: var(--text) !important;
+    text-align: center !important;
+    width: 72px !important;
+    padding: .4rem .5rem !important;
+    font-family: var(--font) !important;
+    font-weight: 600 !important;
+    font-size: .875rem !important;
+    transition: border-color .2s;
+}
+.qty-input:focus {
+    outline: none !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(168,85,247,.15) !important;
+}
+
+.price-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.2);
+    border-radius: 6px;
+    padding: .25rem .6rem;
+    font-weight: 700; font-size: .825rem;
+    color: #4ade80;
+}
+
+/* delete toggle */
+.del-row {
+    display: flex; align-items: center; justify-content: center;
+}
+.del-toggle {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid rgba(239,68,68,.35);
+    background: transparent;
+    color: rgba(239,68,68,.6);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    transition: all .2s;
+}
+.del-toggle:hover {
+    background: rgba(239,68,68,.12);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.del-toggle.active {
+    background: rgba(239,68,68,.18);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.row-deleted td { opacity: .38; }
+.row-deleted .product-name { text-decoration: line-through; }
+
+/* no items */
+.no-items {
+    text-align: center; padding: 2.5rem 1rem; color: var(--muted);
+}
+.no-items i { font-size: 2rem; margin-bottom: .5rem; display: block; }
+
+/* ── status cards ────────────────────────────────────────────────────── */
+.status-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; }
+.sc {
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: .85rem 1rem;
+    cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: .65rem;
+    transition: all .2s;
+    position: relative;
+}
+.sc:hover { border-color: rgba(168,85,247,.3); background: rgba(168,85,247,.04); }
+.sc.sel { border-color: var(--accent); background: rgba(168,85,247,.08); }
+.sc-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.sc-draft    .sc-dot { background: #94a3b8; }
+.sc-pending  .sc-dot { background: #f59e0b; }
+.sc-completed .sc-dot { background: #22c55e; }
+.sc-cancelled .sc-dot { background: #ef4444; }
+.sc-n { font-weight: 700; font-size: .83rem; margin: 0; }
+.sc-d { font-size: .7rem; color: var(--muted); margin: 0; }
+.sc .sc-ck {
+    position: absolute; right: .75rem;
+    font-size: .9rem; color: var(--accent);
+    opacity: 0; transition: opacity .15s;
+}
+.sc.sel .sc-ck { opacity: 1; }
+
+/* ── action bar ──────────────────────────────────────────────────────── */
+.action-bar {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    align-items: center; margin-top: .5rem;
+}
+.btn-save {
+    background: var(--grad);
+    color: #fff; border: none;
+    border-radius: 50px;
+    padding: .7rem 2rem;
+    font-family: var(--font); font-weight: 700; font-size: .9rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: .5rem;
+    transition: opacity .2s, transform .15s;
+    box-shadow: 0 4px 20px rgba(168,85,247,.3);
+}
+.btn-save:hover { opacity: .9; transform: translateY(-1px); }
+.btn-cancel {
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    color: var(--muted); border-radius: 50px;
+    padding: .7rem 1.75rem;
+    font-family: var(--font); font-weight: 600; font-size: .9rem;
+    cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; gap: .5rem;
+    transition: all .2s;
+}
+.btn-cancel:hover { color: var(--text); border-color: rgba(255,255,255,.15); }
+
+/* ── alerts ──────────────────────────────────────────────────────────── */
+.eo-alert-danger {
+    background: rgba(239,68,68,.1);
+    border: 1px solid rgba(239,68,68,.25);
+    border-radius: var(--r-sm);
+    padding: .9rem 1.1rem;
+    color: #fca5a5;
+    font-size: .875rem;
+    display: flex; align-items: center; gap: .6rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── same-as-shipping checkbox ───────────────────────────────────────── */
+.same-check-wrap {
+    display: flex; align-items: center; gap: .5rem;
+    margin-bottom: 1rem;
+    font-size: .8rem; color: var(--muted); cursor: pointer;
+}
+.same-check-wrap input[type=checkbox] {
+    accent-color: var(--accent);
+    width: 15px; height: 15px;
+}
+
+/* ── responsive ──────────────────────────────────────────────────────── */
+@@media (max-width: 575px) {
+    .status-grid { grid-template-columns: 1fr; }
+    .action-bar  { flex-direction: column; }
+    .btn-save, .btn-cancel { width: 100%; justify-content: center; }
+}
+</style>
+
+<div style="max-width:1000px;margin:0 auto;padding:2rem 1rem;">
+
+    @* ── header ── *@
+    <div class="eo-header">
+        <div class="eo-header-icon"><i class="bi bi-pencil-square"></i></div>
+        <div>
+            <h1>Edit Order</h1>
+            <p>Modify order details, addresses, payment info, and line items</p>
+        </div>
+    </div>
+
+    @* ── error ── *@
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="eo-alert-danger">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            @Model.ErrorMessage
+        </div>
+    }
+
+    @if (Model.Order.Id == Guid.Empty)
+    {
+        <p style="color:var(--muted)">No order data available.</p>
+    }
+    else
+    {
+    <form method="post" id="editForm">
+        @Html.AntiForgeryToken()
+
+        @* ── hidden identity ── *@
+        <input type="hidden" asp-for="Order.Id" />
+        <input type="hidden" asp-for="Order.CustomerId" />
+
+        <div class="row g-4">
+
+            @* ══ LEFT column ══════════════════════════════════════════════════ *@
+            <div class="col-lg-8">
+
+                @* ── General ── *@
+                <div class="eo-card">
+                    <div class="section-label">
+                        <i class="bi bi-info-circle"></i> General Information
+                    </div>
+                    <div class="mb-3">
+                        <label class="eo-label" asp-for="Order.OrderName">Order Name</label>
+                        <input class="eo-input" asp-for="Order.OrderName" placeholder="e.g. ORD-2024-001" />
+                        <span asp-validation-for="Order.OrderName" class="text-danger" style="font-size:.78rem;"></span>
+                    </div>
+                </div>
+
+                @* ── Shipping Address ── *@
+                <div class="eo-card">
+                    <div class="section-label">
+                        <i class="bi bi-truck"></i> Shipping Address
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="eo-label">First Name</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.FirstName" placeholder="John" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="eo-label">Last Name</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.LastName" placeholder="Doe" />
+                        </div>
+                        <div class="col-12">
+                            <label class="eo-label">Email Address</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.EmailAddress" placeholder="john@example.com" />
+                        </div>
+                        <div class="col-12">
+                            <label class="eo-label">Address Line</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.AddressLine" placeholder="123 Main Street, Apt 4B" />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="eo-label">Country</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.Country" placeholder="USA" />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="eo-label">State</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.State" placeholder="NY" />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="eo-label">Zip Code</label>
+                            <input class="eo-input" asp-for="Order.ShippingAddress.ZipCode" placeholder="10001" />
+                        </div>
+                    </div>
+                </div>
+
+                @* ── Billing Address ── *@
+                <div class="eo-card">
+                    <div class="section-label">
+                        <i class="bi bi-receipt"></i> Billing Address
+                    </div>
+
+                    <label class="same-check-wrap" id="sameCheckWrap">
+                        <input type="checkbox" id="sameAsShipping" onchange="syncBilling(this.checked)" />
+                        Same as shipping address
+                    </label>
+
+                    <div id="billingFields">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="eo-label">First Name</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.FirstName" placeholder="John" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="eo-label">Last Name</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.LastName" placeholder="Doe" />
+                            </div>
+                            <div class="col-12">
+                                <label class="eo-label">Email Address</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.EmailAddress" placeholder="john@example.com" />
+                            </div>
+                            <div class="col-12">
+                                <label class="eo-label">Address Line</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.AddressLine" placeholder="123 Main Street, Apt 4B" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="eo-label">Country</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.Country" placeholder="USA" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="eo-label">State</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.State" placeholder="NY" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="eo-label">Zip Code</label>
+                                <input class="eo-input bill-field" asp-for="Order.BillingAddress.ZipCode" placeholder="10001" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── Payment ── *@
+                <div class="eo-card">
+                    <div class="section-label">
+                        <i class="bi bi-credit-card"></i> Payment Details
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="eo-label">Card Holder Name</label>
+                            <input class="eo-input" asp-for="Order.Payment.CardName" placeholder="John Doe" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="eo-label">Card Number</label>
+                            <input class="eo-input" asp-for="Order.Payment.CardNumber"
+                                   placeholder="•••• •••• •••• ••••" maxlength="19"
+                                   oninput="fmtCard(this)" />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="eo-label">Expiration (MM/YY)</label>
+                            <input class="eo-input" asp-for="Order.Payment.Expiration"
+                                   placeholder="MM/YY" maxlength="5"
+                                   oninput="fmtExp(this)" />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="eo-label">CVV</label>
+                            <input class="eo-input" asp-for="Order.Payment.Cvv"
+                                   placeholder="•••" maxlength="3" />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="eo-label">Payment Method</label>
+                            <select class="eo-select" asp-for="Order.Payment.PaymentMethod">
+                                <option value="0">Credit Card</option>
+                                <option value="1">Debit Card</option>
+                                <option value="2">PayPal</option>
+                                <option value="3">Bank Transfer</option>
+                                <option value="4">Cash on Delivery</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── Order Items ── *@
+                <div class="eo-card">
+                    <div class="section-label">
+                        <i class="bi bi-bag"></i> Order Items
+                        <span style="margin-left:auto;font-size:.7rem;color:var(--muted);text-transform:none;letter-spacing:0;">
+                            Toggle <i class="bi bi-trash3" style="color:var(--danger);"></i> to remove an item
+                        </span>
+                    </div>
+
+                    @if (!Model.Order.OrderItems.Any())
+                    {
+                        <div class="no-items">
+                            <i class="bi bi-bag-x"></i>
+                            No items in this order
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="overflow-x:auto;">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th style="text-align:center;">Quantity</th>
+                                    <th style="text-align:right;">Unit Price</th>
+                                    <th style="text-align:right;">Subtotal</th>
+                                    <th style="text-align:center;">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                @for (int i = 0; i < Model.Order.OrderItems.Count; i++)
+                                {
+                                    var item = Model.Order.OrderItems[i];
+                                    <tr id="item-row-@i">
+                                        @* hidden inputs to carry all item data *@
+                                        <input type="hidden" name="Order.OrderItems[@i].OrderId"     value="@item.OrderId" />
+                                        <input type="hidden" name="Order.OrderItems[@i].ProductId"   value="@item.ProductId" />
+                                        <input type="hidden" name="Order.OrderItems[@i].ProductName" value="@item.ProductName" />
+                                        <input type="hidden" name="Order.OrderItems[@i].Price"       value="@item.Price" />
+                                        <input type="hidden" name="Order.OrderItems[@i].Delete"      value="false" id="del-flag-@i" />
+
+                                        <td>
+                                            <div class="product-badge">
+                                                <div class="product-icon"><i class="bi bi-box-seam"></i></div>
+                                                <div>
+                                                    <p class="product-name">@item.ProductName</p>
+                                                    <p class="product-id">@item.ProductId.ToString()[..8]…</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <input type="number"
+                                                   class="qty-input"
+                                                   name="Order.OrderItems[@i].Quantity"
+                                                   value="@item.Quantity"
+                                                   min="1" max="9999"
+                                                   onchange="refreshSubtotal(@i, @((float)item.Price))"
+                                                   id="qty-@i" />
+                                        </td>
+                                        <td style="text-align:right;">
+                                            <span class="price-badge">
+                                                <i class="bi bi-tag" style="font-size:.7rem;"></i>
+                                                $@item.Price.ToString("0.00")
+                                            </span>
+                                        </td>
+                                        <td style="text-align:right;">
+                                            <span id="sub-@i" style="font-weight:700;font-size:.9rem;color:var(--text);">
+                                                $@((item.Quantity * item.Price).ToString("0.00"))
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="del-row">
+                                                <button type="button" class="del-toggle"
+                                                        id="del-btn-@i"
+                                                        title="Remove item"
+                                                        onclick="toggleDelete(@i)">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        </div>
+
+                        @* totals row *@
+                        <div style="display:flex;justify-content:flex-end;margin-top:1.25rem;padding-top:.75rem;border-top:1px solid var(--border);">
+                            <div style="text-align:right;">
+                                <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.2rem;">Order Total</div>
+                                <div id="grandTotal" style="font-size:1.3rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                                    $@Model.Order.OrderItems.Sum(x => x.Quantity * x.Price).ToString("0.00")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>@* /col-lg-8 *@
+
+            @* ══ RIGHT sidebar ═════════════════════════════════════════════════ *@
+            <div class="col-lg-4">
+
+                @* ── Status ── *@
+                <div class="eo-card" style="position:sticky;top:1.5rem;">
+                    <div class="section-label">
+                        <i class="bi bi-arrow-repeat"></i> Order Status
+                    </div>
+                    <input type="hidden" asp-for="Order.Status" id="statusHidden" />
+                    <div class="status-grid" id="statusGrid">
+                        <div class="sc sc-draft @(Model.Order.Status == OrderStatus.Draft ? "sel" : "")"
+                             data-value="1" onclick="pickStatus(this)" role="button" tabindex="0">
+                            <span class="sc-dot"></span>
+                            <div>
+                                <p class="sc-n">Draft</p>
+                                <p class="sc-d">Not submitted</p>
+                            </div>
+                            <i class="bi bi-check2 sc-ck"></i>
+                        </div>
+                        <div class="sc sc-pending @(Model.Order.Status == OrderStatus.Pending ? "sel" : "")"
+                             data-value="2" onclick="pickStatus(this)" role="button" tabindex="0">
+                            <span class="sc-dot"></span>
+                            <div>
+                                <p class="sc-n">Pending</p>
+                                <p class="sc-d">Awaiting processing</p>
+                            </div>
+                            <i class="bi bi-check2 sc-ck"></i>
+                        </div>
+                        <div class="sc sc-completed @(Model.Order.Status == OrderStatus.Completed ? "sel" : "")"
+                             data-value="3" onclick="pickStatus(this)" role="button" tabindex="0">
+                            <span class="sc-dot"></span>
+                            <div>
+                                <p class="sc-n">Completed</p>
+                                <p class="sc-d">Fulfilled successfully</p>
+                            </div>
+                            <i class="bi bi-check2 sc-ck"></i>
+                        </div>
+                        <div class="sc sc-cancelled @(Model.Order.Status == OrderStatus.Cancelled ? "sel" : "")"
+                             data-value="4" onclick="pickStatus(this)" role="button" tabindex="0">
+                            <span class="sc-dot"></span>
+                            <div>
+                                <p class="sc-n">Cancelled</p>
+                                <p class="sc-d">Permanently cancelled</p>
+                            </div>
+                            <i class="bi bi-check2 sc-ck"></i>
+                        </div>
+                    </div>
+
+                    <div class="action-bar mt-4">
+                        <button type="submit" class="btn-save" form="editForm">
+                            <i class="bi bi-floppy"></i> Save Changes
+                        </button>
+                        <a asp-page="/Orders/Detail" asp-route-id="@Model.Order.Id" class="btn-cancel">
+                            <i class="bi bi-x-lg"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+
+            </div>@* /col-lg-4 *@
+
+        </div>@* /row *@
+    </form>
+    }
+
+</div>@* /wrapper *@
+
+<script>
+/* ── Status picker ───────────────────────────────────── */
+function pickStatus(card) {
+    document.querySelectorAll('.sc').forEach(c => c.classList.remove('sel'));
+    card.classList.add('sel');
+    document.getElementById('statusHidden').value = card.dataset.value;
+}
+
+/* ── Delete item toggle ──────────────────────────────── */
+function toggleDelete(i) {
+    const row  = document.getElementById('item-row-' + i);
+    const flag = document.getElementById('del-flag-' + i);
+    const btn  = document.getElementById('del-btn-'  + i);
+    const isNowDeleted = flag.value !== 'true';
+    flag.value = isNowDeleted ? 'true' : 'false';
+    row.classList.toggle('row-deleted', isNowDeleted);
+    btn.classList.toggle('active',      isNowDeleted);
+    refreshGrandTotal();
+}
+
+/* ── Subtotal & grand total ──────────────────────────── */
+function refreshSubtotal(i, price) {
+    const qty  = parseInt(document.getElementById('qty-' + i).value) || 0;
+    const sub  = document.getElementById('sub-' + i);
+    if (sub) sub.textContent = '$' + (qty * price).toFixed(2);
+    refreshGrandTotal();
+}
+
+function refreshGrandTotal() {
+    let total = 0;
+    document.querySelectorAll('[id^="item-row-"]').forEach(row => {
+        const idx  = row.id.replace('item-row-', '');
+        const flag = document.getElementById('del-flag-' + idx);
+        if (flag && flag.value === 'true') return;  // deleted rows don't count
+        const qty   = parseFloat(document.getElementById('qty-' + idx)?.value) || 0;
+        const price = parseFloat(row.querySelector('[name$=".Price"]')?.value)  || 0;
+        total += qty * price;
+    });
+    const gt = document.getElementById('grandTotal');
+    if (gt) gt.textContent = '$' + total.toFixed(2);
+}
+
+/* ── Card number formatter ───────────────────────────── */
+function fmtCard(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+
+/* ── Expiry formatter ────────────────────────────────── */
+function fmtExp(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    el.value = v;
+}
+
+/* ── Same-as-shipping ────────────────────────────────── */
+const shipFields = [
+    'Order_ShippingAddress_FirstName',
+    'Order_ShippingAddress_LastName',
+    'Order_ShippingAddress_EmailAddress',
+    'Order_ShippingAddress_AddressLine',
+    'Order_ShippingAddress_Country',
+    'Order_ShippingAddress_State',
+    'Order_ShippingAddress_ZipCode',
+];
+const billFields = [
+    'Order_BillingAddress_FirstName',
+    'Order_BillingAddress_LastName',
+    'Order_BillingAddress_EmailAddress',
+    'Order_BillingAddress_AddressLine',
+    'Order_BillingAddress_Country',
+    'Order_BillingAddress_State',
+    'Order_BillingAddress_ZipCode',
+];
+function syncBilling(checked) {
+    if (!checked) return;
+    shipFields.forEach((id, i) => {
+        const s = document.getElementById(id);
+        const b = document.getElementById(billFields[i]);
+        if (s && b) b.value = s.value;
+    });
+    // keep billing in sync whenever shipping changes
+    shipFields.forEach((id, i) => {
+        const s = document.getElementById(id);
+        const b = document.getElementById(billFields[i]);
+        if (s && b) {
+            s.addEventListener('input', () => {
+                if (document.getElementById('sameAsShipping').checked) b.value = s.value;
+            });
+        }
+    });
+}
+</script>

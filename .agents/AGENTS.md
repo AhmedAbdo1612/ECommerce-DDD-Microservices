@@ -103,7 +103,7 @@ Instashop/
 ├── ApiGateways/                    # API Gateways routing requests to internal microservices
 │   └── YarpApiGateway/             # Central entry point using YARP
 ├── BuildingBlocks/                 # Shared abstractions, CQRS interfaces, and pipeline behaviors
-│   ├── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination)
+│   ├── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination, Authentication)
 │   └── BuildingBlocks.Messaging/   # Async messaging abstractions (MassTransit, RabbitMQ)
 ├── Services/
 │   ├── Catalog/
@@ -112,7 +112,7 @@ Instashop/
 │   │       └── Models/             # Catalog Entities
 │   ├── Basket/
 │   │   └── Baket.API/              # Basket Microservice (Vertical Slice, Marten + Redis)
-│   │       ├── Basket/             # Feature slices (e.g. StoreBasket, GetBasket)
+│   │       ├── Basket/             # Feature slices (e.g. StoreBasket, GetBasket, AddItem, RemoveItem, UpdateItemQuantity)
 │   │       └── Data/               # Repositories (Decorated Caching Logic)
 │   ├── Discount/
 │   │   └── Discount.Grpc/          # Discount RPC Service (gRPC, EF Core + SQLite)
