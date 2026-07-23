@@ -4,6 +4,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Identity.API.Models;
 using Mapster;
+using MassTransit;
+using BuildingBlocks.Messaging.Events;
 
 namespace Identity.API.Features.Register;
 
@@ -36,10 +38,11 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterResponse>
 {
     private readonly UserManager<ApplicationUser> _userManager;
-
-    public RegisterCommandHandler(UserManager<ApplicationUser> userManager)
+    private readonly IPublishEndpoint _publisher;
+    public RegisterCommandHandler(UserManager<ApplicationUser> userManager, IPublishEndpoint publisher)
     {
         _userManager = userManager;
+        _publisher = publisher;
     }
 
     public async Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -60,7 +63,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
             return new RegisterResponse(false, errors);
         }
-
+        await _publisher.Publish(new CustomerCreatedEvent(Guid.Parse(user.Id), $"{user.FirstName} {user.LastName}", user.Email));
         await _userManager.AddToRoleAsync(user, "Customer");
 
         return new RegisterResponse(true, "User registered successfully");

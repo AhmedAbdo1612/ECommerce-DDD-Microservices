@@ -96,6 +96,20 @@ The domain logic is isolated and modeled using:
 
 ---
 
+## 🧩 Cross-Cutting Concerns (`BuildingBlocks`)
+
+The `BuildingBlocks` project provides shared abstractions and behaviors used across all microservices:
+
+*   **CQRS Abstractions:** Defines `ICommand`, `IQuery`, and their respective handlers.
+*   **MediatR Pipeline Behaviors:**
+    *   **ValidationBehavior:** Automatically validates every `IRequest` (Commands and Queries) using FluentValidation before it reaches the handler.
+    *   **LoggingBehavior:** Provides standardized request/response logging and performance monitoring (logs warnings for requests taking longer than 3 seconds).
+*   **Exception Handling:** Centralized middleware (`CustomExceptionHandler`) for capturing and formatting API errors, automatically mapping domain exceptions (e.g., `NotFoundException`) to RFC 7807 compliant HTTP responses (e.g., 404 Not Found).
+*   **Authentication:** Centralized JWT bearer authentication and role-based authorization policies (`AuthenticationExtensions.cs`).
+*   **Messaging (`BuildingBlocks.Messaging`):** Integrates **MassTransit** and **RabbitMQ** for asynchronous event-driven communication across bounded contexts.
+
+---
+
 ## 📂 Directory Structure
 
 ```text
@@ -166,5 +180,7 @@ graph TD
     *   Do not reference `Ordering.Infrastructure` in `Ordering.Application` or `OrderingDomain`.
     *   Do not reference `Ordering.Application` in `OrderingDomain`.
     *   Any infrastructure dependency must be registered through dependency injection using abstractions defined in the `Application` layer.
-4.  **Save Changes Interceptors:** Always leverage `AuditableEntityInterceptor` for automatic creation/modification timestamps, and `DispatchDomainEventInterceptor` for dispatching aggregate events.
+4.  **Save Changes Interceptors:** Always leverage `AuditableEntityInterceptor` for automatic creation/modification timestamps, and `DispatchDomainEventInterceptor` for dispatching aggregate events. Always ensure that `ClearDomainEvents()` is called during dispatch to avoid re-publishing events on retries.
 5.  **Use Primary Constructors:** Utilize C# 12+ primary constructor syntax for dependency injection where applicable (e.g., `public class Handler(IApplicationDbContext dbContext) : ...`).
+6.  **Aggregate Mutations:** When updating an aggregate root (e.g., `Order`), always orchestrate the changes through the aggregate's methods (e.g., `UpdateItem`, `RemoveItem`) rather than modifying child entities directly, ensuring all domain invariants are preserved.
+7.  **EF Core & Enums:** If configuring an enum property with a database-generated default (via `.HasDefaultValue()`), you must configure the sentinel value via `.HasSentinel((EnumType)0)` to explicitly inform EF Core of the unassigned state. Additionally, always register `JsonStringEnumConverter` for JSON serialization to maintain clear API contracts.

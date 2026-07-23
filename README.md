@@ -1,200 +1,428 @@
-# 🛒 Instashop E-Commerce Microservices
+<div align="center">
 
-![Instashop Banner](./assets/instashop_banner.jpg)
+# 🛒 Instashop
 
-**Instashop** is a state-of-the-art e-commerce microservices platform built using **.NET 10**. This system leverages industry-standard design patterns to achieve high scalability, domain isolation, and optimized performance. The codebase demonstrates a **hybrid architectural approach**—combining **Vertical Slice Architecture** for feature-heavy services and **Clean Architecture (DDD)** for complex enterprise ordering workflows.
+### Enterprise-Grade E-Commerce Microservices Platform
+
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7.2-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)](https://rabbitmq.com/)
+
+**Instashop** is a production-ready, cloud-native e-commerce platform built on **.NET 10** that demonstrates the full power of modern backend architecture. It combines **Domain-Driven Design**, **CQRS**, **Event-Driven Communication**, and a **Hybrid Architecture** strategy — choosing the right pattern for each service's complexity.
+
+[Architecture](#-architectural-topology) · [Services](#-service-breakdown) · [Tech Stack](#-technology-stack) · [Getting Started](#-getting-started) · [API Flow](#-request-pipeline)
+
+</div>
 
 ---
 
 ## 🏗️ Architectural Topology
 
-The following component diagram illustrates how clients interact with the API gateways, how services communicate via RPC (gRPC), and how data stores (Marten Document DB, PostgreSQL Relational, SQLite, Redis Cache) are organized:
+The platform is composed of specialized microservices, each isolated in its own bounded context with its own data store. Traffic flows through a **YARP API Gateway** which routes requests to the appropriate service.
 
 ```mermaid
 graph TB
-    %% Clients
-    Client([🌐 Client App / API Client])
+    User(["🌐 Browser / API Client"])
+    WebApp["🖥️ Shopping.Web\n(Razor Pages + Refit)"]
 
-    subgraph "Service Mesh (Docker Compose)"
-        %% API Endpoints
-        CatalogAPI["🛍️ Catalog.API <br> (Vertical Slice, Marten)"]
-        BasketAPI["🛒 Basket.API <br> (Vertical Slice, Redis + Marten)"]
-        OrderingAPI["📦 Ordering.API <br> (Clean Architecture Controllers)"]
-        DiscountGrpc["🏷️ Discount.Grpc <br> (High-Perf gRPC, EF SQLite)"]
-        MediaAPI["📸 Media.API <br> (Minimal API, Local Storage)"]
-        
-        %% Shared Abstraction
-        BuildingBlocks["🧩 BuildingBlocks <br> (Shared CQRS & Pipeline)"]
+    subgraph Gateway["🔀 API Gateway Layer"]
+        YARP["⚡ YARP Reverse Proxy\n(Routing + Auth)"]
     end
 
-    %% Databases & Cache
-    subgraph "Databases & Caching"
-        MartenPostgres[("🐘 Postgres <br> (Marten Doc Store)")]
-        RedisCache[("🔴 Redis Cache <br> (Basket Caching)")]
-        SQLiteDb[("💾 SQLite <br> (DiscountDb.db)")]
-        EFPostgres[("🐘 Postgres <br> (Ordering Relational Db)")]
+    subgraph Services["🐳 Docker Compose — Service Mesh"]
+        CatalogAPI["🛍️ Catalog.API\nVertical Slice · Carter · Marten"]
+        BasketAPI["🛒 Basket.API\nVertical Slice · Carter · Redis + Marten"]
+        OrderingAPI["📦 Ordering.API\nClean Arch · DDD · EF Core · Controllers"]
+        IdentityAPI["🔐 Identity.API\nJWT · ASP.NET Identity · RSA Keys"]
+        MediaAPI["📸 Media.API\nFile Upload · Static Assets · Carter"]
+        DiscountGrpc["🏷️ Discount.Grpc\ngRPC · EF Core · SQLite"]
     end
 
-    %% Flow Relations
-    Client -->|REST HTTP / Carter| CatalogAPI
-    Client -->|REST HTTP / Carter| BasketAPI
-    Client -->|REST HTTP / Controllers| OrderingAPI
-    Client -->|REST HTTP / Carter| MediaAPI
-    
-    BasketAPI -->|gRPC Call| DiscountGrpc
-    DiscountGrpc -->|EF Core SQLite| SQLiteDb
-    
-    CatalogAPI -->|Marten Session| MartenPostgres
-    BasketAPI -->|Decorator Pattern| RedisCache
-    RedisCache -.->|Fallback to Marten| MartenPostgres
-    OrderingAPI -->|EF Core Postgres| EFPostgres
-    
-    %% Dependency Injection of Shared Core
-    CatalogAPI -.-> BuildingBlocks
-    BasketAPI -.-> BuildingBlocks
-    OrderingAPI -.-> BuildingBlocks
+    subgraph Messaging["📨 Async Messaging"]
+        RabbitMQ[("🐇 RabbitMQ\nMassTransit")]
+    end
 
-    %% Styling
-    classDef api fill:#1A365D,stroke:#3182CE,stroke-width:2px,color:#fff;
-    classDef db fill:#2D3748,stroke:#4A5568,stroke-width:2px,color:#fff;
-    classDef grpc fill:#2C7A7B,stroke:#319795,stroke-width:2px,color:#fff;
-    classDef shared fill:#742A2A,stroke:#9B2C2C,stroke-width:2px,color:#fff;
-    
-    class CatalogAPI,BasketAPI,OrderingAPI,MediaAPI api;
-    class MartenPostgres,RedisCache,SQLiteDb,EFPostgres db;
-    class DiscountGrpc grpc;
-    class BuildingBlocks shared;
+    subgraph Datastores["🗄️ Data Layer"]
+        PG_Catalog[("🐘 PostgreSQL\nCatalog + Basket\nMarten Doc Store")]
+        PG_Order[("🐘 PostgreSQL\nOrdering + Identity\nEF Core Relational")]
+        Redis[("🔴 Redis\nDistributed Cache")]
+        SQLite[("💾 SQLite\nDiscount DB")]
+        FileSystem[("📁 File System\nMedia Assets")]
+    end
+
+    User --> WebApp
+    WebApp --> YARP
+    YARP --> CatalogAPI & BasketAPI & OrderingAPI & IdentityAPI & MediaAPI
+
+    BasketAPI -->|"gRPC Call"| DiscountGrpc
+    BasketAPI -->|"Publish: BasketCheckoutEvent"| RabbitMQ
+    RabbitMQ -->|"Subscribe: BasketCheckoutEvent"| OrderingAPI
+
+    CatalogAPI --> PG_Catalog
+    BasketAPI --> Redis
+    BasketAPI -.->|"Cache Miss Fallback"| PG_Catalog
+    OrderingAPI --> PG_Order
+    IdentityAPI --> PG_Order
+    DiscountGrpc --> SQLite
+    MediaAPI --> FileSystem
+
+    classDef gateway fill:#1A365D,stroke:#63B3ED,stroke-width:2px,color:#fff,font-weight:bold
+    classDef service fill:#1C4532,stroke:#48BB78,stroke-width:2px,color:#fff
+    classDef grpc fill:#322659,stroke:#9F7AEA,stroke-width:2px,color:#fff
+    classDef data fill:#2D3748,stroke:#718096,stroke-width:1px,color:#CBD5E0
+    classDef mq fill:#652B19,stroke:#FC8181,stroke-width:2px,color:#fff
+
+    class YARP gateway
+    class CatalogAPI,BasketAPI,OrderingAPI,IdentityAPI,MediaAPI service
+    class DiscountGrpc grpc
+    class PG_Catalog,PG_Order,Redis,SQLite,FileSystem data
+    class RabbitMQ mq
 ```
 
 ---
 
-## 🛠️ Tech Stack & Service Matrix
+## ⚙️ Technology Stack
 
-| Service | Architecture | Primary Technology | Database / Datastore | Key Pattern / Purpose |
-| :--- | :--- | :--- | :--- | :--- |
-| **`Catalog.API`** | Vertical Slice | .NET 10 Minimal APIs (Carter) | Marten (PostgreSQL Doc Store) | Inventory, catalog pagination |
-| **`Baket.API`** | Vertical Slice | .NET 10 Minimal APIs (Carter) | Redis Cache + Marten (PostgreSQL) | Shopping Cart, Caching Decorator |
-| **`Discount.Grpc`** | RPC Service | gRPC Server | EF Core + SQLite | High-speed discount coupon lookup |
-| **`Media.API`** | Minimal API | .NET 10 Minimal APIs (Carter) | Local File System | Media upload & static asset serving |
-| **`Ordering`** | Clean Architecture | ASP.NET Core Controllers | EF Core + PostgreSQL | Enterprise DDD, Domain Events, Orders |
-| **`BuildingBlocks`** | Shared Core | Library Abstractions | N/A | Cross-cutting concerns, CQRS behaviors |
+| Component | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | .NET 10 | Core runtime |
+| **Minimal APIs** | Carter | Catalog, Basket, Media & Identity endpoints |
+| **REST APIs** | ASP.NET Core Controllers | Ordering API endpoint routing |
+| **RPC** | gRPC | High-perf Discount service communication |
+| **Mediator** | MediatR | Thin endpoints; decoupled feature handlers |
+| **Document Store** | Marten (PostgreSQL) | Catalog & Basket — schemaless JSON storage |
+| **Relational DB** | EF Core + PostgreSQL | Ordering & Identity — relational mapping |
+| **Lightweight DB** | EF Core + SQLite | Discount — fast, embedded, zero-config |
+| **Distributed Cache** | Redis 7.2 | Basket — decorator-pattern cache layer |
+| **Validation** | FluentValidation | Auto-validated on every `IRequest` via pipeline |
+| **Mapping** | Mapster | Zero-reflection, code-gen DTO mapping |
+| **Message Broker** | RabbitMQ + MassTransit | Async events across bounded contexts |
+| **Identity & Auth** | ASP.NET Identity + JWT (RSA) | Token issuance, role-based access |
+| **API Gateway** | YARP | Centralized routing, auth forwarding |
+| **Frontend** | Razor Pages + Refit | Type-safe HTTP client, server-side UI |
+| **Containerization** | Docker + Docker Compose | Full local service mesh |
 
 ---
 
-## ⚡ Execution Flow & Request Pipeline
+## 🧩 Architectural Patterns
 
-Each service processes incoming requests through a unified pipeline behavior structure defined in `BuildingBlocks`. This flowchart shows how requests are logged, validated, and mapped as they navigate through the application:
+### 1 · Hybrid Architecture Strategy
+
+Each service adopts the architecture that best fits its complexity:
+
+| Service | Architecture | Rationale |
+| :--- | :--- | :--- |
+| `Catalog.API` | **Vertical Slice** | Simple CRUD with no cross-cutting domain logic |
+| `Basket.API` | **Vertical Slice** | Fast, feature-isolated cart operations |
+| `Discount.Grpc` | **gRPC Service** | Protocol-buffer contract for low-latency RPC |
+| `Ordering` | **Clean Architecture + DDD** | Complex domain rules, rich aggregates, events |
+| `Identity.API` | **Minimal API** | Focused auth concerns, Carter routing |
+| `Media.API` | **Minimal API** | Single-responsibility file I/O |
+
+### 2 · CQRS — Command Query Responsibility Segregation
+
+Every service strictly separates reads from writes using **MediatR**:
+
+```
+HTTP Request
+    └── Thin Endpoint (Carter / Controller)
+            └── MediatR.Send(Command | Query)
+                    └── Pipeline Behaviors
+                            ├── LoggingBehavior      → Timing + structured logs
+                            └── ValidationBehavior   → FluentValidation on every IRequest
+                                    └── Handler (ICommandHandler | IQueryHandler)
+                                            └── Datastore (Marten / EF Core / Redis)
+```
+
+### 3 · Domain-Driven Design (Ordering Service)
+
+```
+OrderingDomain/
+├── Abstractions/     IAggregate, IEntity, IDomainEvent
+├── Models/           Order (Aggregate Root), OrderItem, Customer, Product
+├── ValueObjects/     Address, Payment, OrderName, OrderId, OrderItemId
+├── Events/           OrderCreatedEvent, OrderUpdatedEvent
+└── Exceptions/       NotFoundException, DomainException
+```
+
+The `Order` aggregate root enforces all invariants. State changes (add item, update item, remove item, update status) go through aggregate methods — never by mutating child entities directly.
+
+### 4 · Event-Driven Communication
+
+```mermaid
+sequenceDiagram
+    participant Basket as 🛒 Basket.API
+    participant RabbitMQ as 🐇 RabbitMQ
+    participant Ordering as 📦 Ordering.API
+
+    Basket->>RabbitMQ: Publish BasketCheckoutEvent
+    Note over RabbitMQ: Persisted & Routed by MassTransit
+    RabbitMQ-->>Ordering: Deliver BasketCheckoutEvent
+    Ordering->>Ordering: Handle → Create Order in DB
+```
+
+---
+
+## 📦 Service Breakdown
+
+### 🛍️ Catalog Service
+> **Pattern:** Vertical Slice · **DB:** Marten (PostgreSQL)
+
+Manages product inventory, categories, and image hosting. Features are organized as self-contained vertical slices — each slice owns its endpoint, MediatR handler, FluentValidation rules, and models.
+
+```
+Catalog.API/Products/
+├── CreateProduct/    Endpoint + Command + Handler + Validator
+├── UpdateProduct/    Endpoint + Command + Handler + Validator
+├── DeleteProduct/    Endpoint + Command + Handler
+├── GetProducts/      Endpoint + Query  + Handler  (Paginated)
+└── GetProductById/   Endpoint + Query  + Handler
+```
+
+---
+
+### 🛒 Basket Service
+> **Pattern:** Vertical Slice · **DB:** Redis (cache) + Marten (source of truth)
+
+Shopping cart management with a **Decorator-Pattern** caching strategy and real-time discount application via gRPC.
+
+```mermaid
+graph LR
+    Req([Request]) --> Cached["CachedBasketRepository\n(Decorator)"]
+    Cached -->|Hit| Redis[("🔴 Redis")]
+    Cached -->|Miss| Real["BasketRepository"]
+    Real --> Marten[("🐘 Marten\nPostgreSQL")]
+    Real -->|Write-through| Redis
+```
+
+---
+
+### 🏷️ Discount Service
+> **Pattern:** gRPC · **DB:** EF Core + SQLite
+
+High-performance coupon service exposing a Protocol Buffer contract. The Basket service calls it synchronously at checkout time to apply real-time discounts.
+
+**RPCs:** `GetDiscount` · `CreateDiscount` · `UpdateDiscount` · `DeleteDiscount`
+
+---
+
+### 📦 Ordering Service
+> **Pattern:** Clean Architecture + DDD · **DB:** EF Core + PostgreSQL
+
+The platform's most sophisticated service. Order processing follows strict DDD rules: business invariants live in the domain, application handlers orchestrate use cases, and infrastructure implements persistence abstractions.
+
+| Layer | Responsibility |
+| :--- | :--- |
+| `OrderingDomain` | Aggregates, value objects, domain events, exceptions |
+| `Ordering.Application` | CQRS commands/queries, MediatR handlers, `IApplicationDbContext` |
+| `Ordering.Infrastructure` | EF Core configs, `AuditableEntityInterceptor`, `DispatchDomainEventInterceptor`, migrations |
+| `Ordering.API` | Thin controllers → MediatR pipeline |
+
+**Full Order Editability:** All order fields are editable post-creation — customer info, addresses, payment details, order status, and individual order items (add, update quantity/price, remove).
+
+---
+
+### 🔐 Identity Service
+> **Pattern:** Minimal API (Carter) · **DB:** EF Core + PostgreSQL
+
+Issues signed **JWT tokens** using **RSA keypairs**. Manages user registration, login, and role assignment (e.g., `Admin`, `Manager`, `Customer`). Policies like `ManagerOrAdmin` are consumed by other services through the shared `BuildingBlocks` auth extensions.
+
+---
+
+### 📸 Media Service
+> **Pattern:** Minimal API (Carter) · **DB:** Local File System
+
+Handles all media asset operations. Provides `POST /api/media/upload` and `DELETE /api/media/{fileName}` endpoints. Catalog products reference image URLs served from this service.
+
+---
+
+### 🌐 Shopping Web
+> **Pattern:** Razor Pages · **Client:** Refit (type-safe HTTP)
+
+The customer-facing storefront. Runs **outside Docker** for rapid development cycles. Calls all backend services through the YARP gateway using strongly-typed Refit interfaces.
+
+---
+
+## 🧩 BuildingBlocks — Shared Core
+
+All cross-cutting concerns are centralized in the `BuildingBlocks` library, consumed by every service:
+
+| Concern | Implementation |
+| :--- | :--- |
+| **CQRS Abstractions** | `ICommand<T>`, `IQuery<T>`, `ICommandHandler<,>`, `IQueryHandler<,>` |
+| **Validation Pipeline** | `ValidationBehavior<TReq,TRes>` — runs FluentValidation on every `IRequest` |
+| **Logging Pipeline** | `LoggingBehavior<TReq,TRes>` — structured logs + ⚠️ warns if > 3 seconds |
+| **Exception Handling** | `CustomExceptionHandler` — RFC 7807 `ProblemDetails` for all domain errors |
+| **JWT Auth** | `AuthenticationExtensions` — shared bearer scheme + role policies |
+| **Async Messaging** | `BuildingBlocks.Messaging` — MassTransit + RabbitMQ event bus abstractions |
+
+---
+
+## 🚀 Request Pipeline (End-to-End)
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Client
-    participant Endpoint as API Endpoint (Carter/Controller)
-    participant Mapster as Mapster Mapper
-    participant MediatR as MediatR Pipeline
-    participant Behaviors as Pipeline Behaviors (Logging & Validation)
-    participant Handler as Command/Query Handler
-    participant DB as Datastore (Marten/EF/Redis)
+    participant GW as ⚡ YARP Gateway
+    participant EP as 🔌 API Endpoint
+    participant Log as 📋 LoggingBehavior
+    participant Val as ✅ ValidationBehavior
+    participant H as 🧠 MediatR Handler
+    participant DB as 🗄️ Datastore
 
-    Client->>Endpoint: HTTP Request (e.g. POST /products)
-    Endpoint->>Mapster: Map Request DTO to Command/Query
-    Mapster-->>Endpoint: Command/Query Object
-    Endpoint->>MediatR: Send(Command/Query)
-    
-    activate MediatR
-    MediatR->>Behaviors: LoggingBehavior (Start timer & log request)
-    activate Behaviors
-    Behaviors->>Behaviors: ValidationBehavior (Runs FluentValidation)
-    
-    alt Validation Fails
-        Behaviors-->>Client: Throw ValidationException (400 Bad Request)
-    else Validation Succeeds
-        Behaviors->>Handler: Handle(Command/Query)
-        activate Handler
-        Handler->>DB: Perform Read/Write Operations
-        DB-->>Handler: Return Entity/Data
-        Handler-->>Behaviors: Return Command/Query Result
-        deactivate Handler
+    Client->>GW: HTTP Request
+    GW->>EP: Route + forward JWT
+    EP->>EP: Map DTO → Command/Query (Mapster)
+    EP->>Log: MediatR.Send(Command)
+    Log->>Val: Start timer, log request
+    alt Validation fails
+        Val-->>Client: 400 Bad Request (ValidationException)
+    else Validation passes
+        Val->>H: Handle(Command)
+        H->>DB: Read / Write
+        DB-->>H: Entity / Data
+        H-->>Val: Result
     end
-    
-    Behaviors->>Behaviors: LoggingBehavior (Log execution time & finish)
-    Behaviors-->>MediatR: Return Result
-    deactivate Behaviors
-    
-    MediatR-->>Endpoint: Return Result Object
-    deactivate MediatR
-    
-    Endpoint->>Mapster: Map Result to Response DTO
-    Mapster-->>Endpoint: Response DTO
-    Endpoint-->>Client: HTTP Response (200 OK / 201 Created)
+    Val-->>Log: Result
+    Log-->>EP: Log duration (warn if >3s)
+    EP->>EP: Map Result → Response DTO (Mapster)
+    EP-->>Client: HTTP 200 OK / 201 Created
 ```
 
 ---
 
-## 🛍️ Detailed Service Breakdown
+## 🐳 Getting Started
 
-### 1. Catalog Service (`Catalog.API`)
-Manages the inventory of products. Written using the **Vertical Slice Architecture**, keeping endpoints, MediatR command/query, handlers, and validation rules in feature-specific directories.
-* **Storage:** PostgreSQL managed via **Marten** (which exposes PostgreSQL as a high-performance JSON document database).
-* **Key Endpoints:** Create Product, Update Product, Delete Product, Get Products (with cursor/offset pagination), Get Product by Category.
+### Prerequisites
 
-### 2. Basket Service (`Baket.API`)
-Manages user shopping carts and communicates with the `Discount.Grpc` service to apply coupon codes dynamically.
-* **Marten & Redis Caching:** Employs the **Decorator Pattern**. The main database operations are defined in `BasketRepository`, which is wrapped inside a `CachedBasketRepository` that utilizes a Redis distributed cache.
-* **Flow Diagram of Caching Strategy:**
-```mermaid
-graph TD
-    Request([📥 Basket Request]) --> CacheCheck{Check Redis Cache}
-    CacheCheck -->|Cache Hit| ReturnCache[Return Basket Data]
-    CacheCheck -->|Cache Miss| FetchDb[Fetch from Marten Postgres]
-    FetchDb --> UpdateCache[Write Basket to Redis Cache]
-    UpdateCache --> ReturnDb[Return Basket Data]
-    
-    style CacheCheck fill:#2D3748,stroke:#3182CE,stroke-width:2px,color:#fff;
-```
+| Tool | Version |
+| :--- | :--- |
+| Docker Desktop | ≥ 4.x |
+| .NET SDK | 10.0 |
+| (Optional) pgAdmin | Latest |
 
-### 3. Discount Service (`Discount.Grpc`)
-A high-performance gRPC microservice that stores and manages coupon details.
-* **Storage:** EF Core mapping to a local SQLite database (`DiscountDb.db`).
-* **Protocol Buffers:** Interface defined in [discount.proto](file:///E:/C%23-courses/Microservices_DDD_CQRS_VerticalClean_Architecture_2024/Instashop/Instashop/Services/Discount/Discount.Grpc/Protos/discount.proto) supplying `GetDiscount`, `CreateDiscount`, `UpdateDiscount`, and `DeleteDiscount` RPCs.
+### 1 · Start Infrastructure & All Services
 
-### 4. Ordering Service (`Ordering`)
-The system's most complex service, implemented using **Clean Architecture** and strict **Domain-Driven Design (DDD)**.
-* **Core Domains & Aggregates:** Models customer records, products, order lines, billing/shipping addresses, and payment details.
-* **Layer Isolation:**
-  * **`OrderingDomain`**: Houses pure business logic, invariants, value objects, domain exceptions, and domain events.
-  * **`Ordering.Application`**: Declares CQRS Commands/Queries, MediatR handlers, and database abstractions (`IApplicationDbContext`).
-  * **`Ordering.Infrastructure`**: Handles EF Core mapping configurations, custom database migrators, database seed extension, and save changes interceptors (`AuditableEntityInterceptor` and `DispatchDomainEventInterceptor`).
-  * **`Ordering.API`**: Exposes standard controllers forwarding payloads to the Application core.
-
-### 5. Media Service (`Media.API`)
-A streamlined minimal API service utilizing Carter for handling media file operations.
-* **Storage:** Local File System (serves static content from `wwwroot/images`).
-* **Responsibilities:** Exposes endpoints for uploading (`POST /api/media/upload`) and deleting (`DELETE /api/media/{fileName}`) image assets used across the e-commerce platform.
-
----
-
-## 🧩 Shared Abstractions (`BuildingBlocks`)
-
-The common library provides a solid foundation for cross-cutting concerns:
-* **CQRS Core:** Interfaces `ICommand`, `IQuery`, `ICommandHandler`, and `IQueryHandler`.
-* **Exception Handling:** Centralized exception middleware mapping domain/system errors to standard Problem Details responses.
-* **MediatR Pipeline Behaviors:**
-  * `ValidationBehaviour`: Scans the executing assembly for FluentValidation rules and validates requests before handlers run.
-  * `LoggingBehavior`: Performance monitoring logs that trigger warning alerts if a request takes longer than 3 seconds.
-
----
-
-## 🚀 Getting Started & Local Setup
-
-### Infrastructure Prerequisites
-To start the backing services (PostgreSQL, Redis, and pgAdmin), execute the docker-compose setup:
 ```bash
-docker-compose up -d
+# From the solution root
+docker compose up -d
 ```
 
-### Connection Settings
-Update each service's `appsettings.json` connection strings:
-* **PostgreSQL (Marten & EF Core):** `"Host=localhost;Database=InstashopDb;Username=postgres;Password=postgres"`
-* **Redis Caching:** `"localhost:6379"`
-* **gRPC Endpoint URL:** `"http://localhost:5002"`
+This starts: **PostgreSQL** · **Redis** · **RabbitMQ** · **All Microservices** · **YARP Gateway**
+
+### 2 · Run the Frontend Locally
+
+```bash
+# Shopping.Web runs outside Docker for fast iteration
+dotnet run --project WebApps/Shopping.Web/Shopping.Web.csproj
+```
+
+Then open: **http://localhost:5005**
+
+### 3 · Apply Ordering Service Migrations
+
+If the Ordering database has pending schema changes, generate and apply a migration:
+
+```bash
+# Generate a new migration
+dotnet ef migrations add <MigrationName> \
+  --project Services/Ordering/Ordering.Infrastructure \
+  --startup-project Services/Ordering/Ordering.API
+
+# Rebuild & redeploy the container
+docker compose up -d --build ordering.api
+```
+
+---
+
+## 📡 Service Ports
+
+| Service | Internal Port | Exposed Port |
+| :--- | :--- | :--- |
+| YARP API Gateway | 8080 | **5000** |
+| Catalog.API | 8080 | 6000 |
+| Basket.API | 8080 | 6001 |
+| Discount.Grpc | 8080 | 6002 |
+| Ordering.API | 8080 | 6003 |
+| Identity.API | 8080 | 6004 |
+| Media.API | 8080 | 6005 |
+| Shopping.Web | — | **5005** (local) |
+| PostgreSQL | 5432 | 5433 |
+| Redis | 6379 | 6379 |
+| RabbitMQ | 5672 | 5672 |
+| RabbitMQ Management | 15672 | **15672** |
+
+---
+
+## 📂 Solution Structure
+
+```
+Instashop/
+├── ApiGateways/
+│   └── YarpApiGateway/               # YARP routing config + auth forwarding
+│
+├── BuildingBlocks/
+│   ├── BuildingBlocks/               # CQRS abstractions, pipeline behaviors,
+│   │                                 # exception handler, auth extensions
+│   └── BuildingBlocks.Messaging/     # MassTransit + RabbitMQ event bus
+│
+├── Services/
+│   ├── Catalog/
+│   │   └── Catalog.API/              # Vertical Slice, Marten
+│   │       ├── Products/             # Feature slices (Create/Update/Delete/Get)
+│   │       └── Models/
+│   │
+│   ├── Basket/
+│   │   └── Baket.API/                # Vertical Slice, Redis + Marten
+│   │       ├── Basket/               # Feature slices (Store/Get/Checkout)
+│   │       └── Data/                 # Repository + CachedBasketRepository (Decorator)
+│   │
+│   ├── Discount/
+│   │   └── Discount.Grpc/            # gRPC, EF Core + SQLite
+│   │       ├── Protos/               # discount.proto
+│   │       ├── Services/             # DiscountService (gRPC handlers)
+│   │       └── Data/                 # DiscountContext + seeder
+│   │
+│   ├── Media/
+│   │   └── Media.API/                # Minimal API, Local Storage
+│   │
+│   ├── Ordering/                     # Clean Architecture + DDD
+│   │   ├── OrderingDomain/           # Aggregates, ValueObjects, Events, Exceptions
+│   │   ├── Ordering.Application/     # Commands, Queries, DTOs, IApplicationDbContext
+│   │   ├── Ordering.Infrastructure/  # EF Core, Interceptors, Migrations, Seeder
+│   │   └── Ordering.API/             # Controllers → MediatR
+│   │
+│   └── Identity/
+│       └── Identity.API/             # JWT (RSA), ASP.NET Identity, PostgreSQL
+│
+├── WebApps/
+│   └── Shopping.Web/                 # Razor Pages, Refit HTTP clients
+│
+├── docker-compose.yml
+├── docker-compose.override.yml       # Dev overrides (env vars, port mappings)
+└── init-dbs.sql                      # PostgreSQL DB initialization script
+```
+
+---
+
+## 💡 Key Development Guidelines
+
+1. **Thin Endpoints** — Endpoints only translate HTTP → Command/Query and return status codes. Zero business logic.
+2. **Colocation in Slices** — In `Catalog.API` and `Basket.API`, keep endpoint, handler, command, and validator together in the same feature folder.
+3. **Clean Architecture Isolation** — `OrderingDomain` has zero dependencies. `Ordering.Application` only knows about the domain. `Ordering.Infrastructure` implements application abstractions.
+4. **Interceptors** — `AuditableEntityInterceptor` auto-stamps `CreatedAt`/`LastModified`. `DispatchDomainEventInterceptor` drains and publishes domain events via `ClearDomainEvents()` before committing.
+5. **Aggregate Mutations** — Always update `Order` state through its own methods (`AddItem`, `UpdateItem`, `RemoveItem`). Never mutate `OrderItem` directly.
+6. **EF Core Enums** — Always pair `.HasDefaultValue()` with `.HasSentinel((EnumType)0)` to prevent EF Core from treating the CLR default as a pending value.
+7. **JSON Serialization** — Register `JsonStringEnumConverter` globally so enum values serialize as strings in all API responses.
+8. **Primary Constructors** — Use C# 12 primary constructor syntax for DI (`public class Handler(IApplicationDbContext db)`).
+
+---
+
+<div align="center">
+
+Built with ❤️ using **.NET 10** · **DDD** · **CQRS** · **Microservices**
+
+</div>
