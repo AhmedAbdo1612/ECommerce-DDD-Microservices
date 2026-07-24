@@ -90,6 +90,8 @@ services:
     build:
       context: .
       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
+    ports:
+      - "5000:8080"
     depends_on:
       - catalog.api
       - baket.api

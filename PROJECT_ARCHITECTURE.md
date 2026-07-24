@@ -1,184 +1,125 @@
-# Instashop Project Architecture
+# 🏗️ Instashop Architecture Deep Dive
 
-## 📌 Project Overview
-**Instashop** is a modern e-commerce microservices application built with **.NET 10**. The solution demonstrates scalability, maintainability, and domain-driven design by partitioning the system into bounded contexts and employing optimized architectures based on each service's complexity.
+## 📌 Project Vision & Overview
+**Instashop** is a state-of-the-art e-commerce microservices platform built on **.NET 10**. It serves as a comprehensive reference architecture for building scalable, maintainable, and highly performant enterprise systems. 
+
+This document outlines the architectural patterns, bounded contexts, execution flows, and engineering guidelines that govern the Instashop codebase.
 
 ---
 
-## 🏗️ Architectural Patterns
+## 🧩 Core Architectural Patterns
 
-### 1. Hybrid Architectures
-Depending on the service's complexity, we use different architectural patterns:
-*   **Vertical Slice Architecture (Catalog, Basket):** Features are organized by feature folders ("slices") rather than technical layers. The endpoint, MediatR command/query, handler, and validators are colocated. This reduces navigation overhead and ensures that changes to a feature are localized.
-*   **Clean Architecture (Ordering):** Divided into domain, application, infrastructure, and API layers to handle complex enterprise business logic, rich domain events, and state mapping.
+### 1. Hybrid Architecture Strategy
+We reject the "one size fits all" approach. Services use the architecture that best fits their domain complexity:
+
+*   **Vertical Slice Architecture (Catalog, Basket):** 
+    Features are organized by folders ("slices") rather than technical layers. The endpoint, MediatR command, handler, and validators live side-by-side. This maximizes cohesion and minimizes navigation overhead for simple CRUD-heavy domains.
+*   **Clean Architecture & DDD (Ordering):** 
+    Divided into Domain, Application, Infrastructure, and API layers. This is essential for the Ordering service, which contains complex business logic, rich domain events, and strict invariants that must be protected.
 
 ### 2. CQRS (Command Query Responsibility Segregation)
-All services strictly segregate read (Queries) and write (Commands) operations using the **CQRS** pattern, orchestrated by **MediatR**:
-*   **Commands:** Represent intentions to change application state (e.g., `CreateProductCommand`). Implements `ICommand` and is handled by `ICommandHandler`.
-*   **Queries:** Represent requests to retrieve application state (e.g., `GetProductsQuery`). Implements `IQuery` and is handled by `IQueryHandler`.
-*   **Benefit:** This allows for independent optimization of read and write paths (e.g., using a cache for queries while writing directly to the database).
+Every microservice strictly segregates read operations from write operations using **MediatR**:
+*   **Commands (Writes):** Change system state. Handled by `ICommandHandler`.
+*   **Queries (Reads):** Retrieve system state. Handled by `IQueryHandler`.
+*   *Advantage:* We can independently scale and optimize read and write paths, applying caching to queries while wrapping commands in database transactions.
 
-### 3. Domain-Driven Design (DDD)
-The system is designed around domain models that encapsulate business logic and state, particularly in the Ordering service:
-*   **Entities & Aggregate Roots:** Enforce business invariants (e.g., `Order`, `Product`).
-*   **Value Objects:** Immutable types without identity (e.g., `Address`, `Payment`, `OrderName`).
-*   **Domain Events:** Triggered when state changes, dispatched using `DispatchDomainEventInterceptor` before EF database transactions commit.
-*   **Bounded Contexts:** Each microservice operates within its own bounded context with its own isolated database.
+### 3. Event-Driven Messaging
+Services are decoupled using **RabbitMQ** and **MassTransit**.
+*   Instead of synchronous HTTP calls (which cause cascading failures), services publish integration events (e.g., `BasketCheckoutEvent`).
+*   Subscribing services react to these events asynchronously, ensuring **eventual consistency** and high fault tolerance.
 
 ---
 
-## 🛠️ Technology Stack
+## 📦 Bounded Contexts & Services
 
-| Component | Technology | Bounded Context / Purpose |
-| :--- | :--- | :--- |
-| **Framework** | .NET 10 | Core runtime for all services |
-| **Minimal APIs** | **Carter** | Catalog, Basket & Media API endpoint routing |
-| **REST APIs** | **Controllers** | Ordering API endpoint routing |
-| **RPC Communication** | **gRPC** | Discount.Grpc service communication |
-| **Mediator** | **MediatR** | Decoupling endpoints from feature handlers |
-| **Document Store** | **Marten (PostgreSQL)** | Catalog & Basket NoSQL document store |
-| **Relational Database** | **EF Core + PostgreSQL** | Ordering service data store |
-| **Local Database** | **EF Core + SQLite** | Discount service lightweight data store |
-| **Distributed Cache** | **Redis** | Cached Basket Repository decorator |
-| **Validation** | **FluentValidation** | MediatR pipeline automatic request validation |
-| **Mapping** | **Mapster** | Request/Response and Entity/DTO mapping |
-| **Message Broker** | **RabbitMQ & MassTransit** | Asynchronous event-driven communication |
-| **Identity/Auth** | **JWT & ASP.NET Identity** | Identity.API user management and authentication |
-| **API Gateway** | **YARP** | Centralized routing to backend microservices |
-| **Web Frontend** | **Razor Pages & Refit** | Shopping.Web UI and API consumption |
-| **Containerization**| **Docker & Docker Compose** | Local orchestrations of backend microservices |
+| Service | Architecture | Datastore | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **Catalog.API** | Vertical Slice | Marten (PostgreSQL) | Product catalog, inventory, and categories. |
+| **Basket.API** | Vertical Slice | Redis + Marten | User shopping carts. Uses Decorator pattern for caching. |
+| **Ordering.API** | Clean Architecture | EF Core (PostgreSQL)| Order lifecycle, payment info, shipping details. |
+| **Discount.Grpc** | gRPC Service | EF Core (SQLite) | High-speed RPC coupon calculation. |
+| **Identity.API** | Minimal API | EF Core (PostgreSQL)| JWT issuance, user registration, role management. |
+| **Media.API** | Minimal API | Local File System | Static asset and image hosting. |
+| **YarpApiGateway**| Gateway | N/A | Centralized routing, rate limiting, and CORS handling. |
+| **React Frontend**| SPA (Vite) | N/A | The customer-facing UI interacting with YARP. |
 
 ---
 
-## 📦 Service Breakdown & Data Management
+## 🛠️ The `BuildingBlocks` Core
 
-### 🛍️ Catalog Service (`Catalog.API`)
-*   **Pattern:** Vertical Slice Architecture
-*   **Database:** Marten (PostgreSQL Document Store)
-*   **Responsibilities:** Inventory, category management, product listings, pagination, and static file hosting (e.g., product images).
+To prevent code duplication, cross-cutting concerns are extracted into a shared `BuildingBlocks` library:
 
-### 🛒 Basket Service (`Baket.API`)
-*   **Pattern:** Vertical Slice Architecture
-*   **Database:** Marten (PostgreSQL Document Store) + Redis (caching)
-*   **Caching Strategy:** Decorator pattern via `CachedBasketRepository` wrapping the database repository.
-*   **Dependencies:** Consumes `Discount.Grpc` to fetch and apply coupon amounts.
-
-### 🏷️ Discount Service (`Discount.Grpc`)
-*   **Pattern:** gRPC Service
-*   **Database:** EF Core (SQLite, database file `DiscountDb.db`)
-*   **Responsibilities:** High-performance gRPC server handling coupon discounts (`GetDiscount`, `CreateDiscount`, `UpdateDiscount`, `DeleteDiscount`).
-
-### 📦 Ordering Service (`Ordering`)
-*   **Pattern:** Clean Architecture (DDD)
-*   **Database:** EF Core (PostgreSQL)
-*   **Layers:**
-    *   `OrderingDomain`: Core domain entities (`Customer`, `Product`, `Order`, `OrderItem`), value objects, custom exceptions, and domain events.
-    *   `Ordering.Application`: MediatR commands/queries, mapping (Mapster), DTO definitions, and data abstractions (`IApplicationDbContext`).
-    *   `Ordering.Infrastructure`: Data access implementations (`ApplicationDbContext` with EF configurations, migrators, entity interceptors).
-    *   `Ordering.API`: Web controllers delivering endpoints and calling the MediatR pipeline.
-
-### 🔐 Identity Service (`Identity.API`)
-*   **Pattern:** Minimal APIs / Carter
-*   **Database:** EF Core (PostgreSQL)
-*   **Responsibilities:** User authentication, JWT token generation (using RSA keys), identity management (users and roles).
-
-### 📸 Media Service (`Media.API`)
-*   **Pattern:** Minimal APIs
-*   **Database:** Local File System (`wwwroot/images`)
-*   **Responsibilities:** Handling file uploads and serving static media assets (e.g., product images).
-
-### 🌐 Web Application (`Shopping.Web`)
-*   **Pattern:** Razor Pages Web Application
-*   **Responsibilities:** Client-facing user interface, consuming backend microservices via Refit and YARP API Gateway.
-*   **Hosting:** Runs natively (outside of Docker Compose) for faster local UI development.
+1. **MediatR Pipeline Behaviors:**
+   * `ValidationBehavior`: Automatically validates every incoming request using FluentValidation before it ever reaches the handler.
+   * `LoggingBehavior`: Logs request entry, exit, and execution time (warning if execution exceeds 3 seconds).
+2. **Global Exception Handling:**
+   * A centralized `CustomExceptionHandler` catches domain exceptions and maps them to RFC 7807 compliant `ProblemDetails` (e.g. mapping `NotFoundException` to a HTTP 404 response).
+3. **Messaging Setup:**
+   * Standardized MassTransit/RabbitMQ configurations to easily publish and consume events across microservices.
+4. **Authentication:**
+   * Shared JWT verification extensions to ensure consistent security across all internal APIs.
 
 ---
 
-## 🧩 Cross-Cutting Concerns (`BuildingBlocks`)
+## 🚀 Execution Flows
 
-The `BuildingBlocks` project provides shared abstractions and behaviors used across all microservices:
-
-*   **CQRS Abstractions:** Defines `ICommand`, `IQuery`, and their respective handlers.
-*   **MediatR Pipeline Behaviors:**
-    *   **ValidationBehavior:** Automatically validates every `IRequest` (Commands and Queries) using FluentValidation before it reaches the handler.
-    *   **LoggingBehavior:** Provides standardized request/response logging and performance monitoring (logs warnings for requests taking longer than 3 seconds).
-*   **Exception Handling:** Centralized middleware (`CustomExceptionHandler`) for capturing and formatting API errors, automatically mapping domain exceptions (e.g., `NotFoundException`) to RFC 7807 compliant HTTP responses (e.g., 404 Not Found).
-*   **Authentication:** Centralized JWT bearer authentication and role-based authorization policies (`AuthenticationExtensions.cs`).
-*   **Messaging (`BuildingBlocks.Messaging`):** Integrates **MassTransit** and **RabbitMQ** for asynchronous event-driven communication across bounded contexts.
-
----
-
-## 📂 Directory Structure
-
-```text
-Instashop/
-├── ApiGateways/                    # API Gateways routing requests to internal microservices
-│   └── YarpApiGateway/             # Central entry point using YARP
-├── BuildingBlocks/                 # Shared abstractions, CQRS interfaces, and pipeline behaviors
-│   ├── BuildingBlocks/             # Cross-cutting concerns (Behaviours, Exceptions, Pagination, Authentication)
-│   └── BuildingBlocks.Messaging/   # Async messaging abstractions (MassTransit, RabbitMQ)
-├── Services/
-│   ├── Catalog/
-│   │   └── Catalog.API/            # Catalog Microservice (Vertical Slice, Marten)
-│   │       ├── Products/           # Feature slices (e.g. CreateProduct, GetProducts)
-│   │       └── Models/             # Catalog Entities
-│   ├── Basket/
-│   │   └── Baket.API/              # Basket Microservice (Vertical Slice, Marten + Redis)
-│   │       ├── Basket/             # Feature slices (e.g. StoreBasket, GetBasket, AddItem, RemoveItem, UpdateItemQuantity)
-│   │       └── Data/               # Repositories (Decorated Caching Logic)
-│   ├── Discount/
-│   │   └── Discount.Grpc/          # Discount RPC Service (gRPC, EF Core + SQLite)
-│   │       ├── Data/               # DiscountContext & Extensions
-│   │       ├── Protos/             # Protocol Buffer contract (discount.proto)
-│   │       └── Services/           # Discount gRPC Service Handlers
-│   ├── Media/
-│   │   └── Media.API/              # Media Microservice (Carter, Static Files)
-│   │       └── Endpoints/          # File upload and deletion endpoints
-│   └── Ordering/                   # Ordering Microservice (Clean Architecture + DDD)
-│       ├── OrderingDomain/         # Domain (Models, ValueObjects, Events, Exceptions)
-│       ├── Ordering.Application/   # Application logic (Commands, Queries, DTOs, IApplicationDbContext)
-│       ├── Ordering.Infrastructure/# Infra (ApplicationDbContext, Configurations, Interceptors)
-│       └── Ordering.API/           # Presentation layer (Controllers, Endpoints)
-│   ├── Identity/
-│   │   └── Identity.API/           # Identity Microservice (JWT, ASP.NET Core Identity, PostgreSQL)
-├── WebApps/                        # Frontend web applications
-│   └── Shopping.Web/               # Razor Pages UI consuming the microservices via Refit
-└── docker-compose.yml              # Infrastructural setup (PostgreSQL, Redis, RabbitMQ, and backend microservices)
-```
-
----
-
-## 🚀 Execution Flow
-
+### 1. Standard API Request (CQRS + Validation)
 ```mermaid
-graph TD
-    Client[Client Request] -->|REST/HTTP| Gateway[YARP API Gateway]
-    Gateway -->|REST/HTTP| API[Carter Minimal API / Controllers]
-    API -->|gRPC/RPC| RPC[gRPC Discount Service]
-    API -->|Mapster| Map[Map Request to Command/Query]
-    Map -->|MediatR Send| Pipe[Pipeline Behaviors]
-    Pipe -->|1. LoggingBehavior| PipeVal[2. ValidationBehavior]
-    PipeVal -->|Handle| Handler[MediatR Handler]
-    Handler -->|Domain Operations| Domain[Domain Entities & Rules]
-    Domain -->|Save| DB[(Marten / PostgreSQL / SQLite / Redis)]
-    DB -->|Return Status/Data| Handler
-    Handler -.->|Publish Event| MQ((RabbitMQ / MassTransit))
-    Handler -->|Mapster| DTO[Map Entity to DTO / Response]
-    DTO -->|HTTP Response| Gateway
-    Gateway -->|HTTP Response| Client
+sequenceDiagram
+    autonumber
+    actor Client
+    participant API as Carter Endpoint
+    participant Pipe as MediatR Pipeline
+    participant Handler as Feature Handler
+    participant DB as Database
+
+    Client->>API: HTTP POST /api/products
+    API->>Pipe: Send(CreateProductCommand)
+    Pipe->>Pipe: 1. Logging Behavior (Start)
+    Pipe->>Pipe: 2. Validation Behavior
+    alt Invalid
+        Pipe-->>Client: 400 Bad Request
+    else Valid
+        Pipe->>Handler: Handle()
+        Handler->>DB: Save to DB
+        DB-->>Handler: Success
+        Handler-->>Pipe: Return Result
+        Pipe->>Pipe: 1. Logging Behavior (End)
+        Pipe-->>API: Return Result
+        API-->>Client: 201 Created
+    end
+```
+
+### 2. Event-Driven Checkout Flow
+```mermaid
+sequenceDiagram
+    participant User as React Frontend
+    participant Basket as Basket.API
+    participant MQ as RabbitMQ
+    participant Ordering as Ordering.API
+
+    User->>Basket: POST /basket/checkout
+    Basket->>Basket: Validate Cart & Apply Discounts
+    Basket->>MQ: Publish BasketCheckoutEvent
+    Basket-->>User: 202 Accepted
+    Note over MQ: Asynchronous Delivery
+    MQ->>Ordering: Consume BasketCheckoutEvent
+    Ordering->>Ordering: Create Order (Domain Logic)
+    Ordering->>DB: Save Order
 ```
 
 ---
 
-## 💡 Key Coding Guidelines
+## 💡 Engineering Guidelines & Rules
 
-1.  **Do Not Bypass MediatR:** Keep endpoints thin. API controllers/minimal APIs must only receive requests, translate/validate, send commands/queries to MediatR, and return HTTP status codes.
-2.  **Ensure Colocation in Slices:** When adding/modifying features in `Catalog.API` or `Baket.API`, keep endpoints, models, handlers, and validators inside the feature's vertical slice folder (e.g., `Services/Catalog/Catalog.API/Products/CreateProduct/`).
-3.  **Strict Clean Architecture Isolation in Ordering:** 
-    *   Do not reference `Ordering.Infrastructure` in `Ordering.Application` or `OrderingDomain`.
-    *   Do not reference `Ordering.Application` in `OrderingDomain`.
-    *   Any infrastructure dependency must be registered through dependency injection using abstractions defined in the `Application` layer.
-4.  **Save Changes Interceptors:** Always leverage `AuditableEntityInterceptor` for automatic creation/modification timestamps, and `DispatchDomainEventInterceptor` for dispatching aggregate events. Always ensure that `ClearDomainEvents()` is called during dispatch to avoid re-publishing events on retries.
-5.  **Use Primary Constructors:** Utilize C# 12+ primary constructor syntax for dependency injection where applicable (e.g., `public class Handler(IApplicationDbContext dbContext) : ...`).
-6.  **Aggregate Mutations:** When updating an aggregate root (e.g., `Order`), always orchestrate the changes through the aggregate's methods (e.g., `UpdateItem`, `RemoveItem`) rather than modifying child entities directly, ensuring all domain invariants are preserved.
-7.  **EF Core & Enums:** If configuring an enum property with a database-generated default (via `.HasDefaultValue()`), you must configure the sentinel value via `.HasSentinel((EnumType)0)` to explicitly inform EF Core of the unassigned state. Additionally, always register `JsonStringEnumConverter` for JSON serialization to maintain clear API contracts.
+If you are developing or modifying code in this repository, you **must** adhere to the following rules:
+
+1. **Keep Endpoints Thin:** Carter endpoints and API Controllers must contain zero business logic. They should only map requests, send them to MediatR, and return HTTP status codes.
+2. **Respect the Architecture:** 
+   * In `Catalog` and `Basket`, put your Command, Handler, and Validator in the same folder.
+   * In `Ordering`, strictly maintain Clean Architecture isolation. `OrderingDomain` must have no dependencies on infrastructure or application layers.
+3. **Aggregate Mutations:** When updating an aggregate root (like `Order`), orchestrate the changes exclusively through the aggregate's methods (e.g., `order.AddOrderItem()`). Never mutate child entities directly.
+4. **Domain Events:** Use `DispatchDomainEventInterceptor` to dispatch events triggered by aggregates. Always call `ClearDomainEvents()` after dispatch to prevent infinite loops.
+5. **Modern C# Features:** Use C# 12 primary constructors for dependency injection (e.g., `public class GetProductsHandler(IDocumentSession session) { ... }`).
+6. **EF Core & Enums:** If configuring an enum property with a database-generated default, configure the sentinel value via `.HasSentinel((EnumType)0)` and register `JsonStringEnumConverter` for JSON serialization.
+7. **CORS Configuration:** Ensure CORS policies are correctly propagated via YARP and fallback middleware to support the React frontend.

@@ -62,6 +62,15 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<DatabaseInitializer>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", p =>
+    {
+        p.WithOrigins("http://localhost:5173", "http://localhost:3000")
+         .AllowAnyHeader()
+         .AllowAnyMethod();
+    });
+});
 builder.Services.AddCarter();
 
 builder.Services.AddHealthChecks()
@@ -100,6 +109,7 @@ using (var scope = app.Services.CreateScope())
 
 app.MapHealthChecks("/health");
 
+app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 

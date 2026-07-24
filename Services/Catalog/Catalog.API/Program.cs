@@ -4,6 +4,15 @@ using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 var assembly = typeof(Program).Assembly;
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", p =>
+    {
+        p.WithOrigins("http://localhost:5173", "http://localhost:3000")
+         .AllowAnyHeader()
+         .AllowAnyMethod();
+    });
+});
 builder.Services.AddCarter();
 builder.Services.AddMediatR(con =>
 {
@@ -32,6 +41,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 

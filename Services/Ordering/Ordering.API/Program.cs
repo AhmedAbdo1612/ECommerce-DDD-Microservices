@@ -34,6 +34,15 @@ builder.Services
     .AddInfrastructureServices(builder.Configuration)
     .AddApiServices(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", p =>
+    {
+        p.WithOrigins("http://localhost:5173", "http://localhost:3000")
+         .AllowAnyHeader()
+         .AllowAnyMethod();
+    });
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
@@ -48,6 +57,7 @@ var app = builder.Build();
 //   3. Then Carter route handlers.
 app.UseApiServices();           // registers CustomExceptionHandler + MapCarter
 
+app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 

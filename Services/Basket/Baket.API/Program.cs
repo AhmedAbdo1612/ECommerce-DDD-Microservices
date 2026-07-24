@@ -6,6 +6,15 @@ using BuildingBlocks.Exceptions.Handler;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", p =>
+    {
+        p.WithOrigins("http://localhost:5173", "http://localhost:3000")
+         .AllowAnyHeader()
+         .AllowAnyMethod();
+    });
+});
 builder.Services.AddCarter();
 var assembly = typeof(Program).Assembly;
 builder.Services.AddMediatR(opt =>
@@ -50,6 +59,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddMessageBroker(builder.Configuration);
 var app = builder.Build();
 
+app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 
