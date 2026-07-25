@@ -17,7 +17,7 @@ public static class Extensions
                 {
                     config.AddConsumers(assembly);
                 }
-                config.UsingRabbitMq((context, configurator) =>
+                config.UsingRabbitMq((context, configurator) => 
                 {
                     configurator.Host(new Uri(configuration["MessageBroker:Host"]!), host =>
                     {

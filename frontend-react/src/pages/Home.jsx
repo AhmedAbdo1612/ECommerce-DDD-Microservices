@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { api } from '../api/services';
+import Pagination from '../components/Pagination';
 
 const BANNERS = [
   { id: 1, title: 'Summer Sale', subtitle: 'Up to 50% off on all electronics', color: 'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)' },
@@ -22,7 +23,22 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = parseInt(searchParams.get('size') || '10', 10);
+  
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  
   const categories = ['All', 'Smartphones', 'Laptops', 'Accessories', 'Audio', 'Cameras'];
+
+  const handlePageChange = (newPage) => {
+    setSearchParams({ page: newPage, size: pageSize });
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setSearchParams({ page: 1, size: newSize });
+  };
 
   const fetchProducts = async () => {
     try {
@@ -30,12 +46,22 @@ const Home = () => {
       setError(null);
       // Fetch products using our service layer
       const catParam = selectedCategory === 'All' ? '' : selectedCategory;
-      const res = await api.catalog.getProducts(1, 50, catParam);
+      const res = await api.catalog.getProducts(currentPage, pageSize, catParam);
       // Ensure we extract the data correctly depending on pagination wrapper
-      const items = res.data?.data || res.data || [];
+      const data = res.data?.data || res.data?.products || res.data || [];
+      const items = Array.isArray(data) ? data : [];
       setProducts(items);
+      
+      const estimatedTotal = res.data?.count || res.data?.totalCount || (
+        (currentPage - 1) * pageSize + items.length + (items.length === pageSize ? 1 : 0)
+      );
+      setTotalCount(estimatedTotal);
+      setTotalPages(Math.ceil(estimatedTotal / pageSize) || 1);
+      
     } catch (err) {
       setError(err.message || 'Failed to load products');
+      setTotalCount(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -43,7 +69,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory]);
+  }, [selectedCategory, currentPage, pageSize]);
 
   // Auto-slide hero banner
   useEffect(() => {
@@ -62,7 +88,7 @@ const Home = () => {
     p.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const recentlyAdded = [...products].sort((a, b) => b.id?.localeCompare(a.id)).slice(0, 5); // Mock recently added by taking first 5 after sorting
+  const recentlyAdded = [...products].sort((a, b) => b.id?.toString().localeCompare(a.id?.toString())).slice(0, 5); // Mock recently added by taking first 5 after sorting
 
   // --- Styles ---
   const pageContainer = {
@@ -161,6 +187,15 @@ const Home = () => {
   const getImageUrl = (imageFile) => {
     if (!imageFile) return '';
     return imageFile.startsWith('http') ? imageFile : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/images/${imageFile}`;
+  };
+
+  const getDefaultImage = (product) => {
+    if (product?.images && product.images.length > 0) {
+      const primary = product.images.find(img => img.isPrimary);
+      const url = primary ? primary.url : product.images[0].url;
+      return getImageUrl(url);
+    }
+    return getImageUrl(product?.imageFile);
   };
 
   return (
@@ -277,15 +312,15 @@ const Home = () => {
                   >
                     <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#10b981', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1 }}>NEW</div>
                     <div style={imgContainerStyle}>
-                      {product.imageFile ? (
-                        <img src={getImageUrl(product.imageFile)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                      {getDefaultImage(product) ? (
+                        <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
                       ) : (
                         <span style={{ color: theme.textSecondary }}>No Image</span>
                       )}
                     </div>
                     <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                       <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
-                      <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>${product.price?.toFixed(2)}</p>
+                      <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>${Number(product.price || 0).toFixed(2)}</p>
                       <button style={{ marginTop: 'auto', width: '100%', padding: '0.8rem', background: theme.primary, color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}>Add to Cart</button>
                     </div>
                   </div>
@@ -322,8 +357,8 @@ const Home = () => {
                     }}
                   >
                     <div style={imgContainerStyle}>
-                      {product.imageFile ? (
-                        <img src={getImageUrl(product.imageFile)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                      {getDefaultImage(product) ? (
+                        <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
                       ) : (
                         <span style={{ color: theme.textSecondary }}>No Image</span>
                       )}
@@ -333,7 +368,7 @@ const Home = () => {
                         <h3 style={{ margin: 0, fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
                       </div>
                       <span style={{ color: theme.textSecondary, fontSize: '0.85rem', marginBottom: '1rem' }}>{product.category?.join(', ')}</span>
-                      <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '1.5rem' }}>${product.price?.toFixed(2)}</p>
+                      <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '1.5rem' }}>${Number(product.price || 0).toFixed(2)}</p>
                       
                       <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
                         <button 
@@ -350,6 +385,17 @@ const Home = () => {
                   </div>
                 ))}
               </div>
+            )}
+            
+            {!loading && !error && displayedProducts.length > 0 && (
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
             )}
           </div>
         </>

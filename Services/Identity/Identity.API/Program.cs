@@ -1,3 +1,4 @@
+using BuildingBlocks.Messaging.MassTransit;
 using Carter;
 using Identity.API.Data;
 using Identity.API.Models;
@@ -79,22 +80,23 @@ builder.Services.AddHealthChecks()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 /////////////////////// Message Broker ////////////////////////
-builder.Services.AddMassTransit(
-    config =>
-    {
-        config.SetKebabCaseEndpointNameFormatter();
-        config.AddConsumers(assembly);
-        config.UsingRabbitMq((context, configurator) =>
-        {
-            configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), host =>
-            {
-                host.Username(builder.Configuration["MessageBroker:UserName"]!);
-                host.Password(builder.Configuration["MessageBroker:Password"]!);
-            });
-            configurator.ConfigureEndpoints(context);
-        });
-    }
-    );
+//builder.Services.AddMassTransit(
+//    config =>
+//    {
+//        config.SetKebabCaseEndpointNameFormatter();
+//        config.AddConsumers(assembly);
+//        config.UsingRabbitMq((context, configurator) =>
+//        {
+//            configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), host =>
+//            {
+//                host.Username(builder.Configuration["MessageBroker:UserName"]!);
+//                host.Password(builder.Configuration["MessageBroker:Password"]!);
+//            });
+//            configurator.ConfigureEndpoints(context);
+//        });
+//    }
+//    );
+builder.Services.AddMessageBroker(builder.Configuration);
 var app = builder.Build();
 
 app.UseSwagger();
