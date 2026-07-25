@@ -43,6 +43,87 @@ Services are decoupled using **RabbitMQ** and **MassTransit**.
 | **YarpApiGateway**| Gateway | N/A | Centralized routing, rate limiting, and CORS handling. |
 | **React Frontend**| SPA (Vite) | N/A | The customer-facing UI interacting with YARP. |
 
+### 🌐 Service Dependency Diagram
+This diagram illustrates the macro-level dependencies across all microservices, API Gateway, datastores, and message brokers.
+
+```mermaid
+graph TD
+    Client[React Frontend] -->|HTTPS| YARP[YARP API Gateway]
+    YARP -->|Route /catalog| CatalogAPI[Catalog.API]
+    YARP -->|Route /basket| BasketAPI[Basket.API]
+    YARP -->|Route /ordering| OrderingAPI[Ordering.API]
+    YARP -->|Route /identity| IdentityAPI[Identity.API]
+    YARP -->|Route /media| MediaAPI[Media.API]
+    
+    BasketAPI -->|gRPC| DiscountGrpc[Discount.Grpc]
+    
+    CatalogAPI -->|Marten| CatalogDB[(Catalog PostgreSQL)]
+    BasketAPI -->|Marten| BasketDB[(Basket PostgreSQL)]
+    BasketAPI -->|Cache| RedisCache[(Redis)]
+    OrderingAPI -->|EF Core| OrderDB[(Ordering PostgreSQL)]
+    DiscountGrpc -->|EF Core| DiscountDB[(SQLite)]
+    IdentityAPI -->|EF Core| IdentityDB[(Identity PostgreSQL)]
+    MediaAPI -->|File I/O| LocalStorage[(Local File System)]
+    
+    BasketAPI -.->|Publish Event| RabbitMQ{RabbitMQ / MassTransit}
+    CatalogAPI -.->|Publish Event| RabbitMQ
+    RabbitMQ -.->|Consume Event| OrderingAPI
+    RabbitMQ -.->|Consume Event| BasketAPI
+```
+
+### 🗄️ Database Schema & Storage
+Each service owns its domain data exclusively. Services use Marten (Document DB on Postgres) or EF Core (Relational).
+
+```mermaid
+erDiagram
+    %% Catalog Service
+    Product {
+        guid Id PK
+        string Name
+        string Description
+        decimal Price
+        string Category
+    }
+    
+    %% Basket Service
+    ShoppingCart {
+        string UserName PK
+        decimal TotalPrice
+    }
+    ShoppingCartItem {
+        guid ProductId
+        string ProductName
+        int Quantity
+        decimal Price
+    }
+    ShoppingCart ||--o{ ShoppingCartItem : contains
+    
+    %% Ordering Service
+    Order {
+        guid Id PK
+        guid CustomerId
+        string OrderName
+        string Status
+        decimal TotalPrice
+    }
+    OrderItem {
+        guid Id PK
+        guid OrderId FK
+        guid ProductId
+        decimal Price
+        int Quantity
+    }
+    Order ||--o{ OrderItem : has
+    
+    %% Identity Service
+    ApplicationUser {
+        string Id PK
+        string UserName
+        string Email
+        string PasswordHash
+    }
+```
+
 ---
 
 ## 🛠️ The `BuildingBlocks` Core
@@ -63,7 +144,21 @@ To prevent code duplication, cross-cutting concerns are extracted into a shared 
 
 ## 🚀 Execution Flows
 
-### 1. Standard API Request (CQRS + Validation)
+### 1. API Endpoint Mapping (YARP Gateway)
+The API Gateway acts as the single entry point, routing requests based on path prefixes.
+
+```mermaid
+graph LR
+    Client([Client Apps / React UI]) --> YARP{YARP Gateway}
+    
+    YARP -->|/api/catalog/*| Catalog[Catalog.API]
+    YARP -->|/api/basket/*| Basket[Basket.API]
+    YARP -->|/api/ordering/*| Ordering[Ordering.API]
+    YARP -->|/api/identity/*| Identity[Identity.API]
+    YARP -->|/api/media/*| Media[Media.API]
+```
+
+### 2. Standard API Request (CQRS + Validation)
 ```mermaid
 sequenceDiagram
     autonumber
@@ -90,7 +185,30 @@ sequenceDiagram
     end
 ```
 
-### 2. Event-Driven Checkout Flow
+### 3. Authentication & Authorization Flow
+```mermaid
+sequenceDiagram
+    participant User as React Frontend
+    participant YARP as YarpApiGateway
+    participant Identity as Identity.API
+    participant DB as Identity DB (PostgreSQL)
+
+    User->>YARP: POST /identity/auth/login
+    YARP->>Identity: Forward Request
+    Identity->>DB: Verify Credentials
+    DB-->>Identity: Success
+    Identity->>Identity: Generate JWT Token
+    Identity-->>YARP: Return JWT & Claims
+    YARP-->>User: 200 OK (JWT Token)
+    User->>User: Store Token (Local Storage/Cookie)
+    
+    Note over User,YARP: Subsequent Authenticated Requests
+    User->>YARP: GET /basket (Bearer <token>)
+    YARP->>YARP: Validate JWT (Fallback Middleware)
+    YARP->>Basket.API: Forward Authenticated Request
+```
+
+### 4. Event-Driven Checkout Flow
 ```mermaid
 sequenceDiagram
     participant User as React Frontend
@@ -106,6 +224,106 @@ sequenceDiagram
     MQ->>Ordering: Consume BasketCheckoutEvent
     Ordering->>Ordering: Create Order (Domain Logic)
     Ordering->>DB: Save Order
+```
+
+### 5. Generalized Event-Driven Communication
+```mermaid
+graph LR
+    subgraph Publishers
+        BasketAPI[Basket.API]
+        CatalogAPI[Catalog.API]
+    end
+    
+    subgraph Message Broker
+        RMQ((RabbitMQ))
+        Exchange[Event Bus Exchange]
+        RMQ --- Exchange
+    end
+    
+    subgraph Consumers
+        OrderingAPI[Ordering.API]
+        SearchService[Search / Analytics]
+    end
+    
+    BasketAPI -->|BasketCheckoutEvent| Exchange
+    CatalogAPI -->|ProductPriceChangedEvent| Exchange
+    
+    Exchange -->|Queue| OrderingAPI
+    Exchange -->|Queue| SearchService
+    Exchange -->|Queue| BasketAPI
+```
+
+---
+
+## 💻 Frontend Component Hierarchy
+The React SPA consumes the microservices via the YARP gateway.
+
+```mermaid
+graph TD
+    App[App (Main Layout)]
+    App --> Router[React Router]
+    
+    Router --> Navbar[Navbar]
+    Router --> Footer[Footer]
+    
+    Router --> Home[Home Page]
+    Router --> ProductList[Product Catalog Page]
+    Router --> ProductDetail[Product Detail Page]
+    Router --> Cart[Shopping Cart Page]
+    Router --> Checkout[Checkout Page]
+    Router --> Profile[User Profile]
+    
+    ProductList --> FilterSidebar[Filter & Sort]
+    ProductList --> ProductCard[Product Card x N]
+    
+    Cart --> CartItem[Cart Item Row x N]
+    Cart --> OrderSummary[Order Summary]
+```
+
+---
+
+## 🐳 Deployment Architecture
+The platform is orchestrated via Docker, isolating dependencies and standardizing the runtime environment.
+
+```mermaid
+graph TB
+    subgraph Docker Host
+        subgraph Infrastructure Containers
+            PG[(PostgreSQL)]
+            Redis[(Redis)]
+            RMQ[(RabbitMQ)]
+        end
+        
+        subgraph App Containers
+            YARP[YARP Gateway]
+            UI[React Frontend]
+            Identity[Identity.API]
+            Catalog[Catalog.API]
+            Basket[Basket.API]
+            Ordering[Ordering.API]
+            Discount[Discount.Grpc]
+            Media[Media.API]
+        end
+        
+        UI --> YARP
+        YARP --> Identity
+        YARP --> Catalog
+        YARP --> Basket
+        YARP --> Ordering
+        YARP --> Media
+        
+        Basket --> Discount
+        
+        Identity --> PG
+        Catalog --> PG
+        Basket --> PG
+        Basket --> Redis
+        Ordering --> PG
+        
+        Basket -.-> RMQ
+        Catalog -.-> RMQ
+        Ordering -.-> RMQ
+    end
 ```
 
 ---
