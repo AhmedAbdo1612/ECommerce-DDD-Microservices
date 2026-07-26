@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace Baket.API.Basket.DeleteBasket;
 
 public record DeleteBasketResponse(bool IsSuccess);
@@ -7,7 +9,7 @@ public class DeleteBasketEndpoint : ICarterModule
     {
         app.MapDelete("/basket/{userName}", async (string userName, ISender sender, Microsoft.AspNetCore.Http.HttpContext context) =>
         {
-            if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != userName)
+            if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != userName)
             {
                 return Microsoft.AspNetCore.Http.Results.Forbid();
             }

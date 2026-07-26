@@ -11,6 +11,11 @@ import DebugPanel from './components/DebugPanel';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleRoute from './components/RoleRoute';
 import { useTheme } from './hooks/useTheme';
+import { Toaster } from 'react-hot-toast';
+import Cart from './pages/Cart';
+import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
+import OrdersHistory from './pages/OrdersHistory';
 
 function App() {
   const { theme, themeName } = useTheme();
@@ -61,18 +66,23 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route element={<RoleRoute allowedRoles={['Admin']} />}>
-              <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/admin" element={<RoleRoute allowedRoles={['Admin']} />}>
+              <Route index element={<AdminDashboard />} />
             </Route>
-            <Route element={<RoleRoute allowedRoles={['Customer']} />}>
-              <Route path="/customer" element={<CustomerDashboard />} />
+            <Route path="/customer" element={<RoleRoute allowedRoles={['Customer']} />}>
+              <Route index element={<CustomerDashboard />} />
+              <Route path="orders" element={<OrdersHistory />} />
             </Route>
           </Route>
         </Routes>
       </main>
+      <Toaster position="bottom-right" />
       <DebugPanel />
     </div>
   );

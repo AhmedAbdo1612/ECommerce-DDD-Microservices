@@ -14,7 +14,10 @@ namespace OrderingDomain.Models
         public int Quantity { get; private set; } = default!;
         public float Price { get; private set; } = default!;
 
-        /// <summary>Called by the Order aggregate's UpdateItem method.</summary>
+        public static OrderItem Create(OrderId orderId, ProductId productId, int quantity,float price)
+        {
+            return new OrderItem(orderId,productId,quantity,price);
+        }
         internal void UpdateQuantityAndPrice(int quantity, float price)
         {
             Quantity = quantity;

@@ -1,4 +1,6 @@
 
+using System.Security.Claims;
+
 namespace Baket.API.Basket.GetBaket
 {
     public record GetBasketReponse(ShoppingCart Cart);
@@ -8,7 +10,7 @@ namespace Baket.API.Basket.GetBaket
         {
             app.MapGet("/basket/{userName}", async (string userName, ISender sender, HttpContext context) =>
             {
-                if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != userName)
+                if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != userName)
                 {
                     return Results.Forbid();
                 }

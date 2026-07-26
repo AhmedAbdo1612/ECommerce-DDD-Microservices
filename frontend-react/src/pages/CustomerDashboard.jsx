@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import ProductList from '../components/ProductList';
@@ -7,6 +8,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 const CustomerDashboard = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   const containerStyle = {
     padding: '3rem',
@@ -69,6 +71,7 @@ const CustomerDashboard = () => {
         <div style={actionsGridStyle}>
           <div 
             style={actionCardStyle}
+            onClick={() => navigate('/customer/orders')}
             onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.background = theme.border; }}
             onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.background = theme.backgroundAlt; }}
           >

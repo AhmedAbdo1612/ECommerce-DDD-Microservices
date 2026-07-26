@@ -25,7 +25,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasMany(o => o.OrderItems)
             .WithOne()
             .HasForeignKey(x => x.OrderId);
-
+        //builder.Navigation(o => o.OrderItems)
+        //.UsePropertyAccessMode(PropertyAccessMode.Field);
         builder.ComplexProperty(
             o => o.OrderName, nameBuilder =>
             {

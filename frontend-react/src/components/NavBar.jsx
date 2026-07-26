@@ -2,11 +2,14 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
+import { useCart } from '../context/CartContext';
 import ThemeToggle from './ThemeToggle';
+import { ShoppingCart } from 'lucide-react';
 
 const NavBar = () => {
   const { isAuthenticated, isAdmin, isCustomer, logout, user } = useAuth();
   const { theme } = useTheme();
+  const { itemCount } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -88,6 +91,30 @@ const NavBar = () => {
       <div style={linkContainerStyles}>
         <ThemeToggle />
         
+        <Link to="/cart" style={{ ...linkStyles, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ShoppingCart size={24} />
+          {itemCount > 0 && (
+            <span style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              background: theme.primary,
+              color: '#fff',
+              fontSize: '0.75rem',
+              fontWeight: 'bold',
+              borderRadius: '50%',
+              width: '18px',
+              height: '18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: theme.shadow
+            }}>
+              {itemCount > 99 ? '99+' : itemCount}
+            </span>
+          )}
+        </Link>
+
         {isAuthenticated ? (
           <>
             {isAdmin && <Link to="/admin" style={linkStyles}>Admin Dashboard</Link>}

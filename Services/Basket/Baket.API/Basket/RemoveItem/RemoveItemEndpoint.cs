@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace Baket.API.Basket.RemoveItem
 {
     public record RemoveItemResponse(ShoppingCart Cart);
@@ -8,7 +10,7 @@ namespace Baket.API.Basket.RemoveItem
         {
             app.MapDelete("/basket/{userName}/items/{productId:guid}", async (string userName, Guid productId, ISender sender,HttpContext context) =>
             {
-                if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != userName)
+                if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != userName)
                 {
                     return Results.Forbid();
                 }

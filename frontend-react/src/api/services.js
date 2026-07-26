@@ -33,6 +33,7 @@ export const api = {
     getOrders: (page = 1, size = 10) => axiosInstance.get(`/orders?PageIndex=${page}&PageSize=${size}`),
     getOrderById: (id) => axiosInstance.get(`/orders/${id}`),
     getOrdersByCustomer: (customerId) => axiosInstance.get(`/orders/customer/${customerId}`),
+    getMyOrders: () => axiosInstance.get('/orders/my-orders'),
     createOrder: (data) => axiosInstance.post('/orders', data),
     deleteOrder: (id) => axiosInstance.delete(`/orders/${id}`),
   },

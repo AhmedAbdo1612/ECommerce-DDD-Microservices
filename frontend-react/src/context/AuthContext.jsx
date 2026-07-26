@@ -15,13 +15,18 @@ export const AuthProvider = ({ children }) => {
     
     if (storedToken && !isTokenExpired(storedToken)) {
       setToken(storedToken);
-      const decoded = decodeToken(storedToken);
-      const role = getUserRole(storedToken);
       
-      setUser({
-        ...decoded,
-        role: role
-      });
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        const decoded = decodeToken(storedToken);
+        const role = getUserRole(storedToken);
+        setUser({
+          ...decoded,
+          role: role
+        });
+      }
     } else if (storedToken) {
       // Token is expired
       logout();
@@ -41,10 +46,16 @@ export const AuthProvider = ({ children }) => {
       const decoded = decodeToken(token);
       const role = getUserRole(token);
       
-      setUser({
+      const userData = {
         ...decoded,
-        role: role
-      });
+        role: role,
+        email: response.data.email || decoded.email,
+        username: response.data.userName || response.data.username || decoded.username,
+        userName: response.data.userName || response.data.username || decoded.username
+      };
+      
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
       
       return { success: true };
     } catch (error) {

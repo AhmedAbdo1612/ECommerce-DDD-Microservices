@@ -33,7 +33,7 @@ public static class AuthenticationExtensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                     ClockSkew = TimeSpan.Zero,
-                    NameClaimType = "username",
+                    //NameClaimType = "username",
                     //RoleClaimType = "roles"
                 };
             });

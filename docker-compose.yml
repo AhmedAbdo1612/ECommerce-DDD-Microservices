@@ -1,4 +1,3 @@
-
 services:
   # Databases & Infrastructure
   postgres:
@@ -36,6 +35,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Microservices
   catalog.api:
@@ -43,6 +47,8 @@ services:
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
     depends_on:
       - postgres
 
@@ -51,51 +57,82 @@ services:
     build:
       context: .
       dockerfile: Services/Basket/Baket.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - MessageBroker__Host=amqp://rabbitmq:5672
     depends_on:
-      - postgres
-      - redis-cache
-      - discount.grpc
+      postgres:
+        condition: service_started
+      redis-cache:
+        condition: service_started
+      discount.grpc:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   media.api:
     image: ${DOCKER_REGISTRY-}mediaapi
     build:
       context: .
       dockerfile: Services/Media/Media.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
 
   discount.grpc:
     image: ${DOCKER_REGISTRY-}discountgrpc
     build:
       context: .
       dockerfile: Services/Discount/Discount.Grpc/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
 
   identity.api:
     image: ${DOCKER_REGISTRY-}identityapi
     build:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - MessageBroker__Host=amqp://rabbitmq:5672
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       - postgres
-
+      
   ordering.api:
     image: ${DOCKER_REGISTRY-}orderingapi
     build:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - MessageBroker__Host=amqp://rabbitmq:5672
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      identity.api:
+        condition: service_started
 
   yarpapigateway:
     image: ${DOCKER_REGISTRY-}yarpapigateway
     build:
       context: .
       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ReverseProxy__Clusters__identity-cluster__Destinations__destination1__Address=http://identity.api:8080
     ports:
       - "5000:8080"
     depends_on:
       - catalog.api
       - baket.api
       - ordering.api
+      - identity.api
 
 volumes:
   postgres_data:

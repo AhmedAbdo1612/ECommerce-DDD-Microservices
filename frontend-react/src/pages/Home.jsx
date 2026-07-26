@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import { api } from '../api/services';
+import { useCart } from '../context/CartContext';
+import { useProducts } from '../hooks/useProducts';
 import Pagination from '../components/Pagination';
 
 const BANNERS = [
@@ -14,11 +15,8 @@ const BANNERS = [
 const Home = () => {
   const { isAuthenticated, isCustomer, isAdmin } = useAuth();
   const { theme } = useTheme();
-  
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -27,10 +25,10 @@ const Home = () => {
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const pageSize = parseInt(searchParams.get('size') || '10', 10);
   
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  
   const categories = ['All', 'Smartphones', 'Laptops', 'Accessories', 'Audio', 'Cameras'];
+
+  const catParam = selectedCategory === 'All' ? '' : selectedCategory;
+  const { products, loading, error, totalCount, totalPages } = useProducts(currentPage, pageSize, catParam);
 
   const handlePageChange = (newPage) => {
     setSearchParams({ page: newPage, size: pageSize });
@@ -39,37 +37,6 @@ const Home = () => {
   const handlePageSizeChange = (newSize) => {
     setSearchParams({ page: 1, size: newSize });
   };
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      // Fetch products using our service layer
-      const catParam = selectedCategory === 'All' ? '' : selectedCategory;
-      const res = await api.catalog.getProducts(currentPage, pageSize, catParam);
-      // Ensure we extract the data correctly depending on pagination wrapper
-      const data = res.data?.data || res.data?.products || res.data || [];
-      const items = Array.isArray(data) ? data : [];
-      setProducts(items);
-      
-      const estimatedTotal = res.data?.count || res.data?.totalCount || (
-        (currentPage - 1) * pageSize + items.length + (items.length === pageSize ? 1 : 0)
-      );
-      setTotalCount(estimatedTotal);
-      setTotalPages(Math.ceil(estimatedTotal / pageSize) || 1);
-      
-    } catch (err) {
-      setError(err.message || 'Failed to load products');
-      setTotalCount(0);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory, currentPage, pageSize]);
 
   // Auto-slide hero banner
   useEffect(() => {
@@ -266,7 +233,6 @@ const Home = () => {
         <div style={{ padding: '2rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '12px', textAlign: 'center' }}>
           <h3>Failed to load catalog</h3>
           <p>{error}</p>
-          <button onClick={fetchProducts} style={{ padding: '0.8rem 1.5rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginTop: '1rem' }}>Retry Connection</button>
         </div>
       )}
 
@@ -309,6 +275,7 @@ const Home = () => {
                     style={{ ...cardStyle, minWidth: '280px', maxWidth: '300px' }}
                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
                     onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
+                    onClick={() => navigate(`/product/${product.id}`)}
                   >
                     <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#10b981', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1 }}>NEW</div>
                     <div style={imgContainerStyle}>
@@ -321,7 +288,16 @@ const Home = () => {
                     <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                       <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
                       <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>${Number(product.price || 0).toFixed(2)}</p>
-                      <button style={{ marginTop: 'auto', width: '100%', padding: '0.8rem', background: theme.primary, color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}>Add to Cart</button>
+                      <button 
+                        style={{ marginTop: 'auto', width: '100%', padding: '0.8rem', background: theme.primary, color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addToCart(product);
+                        }}
+                      >
+                        Add to Cart
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -355,6 +331,7 @@ const Home = () => {
                       e.currentTarget.style.transform = 'none';
                       e.currentTarget.style.boxShadow = 'none';
                     }}
+                    onClick={() => navigate(`/product/${product.id}`)}
                   >
                     <div style={imgContainerStyle}>
                       {getDefaultImage(product) ? (
@@ -376,6 +353,11 @@ const Home = () => {
                             flex: 1, padding: '0.8rem', background: theme.primary, color: '#fff', 
                             border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
                             display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px'
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addToCart(product);
                           }}
                         >
                           Add to Cart

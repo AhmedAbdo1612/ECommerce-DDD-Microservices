@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace Baket.API.Basket.AddItem
 {
     public record AddItemRequest(ShoppingCartItem Item);
@@ -9,15 +11,7 @@ namespace Baket.API.Basket.AddItem
         {
             app.MapPost("/basket/{userName}/items", async (string userName, AddItemRequest request, ISender sender,HttpContext context) =>
             {
-                foreach(var header in context.Request.Headers)
-                {
-                    Console.WriteLine($"{header.Key}: {header.Value}");
-                }
-                Console.WriteLine("\n========================>");
-                Console.WriteLine(userName);
-                Console.WriteLine(context.User.Identity?.Name);
-
-                if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != userName)
+                if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != userName)
                 {
                   return Results.Forbid();
                 }

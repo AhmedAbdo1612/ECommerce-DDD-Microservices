@@ -1,4 +1,5 @@
 using Baket.API.Basket.StoreBasket;
+using System.Security.Claims;
 
 public record StoreBasketRequest(ShoppingCart Cart);
 public record StoreBasketResponse(string UserName);
@@ -8,7 +9,7 @@ public class StoreBasketEndpoint : ICarterModule
     {
         app.MapPost("/basket", async (StoreBasketRequest request, ISender sender, HttpContext context) =>
         {
-            if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != request.Cart.UserName)
+            if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != request.Cart.UserName)
             {
                 return Results.Forbid();
             }

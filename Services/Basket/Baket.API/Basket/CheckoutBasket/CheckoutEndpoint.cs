@@ -1,5 +1,7 @@
 
 
+using System.Security.Claims;
+
 namespace Baket.API.Basket.CheckoutBasket;
 
 public record ChechoutBasketRequest(BasketCheckoutDto BasketCheckoutDto);
@@ -8,9 +10,9 @@ public class CheckoutEndpoint : ICarterModule
 {
     void ICarterModule.AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket/Checkout", async (ChechoutBasketRequest request, ISender sender,HttpContext context) =>
+        app.MapPost("/basket/Checkout", async (ChechoutBasketRequest request, ISender sender, HttpContext context) =>
         {
-            if (!context.User.IsInRole("Admin") && context.User.Identity?.Name != request.BasketCheckoutDto.UserName)
+            if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != request.BasketCheckoutDto.UserName)
             {
                 Results.Forbid();
             }

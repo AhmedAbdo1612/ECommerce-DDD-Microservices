@@ -18,4 +18,6 @@ public record BasketCheckoutEvent : IntegrationEvent
     public string CVV { get; set; } = default!;
     public int PaymentMethod { get; set; } = default!;
 
+    public IEnumerable<CartOrderItem> OrderItems { get; set; } = default!;
 }
+public record CartOrderItem( Guid ProductId, string ProductName, int Quantity, float Price);

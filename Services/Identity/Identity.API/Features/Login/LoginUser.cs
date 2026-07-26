@@ -11,7 +11,7 @@ namespace Identity.API.Features.Login;
 
 public record LoginUserCommand(string Email, string Password) : ICommand<LoginUserResult>;
 
-public record LoginUserResult(string AccessToken, string RefreshToken);
+public record LoginUserResult(string Email, string UserName, string AccessToken, string RefreshToken);
 
 public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
 {
@@ -51,7 +51,7 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand, LoginUserResul
 
         await _userManager.UpdateAsync(user);
 
-        return new LoginUserResult(accessToken, refreshToken.Token);
+        return new LoginUserResult(user.Email, user.UserName,accessToken, refreshToken.Token);
     }
 }
 

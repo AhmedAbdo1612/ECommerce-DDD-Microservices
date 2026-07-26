@@ -6,6 +6,19 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
     {
         var order = CreateNewOrder(command.Order);
         await dbContext.Orders.AddAsync(order);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+        Console.WriteLine($"\n the order id ==={order.Id.Value}");
+        Console.WriteLine($"the length of order items {command.Order.OrderItems.Count()}");
+        var orderItems = new List<OrderItem>();
+
+        foreach (var item in command.Order.OrderItems)
+        {
+            orderItems.Add(OrderItem.Create(order.Id, ProductId.Of(item.ProductId), item.Quantity, item.Price));
+            Console.WriteLine($"the order id from item ====={item.OrderId}");
+            Console.WriteLine($"the orderitem id from item ====={item.ProductName}");
+        }
+        await dbContext.OrderItems.AddRangeAsync(orderItems);
         await dbContext.SaveChangesAsync(cancellationToken);
         return new CreateOrderResult(order.Id.Value);
     }
@@ -45,9 +58,9 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
                 orderDto.Payment.PaymentMethod
                 )
             );
-        foreach(var item in orderDto.OrderItems)
+        foreach (var item in orderDto.OrderItems)
         {
-            newOrder.Add(ProductId.Of(item.ProductId), item.Quantity,item.Price);
+            //newOrder.Add(ProductId.Of(item.ProductId), item.Quantity, item.Price);
         }
         return newOrder;
     }

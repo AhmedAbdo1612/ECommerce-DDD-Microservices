@@ -3,7 +3,7 @@ namespace OrderingDomain.Models
     public class Order : Aggregate<OrderId>
     {
         private readonly List<OrderItem> _orderItems = new();
-        public IReadOnlyList<OrderItem> OrderItems => _orderItems.AsReadOnly();
+        public List<OrderItem> OrderItems =new();
         public CustomerId CustomerId { get; private set; } = default!;
         public OrderName OrderName { get; private set; } = default!;
         public Address ShippingAddress { get; private set; } = default!;
@@ -57,14 +57,14 @@ namespace OrderingDomain.Models
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(price);
             var orderItem = new OrderItem(Id, productId, quantity, price);
-            _orderItems.Add(orderItem);
+            OrderItems.Add(orderItem);
         }
         public void Remove(ProductId productId)
         {
-            var orderItem = _orderItems.FirstOrDefault(x => x.ProductId == productId);
+            var orderItem = OrderItems.FirstOrDefault(x => x.ProductId == productId);
             if (orderItem is not null)
             {
-                _orderItems.Remove(orderItem);
+                OrderItems.Remove(orderItem);
             }
         }
 
@@ -76,7 +76,7 @@ namespace OrderingDomain.Models
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(price);
-            var orderItem = _orderItems.FirstOrDefault(x => x.ProductId == productId);
+            var orderItem = OrderItems.FirstOrDefault(x => x.ProductId == productId);
             if (orderItem is not null)
             {
                 orderItem.UpdateQuantityAndPrice(quantity, price);

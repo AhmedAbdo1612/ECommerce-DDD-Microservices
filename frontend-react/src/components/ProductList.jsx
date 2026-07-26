@@ -1,7 +1,8 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useTheme } from '../hooks/useTheme';
+import { useCart } from '../context/CartContext';
 import Pagination from './Pagination';
 
 const DebugProductCard = ({ product }) => (
@@ -21,6 +22,8 @@ const ProductList = () => {
 
   const { products, loading, error, totalCount, totalPages } = useProducts(currentPage, pageSize);
   const { theme } = useTheme();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const handlePageChange = (newPage) => {
     setSearchParams({ page: newPage, size: pageSize });
@@ -157,9 +160,10 @@ const ProductList = () => {
               {/* <DebugProductCard product={product} /> */}
 
               <div 
-                style={cardStyle}
+                style={{ ...cardStyle, cursor: 'pointer' }}
                 onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
                 onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; }}
+                onClick={() => navigate(`/product/${product.id}`)}
               >
                 {/* Display product image if we have URL, else structured fallback */}
                 <div style={imagePlaceholderStyle}>
@@ -192,9 +196,13 @@ const ProductList = () => {
                   
                   <button 
                     style={buttonStyle}
-                    onClick={() => alert(`Added ${product?.name} to basket (feature coming soon!)`)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      addToCart(product);
+                    }}
                   >
-                    Add to Basket
+                    Add to Cart
                   </button>
                 </div>
               </div>

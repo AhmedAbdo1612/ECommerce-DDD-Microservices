@@ -36,9 +36,7 @@ public class BasketCheckoutEventHandler(ISender sender, ILogger<BasketCheckoutEv
             BillingAddress: addressDto,
             Payment: paymentDto,
             Status: OrderStatus.Pending,
-            OrderItems: [
-
-                ]
+            OrderItems: message.OrderItems.Select(x=>new OrderItemDto(orderId,x.ProductId,x.ProductName,x.Quantity,x.Price)).ToList()
             );
         return new CreateOrderCommand(orderDto);
 

@@ -11,16 +11,16 @@ internal class GetOrdersByCustomerHandler(IApplicationDbContext dbContext) : IQu
             .OrderBy(o => o.CreatedAt)
             .ToListAsync(cancellationToken);
 
-        var productIds = orders
-            .SelectMany(o => o.OrderItems.Select(i => i.ProductId.Value))
-            .Distinct()
-            .ToList();
+        //var productIds = orders
+        //    .SelectMany(o => o.OrderItems.Select(i => i.ProductId.Value))
+        //    .Distinct()
+        //    .ToList();
 
-        var productNames = await dbContext.Products
-            .Where(p => productIds.Contains(p.Id.Value))
-            .AsNoTracking()
-            .ToDictionaryAsync(p => p.Id.Value, p => p.Name, cancellationToken);
+        //var productNames = await dbContext.Products
+        //    .Where(p => productIds.Contains(p.Id.Value))
+        //    .AsNoTracking()
+        //    .ToDictionaryAsync(p => p.Id.Value, p => p.Name, cancellationToken);
 
-        return new GetOrderByCustomerResult(orders.ToOrderDtoList(productNames));
+        return new GetOrderByCustomerResult(orders.ToOrderDtoList());
     }
 }
