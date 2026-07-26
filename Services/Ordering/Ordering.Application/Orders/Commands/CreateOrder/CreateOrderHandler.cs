@@ -5,20 +5,30 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
     public async Task<CreateOrderResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var order = CreateNewOrder(command.Order);
-        await dbContext.Orders.AddAsync(order);
+       
 
-        await dbContext.SaveChangesAsync(cancellationToken);
-        Console.WriteLine($"\n the order id ==={order.Id.Value}");
-        Console.WriteLine($"the length of order items {command.Order.OrderItems.Count()}");
-        var orderItems = new List<OrderItem>();
+        List<ProductId> orderProductsId = command.Order.OrderItems
+            .Select(x => ProductId.Of(x.ProductId))
+            .ToList();
 
-        foreach (var item in command.Order.OrderItems)
+        var productsIdInDb = await dbContext.Products
+            .Where(p => orderProductsId.Contains(p.Id))
+            .Select(x => x.Id).ToHashSetAsync();
+       
+        var missingPoructIds = orderProductsId
+            .Where(x => !productsIdInDb.Contains(x))
+            .Select(x => x.Value).ToList();
+        if(missingPoructIds.Any())
         {
-            orderItems.Add(OrderItem.Create(order.Id, ProductId.Of(item.ProductId), item.Quantity, item.Price));
-            Console.WriteLine($"the order id from item ====={item.OrderId}");
-            Console.WriteLine($"the orderitem id from item ====={item.ProductName}");
+            List<Product> newProductsToAdd = command.Order.OrderItems
+            .Where(x => missingPoructIds.Contains(x.ProductId))
+            .Select(x => Product.Create(ProductId.Of(x.ProductId), x.ProductName, x.Price))
+            .ToList();
+
+            await dbContext.Products.AddRangeAsync(newProductsToAdd);
+            
         }
-        await dbContext.OrderItems.AddRangeAsync(orderItems);
+        await dbContext.Orders.AddAsync(order);
         await dbContext.SaveChangesAsync(cancellationToken);
         return new CreateOrderResult(order.Id.Value);
     }
@@ -60,7 +70,7 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
             );
         foreach (var item in orderDto.OrderItems)
         {
-            //newOrder.Add(ProductId.Of(item.ProductId), item.Quantity, item.Price);
+            newOrder.Add(ProductId.Of(item.ProductId), item.Quantity, item.Price);
         }
         return newOrder;
     }
