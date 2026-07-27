@@ -12,154 +12,180 @@
 
 **Instashop** is a production-ready, cloud-native e-commerce platform demonstrating the full power of modern architecture. It elegantly combines **Domain-Driven Design (DDD)**, **CQRS**, **Event-Driven Communication**, and a **Hybrid Architecture** strategy — pairing robust backend microservices with a lightning-fast **React** frontend.
 
-[Architecture](#-architectural-topology) · [Features](#-key-features) · [Services](#-microservices-breakdown) · [Tech Stack](#-technology-stack) · [Getting Started](#-getting-started)
+[Overview](#-project-overview) · [Features](#-key-features--modules) · [Architecture](#-architecture-highlights) · [Endpoints](#-api-endpoints-summary) · [Getting Started](#-getting-started)
+
+<br/>
+
+![Admin Dashboard UI Placeholder](./frontend-react/public/vite.svg)
+*(Placeholder: Add your React Frontend UI screenshots here)*
 
 </div>
 
 ---
 
-## 🌟 Key Features
-- **🏗️ Hybrid Microservices Architecture**: Uses Clean Architecture for complex domains (Ordering) and Vertical Slice Architecture for simpler CRUD domains (Catalog, Basket).
-- **🔄 Event-Driven Communication**: Services communicate asynchronously using **RabbitMQ** and **MassTransit** to ensure eventual consistency and decoupling.
-- **📸 Microservices Snapshot Pattern**: Ensures historical data integrity and inter-service decoupling by snapshotting mutable data (like product names) at the time of order creation.
-- **⚡ High-Performance API Gateway**: Centralized routing, rate limiting, and CORS handling using **YARP (Yet Another Reverse Proxy)**.
-- **🔐 Secure Authentication**: JWT-based authentication using **ASP.NET Core Identity** and RSA-signed tokens.
-- **🚀 Modern React Frontend**: A dynamic, component-based user interface built with React and Vite.
-- **📦 Distributed Caching**: Uses **Redis** with the Decorator pattern to massively boost performance for shopping basket operations.
-- **📄 NoSQL & Relational DBs**: Polyglot persistence using **Marten (PostgreSQL Document Store)**, **EF Core (PostgreSQL)**, and **SQLite**.
+## 🌟 Project Overview
+
+Instashop is built as a complete reference architecture for developers looking to understand how to build, scale, and maintain enterprise software in **.NET 10**. Rather than forcing a single architectural pattern, the solution uses the **right tool for the right job**. Complex domains use strict Clean Architecture, while simple CRUD services are streamlined with Vertical Slice Architecture.
+
+> [!NOTE]  
+> **Development Goal:** Provide a clean, robust, and highly scalable microservices template equipped with real-world complexities like eventual consistency, JWT authentication, and distributed caching.
 
 ---
 
-## 🏗️ Architectural Topology
+## ✨ Key Features & Modules
 
-The platform is composed of specialized microservices, each isolated in its own bounded context with its own data store. External traffic flows through the **YARP API Gateway**.
+- **🛍️ Catalog Service (`Catalog.API`)**: Manages product inventory and categories using PostgreSQL (Marten Doc Store) and Vertical Slice Architecture.
+- **🛒 Basket Service (`Basket.API`)**: Blazing-fast shopping cart management. Integrates with **Redis** using the Decorator Pattern to boost caching performance, and communicates with Discount via **gRPC**.
+- **📦 Ordering Service (`Ordering.API`)**: The heart of the business logic. Implements strict **Domain-Driven Design (DDD)** and **Clean Architecture**. Handles rich aggregates, domain events, and complex order lifecycles. Includes the **Admin Orders Dashboard** endpoints.
+- **🏷️ Discount Service (`Discount.Grpc`)**: High-performance **gRPC** microservice handling coupon validation and discount calculations on the fly.
+- **🔐 Identity Service (`Identity.API`)**: Centralized auth provider. Issues RSA-signed JWT tokens and manages users/roles via ASP.NET Core Identity.
+- **🔀 API Gateway (`YarpApiGateway`)**: Powered by **YARP (Yet Another Reverse Proxy)**. Handles centralized routing, rate limiting, and global CORS configurations.
+- **⚛️ Frontend UI (`frontend-react`)**: A sleek, dark-themed React 19 SPA built with Vite. Features a dynamic checkout flow, infinite CSS marquees, and a fully functional Admin Orders Dashboard.
 
+---
+
+## 🏗️ Architecture Highlights
+
+### Hybrid Architecture & CQRS
+- **Vertical Slice Architecture**: Used in `Catalog` and `Basket`. Endpoints, MediatR commands, handlers, and validators live side-by-side to maximize cohesion.
+- **Clean Architecture & DDD**: Used in `Ordering` to protect complex domain invariants. The `OrderingDomain` is completely isolated from infrastructure layers.
+- **CQRS (Command Query Responsibility Segregation)**: Strict separation of read (Queries) and write (Commands) paths using **MediatR**.
+
+### Cross-Cutting Concerns (BuildingBlocks)
+- **MediatR Pipeline Behaviors**: Every request is intercepted by a `ValidationBehavior` (FluentValidation) and a `LoggingBehavior`.
+- **Global Exception Handling**: A centralized interceptor maps custom exceptions to RFC 7807 compliant `ProblemDetails`.
+
+### Event-Driven Messaging
+Services are decoupled using **RabbitMQ** and **MassTransit**.
+Instead of fragile synchronous HTTP calls, cross-service interactions (like `BasketCheckoutEvent`) are published to message queues ensuring **eventual consistency** and high fault tolerance.
+
+### Architectural Flowchart
 ```mermaid
 graph TB
     User(["👤 Customer"])
-    WebApp["⚛️ React Frontend\n(Vite + Axios)"]
+    WebApp["⚛️ React Frontend\n(Vite)"]
 
-    subgraph Gateway["🔀 API Gateway Layer"]
-        YARP["⚡ YARP Reverse Proxy\n(Routing + CORS + Rate Limiting)"]
+    subgraph Gateway["🔀 API Gateway"]
+        YARP["⚡ YARP Reverse Proxy"]
     end
 
-    subgraph Services["🐳 Docker Compose — Service Mesh"]
-        CatalogAPI["🛍️ Catalog.API\nVertical Slice · Carter · Marten"]
-        BasketAPI["🛒 Basket.API\nVertical Slice · Carter · Redis + Marten"]
-        OrderingAPI["📦 Ordering.API\nClean Arch · DDD · EF Core"]
-        IdentityAPI["🔐 Identity.API\nJWT · ASP.NET Identity"]
-        MediaAPI["📸 Media.API\nStatic Assets · Carter"]
-        DiscountGrpc["🏷️ Discount.Grpc\ngRPC · EF Core · SQLite"]
+    subgraph Services["🐳 Microservices Mesh"]
+        CatalogAPI["🛍️ Catalog.API\n(Vertical Slice)"]
+        BasketAPI["🛒 Basket.API\n(Vertical Slice)"]
+        OrderingAPI["📦 Ordering.API\n(Clean Arch)"]
+        IdentityAPI["🔐 Identity.API\n(Minimal API)"]
+        DiscountGrpc["🏷️ Discount.Grpc\n(gRPC)"]
     end
 
     subgraph Messaging["📨 Async Messaging"]
-        RabbitMQ[("🐇 RabbitMQ\nMassTransit")]
+        RabbitMQ[("🐇 RabbitMQ")]
     end
 
-    subgraph Datastores["🗄️ Data Layer"]
-        PG_Catalog[("🐘 PostgreSQL\n(Marten Doc Store)")]
-        PG_Order[("🐘 PostgreSQL\n(EF Core Relational)")]
-        Redis[("🔴 Redis\n(Distributed Cache)")]
-        SQLite[("💾 SQLite\n(Discount DB)")]
+    subgraph Databases["🗄️ Persistence Layer"]
+        PG_Doc[("🐘 PostgreSQL\n(Marten)")]
+        PG_Rel[("🐘 PostgreSQL\n(EF Core)")]
+        Redis[("🔴 Redis")]
+        SQLite[("💾 SQLite")]
     end
 
     User --> WebApp
-    WebApp -->|"HTTP/REST"| YARP
-    YARP --> CatalogAPI & BasketAPI & OrderingAPI & IdentityAPI & MediaAPI
-
+    WebApp -->|"HTTP REST"| YARP
+    YARP --> CatalogAPI & BasketAPI & OrderingAPI & IdentityAPI
+    
     BasketAPI -->|"gRPC"| DiscountGrpc
-    BasketAPI -->|"Publish: CheckoutEvent"| RabbitMQ
-    RabbitMQ -->|"Subscribe"| OrderingAPI
-
-    CatalogAPI --> PG_Catalog
+    BasketAPI -->|"BasketCheckoutEvent"| RabbitMQ
+    RabbitMQ -->|"Consume"| OrderingAPI
+    
+    CatalogAPI --> PG_Doc
     BasketAPI --> Redis
-    BasketAPI -.->|"Fallback"| PG_Catalog
-    OrderingAPI --> PG_Order
-    IdentityAPI --> PG_Order
+    OrderingAPI --> PG_Rel
+    IdentityAPI --> PG_Rel
     DiscountGrpc --> SQLite
 
-    classDef gateway fill:#1A365D,stroke:#63B3ED,stroke-width:2px,color:#fff,font-weight:bold
-    classDef service fill:#1C4532,stroke:#48BB78,stroke-width:2px,color:#fff
-    classDef grpc fill:#322659,stroke:#9F7AEA,stroke-width:2px,color:#fff
-    classDef data fill:#2D3748,stroke:#718096,stroke-width:1px,color:#CBD5E0
-    classDef mq fill:#652B19,stroke:#FC8181,stroke-width:2px,color:#fff
-    classDef frontend fill:#005A9C,stroke:#61DAFB,stroke-width:2px,color:#fff,font-weight:bold
-
-    class WebApp frontend
+    classDef gateway fill:#1A365D,stroke:#63B3ED,color:#fff
+    classDef service fill:#1C4532,stroke:#48BB78,color:#fff
+    classDef grpc fill:#322659,stroke:#9F7AEA,color:#fff
+    classDef data fill:#2D3748,stroke:#718096,color:#CBD5E0
+    classDef mq fill:#652B19,stroke:#FC8181,color:#fff
+    
     class YARP gateway
-    class CatalogAPI,BasketAPI,OrderingAPI,IdentityAPI,MediaAPI service
+    class CatalogAPI,BasketAPI,OrderingAPI,IdentityAPI service
     class DiscountGrpc grpc
-    class PG_Catalog,PG_Order,Redis,SQLite data
+    class PG_Doc,PG_Rel,Redis,SQLite data
     class RabbitMQ mq
 ```
 
 ---
 
-## ⚙️ Technology Stack
+## 📡 API Endpoints Summary
 
-| Domain | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend** | React 19, Vite, Axios | Modern, responsive SPA for customers |
-| **Backend Framework** | .NET 10, C# 12 | Core runtime and language |
-| **Routing & Endpoints** | Carter, ASP.NET Minimal APIs | Fast, modular HTTP endpoint definitions |
-| **RPC & Microservices**| gRPC | High-perf inter-service communication (Discount) |
-| **CQRS Pipeline** | MediatR, FluentValidation | Decoupled feature handlers with auto-validation |
-| **NoSQL Database** | Marten (PostgreSQL) | Schemaless JSON document storage (Catalog, Basket)|
-| **Relational DB** | EF Core, PostgreSQL, SQLite | Relational modeling (Ordering, Identity, Discount) |
-| **Message Broker** | RabbitMQ, MassTransit | Async event-driven communication across contexts |
-| **Security** | ASP.NET Identity, JWT (RSA) | Token issuance, secure authentication & authorization|
-| **Gateway** | YARP (Yet Another Reverse Proxy)| Centralized routing, rate limiting, and CORS |
-| **Infrastructure** | Docker, Docker Compose | Containerization and local service orchestration |
+Below is a snapshot of the core endpoints exposed through the **YARP Gateway** (`localhost:5000`):
+
+| Service | Method | Endpoint | Description | Auth Required |
+|---------|--------|----------|-------------|---------------|
+| **Catalog** | `GET` | `/products` | Retrieve paginated products | ❌ |
+| **Catalog** | `POST` | `/products` | Create a new product | ✅ Admin |
+| **Basket** | `GET` | `/basket/{username}` | Get user shopping cart | ✅ User |
+| **Basket** | `POST` | `/basket/checkout` | Trigger checkout event | ✅ User |
+| **Ordering**| `GET` | `/orders` | Retrieve paginated orders | ✅ Admin |
+| **Ordering**| `POST` | `/order/status` | Update order status (Enum) | ✅ Admin |
+| **Identity**| `POST` | `/auth/login` | Authenticate and retrieve JWT | ❌ |
+| **Identity**| `POST` | `/auth/register` | Register a new user | ❌ |
 
 ---
 
-## 📦 Microservices Breakdown
+## ⚙️ Environment Variables
 
-1. **🛍️ Catalog Service** (`Catalog.API`)
-   - Uses **Vertical Slice Architecture** and **Marten**.
-   - Manages product inventory and categories. Features are self-contained slices.
-2. **🛒 Basket Service** (`Baket.API`)
-   - Uses **Redis** for blazing-fast caching via the **Decorator Pattern**.
-   - Manages user shopping carts and communicates with the Discount service via **gRPC**.
-3. **📦 Ordering Service** (`Ordering.API`)
-   - Implements strict **Domain-Driven Design (DDD)** and **Clean Architecture**.
-   - Handles rich aggregates, domain events, and complex business logic.
-4. **🔐 Identity Service** (`Identity.API`)
-   - Issues RSA-signed **JWT tokens** and manages user roles using ASP.NET Core Identity.
-5. **🏷️ Discount Service** (`Discount.Grpc`)
-   - High-performance **gRPC** service for coupon management and calculation.
-6. **📸 Media Service** (`Media.API`)
-   - Handles image and asset uploads for product listings.
-7. **🔀 API Gateway** (`YarpApiGateway`)
-   - Built with **YARP**. Routes all frontend requests to the appropriate backend service.
+The backend services rely on the following key environment variables configured in `docker-compose.yml`:
+
+```env
+# Global Settings
+ASPNETCORE_ENVIRONMENT=Docker
+
+# Database Connections (PostgreSQL)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=InstashopDb
+
+# Message Broker (RabbitMQ)
+RABBITMQ_DEFAULT_USER=guest
+RABBITMQ_DEFAULT_PASS=guest
+MessageBroker__Host=amqp://rabbitmq:5672
+
+# Redis Cache
+ConnectionStrings__Redis=redis-cache:6379
+```
+
+> [!TIP]
+> The solution uses `init-dbs.sql` to automatically seed the necessary PostgreSQL databases upon first launch.
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- **Docker Desktop** (v4.x or higher)
+- **Docker Desktop** (v4.x+)
 - **.NET 10 SDK**
-- **Node.js** (v18 or higher for React frontend)
+- **Node.js** (v18+)
 
-### 1️⃣ Start the Backend Infrastructure
-Navigate to the root directory and spin up the entire backend service mesh:
+### 1️⃣ Spin up the Infrastructure
+From the repository root, start all microservices, databases, and the API gateway:
 ```bash
 docker compose up -d
 ```
-*(This starts PostgreSQL, Redis, RabbitMQ, all Microservices, and the YARP API Gateway)*
+*Wait ~30 seconds for RabbitMQ and PostgreSQL to become fully healthy.*
 
 ### 2️⃣ Start the React Frontend
-Open a new terminal, navigate to the React app, install dependencies, and run:
+Open a new terminal, navigate to the frontend directory, install dependencies, and run the development server:
 ```bash
 cd frontend-react
 npm install
 npm run dev
 ```
-The frontend will be available at **http://localhost:5173** and will automatically communicate with the YARP Gateway at **http://localhost:5000**.
+The web app will now be running at **http://localhost:5173**. It automatically proxies API requests to the YARP Gateway (`http://localhost:5000`).
 
-### 3️⃣ Apply Entity Framework Migrations (If needed)
-If the Ordering or Identity databases require schema updates:
+### 3️⃣ Database Migrations (Local Dev Only)
+If you modify the **Ordering** or **Identity** EF Core models, generate and apply migrations:
 ```bash
 dotnet ef migrations add <MigrationName> --project Services/Ordering/Ordering.Infrastructure --startup-project Services/Ordering/Ordering.API
 docker compose up -d --build ordering.api
@@ -167,6 +193,5 @@ docker compose up -d --build ordering.api
 
 ---
 
-<div align="center">
-Built with ❤️ using <strong>.NET 10</strong>, <strong>React</strong>, <strong>DDD</strong>, <strong>CQRS</strong>, and <strong>Microservices</strong>.
-</div>
+## 📄 License
+This project is licensed under the MIT License. Feel free to use it as a robust template for your own enterprise microservice architectures.
