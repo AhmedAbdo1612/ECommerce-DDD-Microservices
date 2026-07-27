@@ -6,7 +6,9 @@ namespace OrderingDomain.Enums
     {
         Draft = 1,
         Pending = 2,
-        Completed = 3,
-        Cancelled = 4,
+        Accepted = 3,
+        Completed = 4,
+        Cancelled = 5,
+
     }
 }

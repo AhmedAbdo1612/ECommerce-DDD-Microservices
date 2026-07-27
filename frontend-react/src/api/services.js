@@ -9,7 +9,7 @@ export const api = {
 
   // --- Catalog Service ---
   catalog: {
-    getProducts: (page = 1, size = 10, category = '') => 
+    getProducts: (page = 1, size = 12, category = '') => 
       axiosInstance.get(`/products?PageNumber=${page}&PageSize=${size}${category ? `&Category=${category}` : ''}`),
     getProductById: (id) => axiosInstance.get(`/products/${id}`),
     createProduct: (data) => axiosInstance.post('/products', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
@@ -35,6 +35,8 @@ export const api = {
     getOrdersByCustomer: (customerId) => axiosInstance.get(`/orders/customer/${customerId}`),
     getMyOrders: () => axiosInstance.get('/orders/my-orders'),
     createOrder: (data) => axiosInstance.post('/orders', data),
+    updateOrder: (data) => axiosInstance.put('/orders', data),
+    updateOrderStatus: (orderId, state) => axiosInstance.post('/orders/order-status', { orderId, state }),
     deleteOrder: (id) => axiosInstance.delete(`/orders/${id}`),
   },
 

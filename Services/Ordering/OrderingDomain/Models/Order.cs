@@ -3,7 +3,7 @@ namespace OrderingDomain.Models
     public class Order : Aggregate<OrderId>
     {
         private readonly List<OrderItem> _orderItems = new();
-        public List<OrderItem> OrderItems =new();
+        public List<OrderItem> OrderItems = new();
         public CustomerId CustomerId { get; private set; } = default!;
         public OrderName OrderName { get; private set; } = default!;
         public Address ShippingAddress { get; private set; } = default!;
@@ -17,7 +17,7 @@ namespace OrderingDomain.Models
         }
         public static Order Create(OrderId id,
             CustomerId customerId,
-           
+
             Address shippingAddress,
             Address billingAddress,
             Payment payment)
@@ -51,6 +51,8 @@ namespace OrderingDomain.Models
             Status = status;
             AddDomainEvent(new OrderUpdateEvent(this));
         }
+
+        public void UpdateOrderStatus(OrderStatus state) => Status = state;
 
         public void Add(ProductId productId, string productName, int quantity, float price)
         {

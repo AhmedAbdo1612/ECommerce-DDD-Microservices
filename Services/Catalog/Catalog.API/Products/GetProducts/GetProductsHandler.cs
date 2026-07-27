@@ -22,7 +22,7 @@ namespace Catalog.API.Products.GetProducts
                 queryable = queryable.Where(p => p.Category.Contains(query.Category));
             }
 
-            var products = await queryable.OrderBy(x=>x.Id).ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
+            var products = await queryable.OrderByDescending(x=>x.Id).ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
             return new GetProductsResult(products);
         }
     }

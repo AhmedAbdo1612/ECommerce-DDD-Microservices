@@ -20,12 +20,10 @@ public class UpdateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
         return new UpdateOrderResult(true);
     }
 
-    // ── scalar / value-object fields ─────────────────────────────────────────
+  
 
     private static void UpdateOrderFields(Order order, OrderDto orderDto)
     {
-        // Fall back to the existing stored value when the DTO omits a nested object
-        // (e.g. a minimal status-only update from the frontend).
         var shippingAddress = orderDto.ShippingAddress is not null
             ? Address.Of(
                 orderDto.ShippingAddress.FirstName,

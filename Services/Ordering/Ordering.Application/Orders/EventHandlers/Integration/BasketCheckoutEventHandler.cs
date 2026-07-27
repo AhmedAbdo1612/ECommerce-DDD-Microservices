@@ -29,7 +29,7 @@ public class BasketCheckoutEventHandler(ISender sender, ILogger<BasketCheckoutEv
         var orderId = Guid.NewGuid();
         var orderDto = new OrderDto(
             Id: orderId,
-          
+          CreatedAt: DateTime.UtcNow,
             CustomerId: message.CustomerId,
             OrderName: message.UserName,
             ShippingAddress: addressDto,

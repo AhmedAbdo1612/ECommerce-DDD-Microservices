@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import AdminProducts from '../components/AdminProducts';
-
+import AdminOrders from '../components/AdminOrders';
 const AdminDashboard = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -148,9 +148,8 @@ const AdminDashboard = () => {
         );
       case 'orders':
         return (
-          <div style={headerCardStyle}>
-            <h2>Order Management</h2>
-            <p style={{ color: theme.textSecondary }}>Order management features coming soon...</p>
+          <div style={{ background: theme.backgroundCard, borderRadius: '16px', padding: '1.5rem 2rem', border: `1px solid ${theme.border}`, boxShadow: theme.shadow, width: '100%', boxSizing: 'border-box' }}>
+            <AdminOrders />
           </div>
         );
       case 'users':

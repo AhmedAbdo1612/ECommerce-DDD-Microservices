@@ -28,7 +28,8 @@ public static class OrderExtensions
             OrderItems:      x.OrderItems?
                               .Select(i => i.ToOrderItemDto(x.Id.Value, productNames))
                               .ToList()
-                             ?? new List<OrderItemDto>()
+                             ?? new List<OrderItemDto>(),
+            CreatedAt:       x.CreatedAt
         );
     }
 

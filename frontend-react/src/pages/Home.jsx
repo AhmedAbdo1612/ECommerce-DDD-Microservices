@@ -23,7 +23,7 @@ const Home = () => {
   
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const pageSize = parseInt(searchParams.get('size') || '10', 10);
+  const pageSize = parseInt(searchParams.get('size') || '10', 12);
   
   const categories = ['All', 'Smartphones', 'Laptops', 'Accessories', 'Audio', 'Cameras'];
 
@@ -167,6 +167,27 @@ const Home = () => {
 
   return (
     <div style={pageContainer}>
+      <style>{`
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.5; }
+          100% { opacity: 1; }
+        }
+        @keyframes marquee-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-50% - 0.75rem)); }
+        }
+        .marquee-track {
+          display: flex;
+          gap: 1.5rem;
+          width: max-content;
+          will-change: transform;
+          animation: marquee-scroll 25s linear infinite;
+        }
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
       
       {/* 1. Hero Banner Carousel */}
       <div style={heroContainer}>
@@ -251,13 +272,6 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <style>{`
-            @keyframes pulse {
-              0% { opacity: 1; }
-              50% { opacity: 0.5; }
-              100% { opacity: 1; }
-            }
-          `}</style>
         </div>
       )}
 
@@ -268,39 +282,50 @@ const Home = () => {
           {recentlyAdded.length > 0 && !searchQuery && !selectedCategory && (
             <div>
               <h2 style={sectionTitle}>Recently Added ✨</h2>
-              <div style={horizontalScroll}>
-                {recentlyAdded.map(product => (
-                  <div 
-                    key={product.id} 
-                    style={{ ...cardStyle, minWidth: '280px', maxWidth: '300px' }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-                    onClick={() => navigate(`/product/${product.id}`)}
-                  >
-                    <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#10b981', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1 }}>NEW</div>
-                    <div style={imgContainerStyle}>
-                      {getDefaultImage(product) ? (
-                        <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
-                      ) : (
-                        <span style={{ color: theme.textSecondary }}>No Image</span>
-                      )}
+              <div style={{
+                overflow: 'hidden',
+                maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+                padding: '1rem 0'
+              }}>
+                <div className="marquee-track">
+                  {[...recentlyAdded, ...recentlyAdded].map((product, index) => (
+                    <div 
+                      key={`${product.id}-${index}`} 
+                      style={{ ...cardStyle, minWidth: '280px', maxWidth: '300px', flexShrink: 0 }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'none';
+                      }}
+                      onClick={() => navigate(`/product/${product.id}`)}
+                    >
+                      <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#10b981', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1 }}>NEW</div>
+                      <div style={imgContainerStyle}>
+                        {getDefaultImage(product) ? (
+                          <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                        ) : (
+                          <span style={{ color: theme.textSecondary }}>No Image</span>
+                        )}
+                      </div>
+                      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
+                        <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>${Number(product.price || 0).toFixed(2)}</p>
+                        <button 
+                          style={{ marginTop: 'auto', width: '100%', padding: '0.8rem', background: theme.primary, color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addToCart(product);
+                          }}
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                      <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
-                      <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>${Number(product.price || 0).toFixed(2)}</p>
-                      <button 
-                        style={{ marginTop: 'auto', width: '100%', padding: '0.8rem', background: theme.primary, color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          addToCart(product);
-                        }}
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}
