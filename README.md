@@ -44,6 +44,109 @@ Instashop is built as a complete reference architecture for developers looking t
 
 ---
 
+## 🌐 System Architecture
+
+The macro-architecture of Instashop is built around decentralized data management, API gateways, and asynchronous event-driven communication. Each microservice is strictly isolated, owning its own dedicated database and state.
+
+### End-to-End System Diagram
+```mermaid
+graph TD
+    %% Define Nodes
+    Client["💻 React Frontend\n(Vite + Axios)"]
+    
+    subgraph Gateway["🔀 Gateway Layer"]
+        YARP["YARP API Gateway\n(CORS, Routing, Rate Limiting)"]
+    end
+
+    subgraph Services["🐳 Microservices Mesh"]
+        Identity["🔐 Identity.API"]
+        Catalog["🛍️ Catalog.API"]
+        Basket["🛒 Basket.API"]
+        Ordering["📦 Ordering.API"]
+        Discount["🏷️ Discount.Grpc"]
+    end
+
+    subgraph Databases["🗄️ Persistence & Cache"]
+        IdentityDB[("🐘 PostgreSQL\n(Identity)")]
+        CatalogDB[("🐘 PostgreSQL\n(Marten)")]
+        BasketCache[("🔴 Redis Cache")]
+        BasketDB[("🐘 PostgreSQL\n(Marten Fallback)")]
+        OrderingDB[("🐘 PostgreSQL\n(EF Core)")]
+        DiscountDB[("💾 SQLite\n(EF Core)")]
+    end
+
+    subgraph Broker["📨 Event Bus"]
+        RMQ{"🐇 RabbitMQ\n(MassTransit)"}
+    end
+
+    %% Connections
+    Client -->|"HTTPS REST"| YARP
+    
+    YARP -->|/identity| Identity
+    YARP -->|/catalog| Catalog
+    YARP -->|/basket| Basket
+    YARP -->|/ordering| Ordering
+
+    %% Service to DB
+    Identity --> IdentityDB
+    Catalog --> CatalogDB
+    Basket --> BasketCache
+    Basket --> BasketDB
+    Ordering --> OrderingDB
+    Discount --> DiscountDB
+
+    %% gRPC
+    Basket -.->|"Synchronous gRPC"| Discount
+
+    %% RabbitMQ Pub/Sub
+    Basket ==>|"1. Publish BasketCheckoutEvent"| RMQ
+    Catalog ==>|"Publish ProductPriceChangedEvent"| RMQ
+    RMQ ==>|"2. Consume BasketCheckoutEvent"| Ordering
+
+    %% Styling
+    classDef client fill:#005A9C,stroke:#61DAFB,color:#fff,font-weight:bold
+    classDef gateway fill:#1A365D,stroke:#63B3ED,color:#fff
+    classDef service fill:#1C4532,stroke:#48BB78,color:#fff
+    classDef data fill:#2D3748,stroke:#718096,color:#CBD5E0
+    classDef rmq fill:#652B19,stroke:#FC8181,color:#fff
+    classDef grpc fill:#322659,stroke:#9F7AEA,color:#fff
+
+    class Client client
+    class YARP gateway
+    class Identity,Catalog,Basket,Ordering service
+    class Discount grpc
+    class IdentityDB,CatalogDB,BasketCache,BasketDB,OrderingDB,DiscountDB data
+    class RMQ rmq
+```
+
+### 🔄 Key Cross-Service Workflows
+
+#### 1. User Login & Authentication
+1. The **React Frontend** sends user credentials via a `POST /auth/login` request.
+2. The **YARP Gateway** proxies this to the **Identity.API**.
+3. The **Identity.API** validates the password hash against its isolated **PostgreSQL Database**.
+4. Upon success, an RSA-signed **JWT Token** is generated and returned to the client.
+5. All subsequent protected requests (e.g., retrieving previous orders) include this Bearer token, which the Gateway and downstream microservices validate automatically.
+
+#### 2. Browsing Catalog & Adding to Basket
+1. Users view products fetched from the **Catalog.API** (backed by a fast **Marten Document Store**).
+2. When adding an item, a `POST /basket` request is sent to the **Basket.API**.
+3. The **Basket.API** caches the user's active shopping cart natively in **Redis** for ultra-fast, low-latency access, applying the Decorator Pattern to automatically save backups to PostgreSQL.
+
+#### 3. Calculating Discounts (Synchronous gRPC)
+1. Before checking out, the **Basket.API** needs to verify if the user's applied promo codes are valid.
+2. Instead of a slow HTTP call, the Basket service opens a high-speed, binary **gRPC channel** to the **Discount.Grpc** service.
+3. The Discount service reads from its **SQLite Database**, calculates the final deduction, and returns the modified price synchronously.
+
+#### 4. Placing an Order (Asynchronous Event-Driven)
+1. The user clicks "Place Order", sending a `POST /basket/checkout` command.
+2. The **Basket.API** validates the cart, clears the Redis cache, and **publishes a `BasketCheckoutEvent`** to **RabbitMQ**. It immediately returns a `202 Accepted` to the UI.
+3. In the background, the **Ordering.API** subscribes to this topic and **consumes the event**.
+4. The **Ordering.API** safely executes its domain logic (Simulating **Payment Processing** and order creation) and writes the definitive `Order` entity to the Ordering **PostgreSQL Database**.
+5. *Inventory Status:* (Planned/Simulated) If an item's inventory drops to zero, the Catalog API could similarly publish an `OutOfStockEvent`, which other services could listen to to automatically update UIs or pause ad campaigns.
+
+---
+
 ## 🏗️ Architecture Highlights
 
 The Instashop platform leverages a **Hybrid Architectural Strategy** designed to scale with complexity. We use the right pattern for the right bounded context, ensuring high performance and developer velocity.
