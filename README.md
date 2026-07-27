@@ -46,74 +46,115 @@ Instashop is built as a complete reference architecture for developers looking t
 
 ## 🏗️ Architecture Highlights
 
-### Hybrid Architecture & CQRS
-- **Vertical Slice Architecture**: Used in `Catalog` and `Basket`. Endpoints, MediatR commands, handlers, and validators live side-by-side to maximize cohesion.
-- **Clean Architecture & DDD**: Used in `Ordering` to protect complex domain invariants. The `OrderingDomain` is completely isolated from infrastructure layers.
-- **CQRS (Command Query Responsibility Segregation)**: Strict separation of read (Queries) and write (Commands) paths using **MediatR**.
+The Instashop platform leverages a **Hybrid Architectural Strategy** designed to scale with complexity. We use the right pattern for the right bounded context, ensuring high performance and developer velocity.
 
-### Cross-Cutting Concerns (BuildingBlocks)
-- **MediatR Pipeline Behaviors**: Every request is intercepted by a `ValidationBehavior` (FluentValidation) and a `LoggingBehavior`.
-- **Global Exception Handling**: A centralized interceptor maps custom exceptions to RFC 7807 compliant `ProblemDetails`.
+### 🌊 Request Execution Flow
 
-### Event-Driven Messaging
-Services are decoupled using **RabbitMQ** and **MassTransit**.
-Instead of fragile synchronous HTTP calls, cross-service interactions (like `BasketCheckoutEvent`) are published to message queues ensuring **eventual consistency** and high fault tolerance.
+Below is the standard execution path for an incoming API request demonstrating how data flows from the client, through the application layers, into the domain, and finally to persistence and messaging.
 
-### Architectural Flowchart
 ```mermaid
-graph TB
-    User(["👤 Customer"])
-    WebApp["⚛️ React Frontend\n(Vite)"]
+graph TD
+    %% Define Nodes
+    Client["💻 React Frontend\n(Axios / Fetch)"]
+    Gateway["🔀 YARP API Gateway\n(Routing & CORS)"]
+    API["🌐 Carter Endpoint\n(Minimal API)"]
+    Val["🛡️ FluentValidation\n(Explicit Validation)"]
+    MediatR["⚙️ MediatR\n(CQRS Command/Query)"]
+    Handler["🛠️ Application Handler\n(Business Logic)"]
+    Domain["🧩 Domain Entities\n(Aggregates / Rules)"]
+    DB["🗄️ EF Core / Marten\n(Persistence)"]
+    MQ["📨 MassTransit\n(RabbitMQ)"]
 
-    subgraph Gateway["🔀 API Gateway"]
-        YARP["⚡ YARP Reverse Proxy"]
-    end
+    %% Connect Flow
+    Client -->|"1. HTTP Request"| Gateway
+    Gateway -->|"2. Proxy Request"| API
+    API -->|"3. Validate Request"| Val
+    Val -->|"4. Send(Command)"| MediatR
+    MediatR -->|"5. Dispatch"| Handler
+    Handler -->|"6. Mutate State"| Domain
+    Domain -.->|"7. Trigger Domain Events"| Handler
+    Handler -->|"8. SaveChangesAsync"| DB
+    Handler -->|"9. Publish Integration Event"| MQ
+    DB -->|"10. Return Result"| Handler
+    Handler -->|"11. Return DTO"| API
+    API -->|"12. HTTP 200/201"| Client
 
-    subgraph Services["🐳 Microservices Mesh"]
-        CatalogAPI["🛍️ Catalog.API\n(Vertical Slice)"]
-        BasketAPI["🛒 Basket.API\n(Vertical Slice)"]
-        OrderingAPI["📦 Ordering.API\n(Clean Arch)"]
-        IdentityAPI["🔐 Identity.API\n(Minimal API)"]
-        DiscountGrpc["🏷️ Discount.Grpc\n(gRPC)"]
-    end
-
-    subgraph Messaging["📨 Async Messaging"]
-        RabbitMQ[("🐇 RabbitMQ")]
-    end
-
-    subgraph Databases["🗄️ Persistence Layer"]
-        PG_Doc[("🐘 PostgreSQL\n(Marten)")]
-        PG_Rel[("🐘 PostgreSQL\n(EF Core)")]
-        Redis[("🔴 Redis")]
-        SQLite[("💾 SQLite")]
-    end
-
-    User --> WebApp
-    WebApp -->|"HTTP REST"| YARP
-    YARP --> CatalogAPI & BasketAPI & OrderingAPI & IdentityAPI
-    
-    BasketAPI -->|"gRPC"| DiscountGrpc
-    BasketAPI -->|"BasketCheckoutEvent"| RabbitMQ
-    RabbitMQ -->|"Consume"| OrderingAPI
-    
-    CatalogAPI --> PG_Doc
-    BasketAPI --> Redis
-    OrderingAPI --> PG_Rel
-    IdentityAPI --> PG_Rel
-    DiscountGrpc --> SQLite
-
+    %% Styling
+    classDef client fill:#005A9C,stroke:#61DAFB,color:#fff,font-weight:bold
     classDef gateway fill:#1A365D,stroke:#63B3ED,color:#fff
-    classDef service fill:#1C4532,stroke:#48BB78,color:#fff
-    classDef grpc fill:#322659,stroke:#9F7AEA,color:#fff
-    classDef data fill:#2D3748,stroke:#718096,color:#CBD5E0
+    classDef api fill:#1C4532,stroke:#48BB78,color:#fff
+    classDef logic fill:#2C7A7B,stroke:#38B2AC,color:#fff
+    classDef domain fill:#6B46C1,stroke:#9F7AEA,color:#fff
+    classDef infra fill:#2D3748,stroke:#718096,color:#CBD5E0
     classDef mq fill:#652B19,stroke:#FC8181,color:#fff
-    
-    class YARP gateway
-    class CatalogAPI,BasketAPI,OrderingAPI,IdentityAPI service
-    class DiscountGrpc grpc
-    class PG_Doc,PG_Rel,Redis,SQLite data
-    class RabbitMQ mq
+
+    class Client client
+    class Gateway gateway
+    class API,Val api
+    class MediatR,Handler logic
+    class Domain domain
+    class DB infra
+    class MQ mq
 ```
+
+#### ASCII Flow Representation
+```text
+[React Client] 
+   │ (HTTP POST /api/orders)
+   ▼
+[YARP Gateway] ──(Proxies)──► [Carter Minimal API]
+                                 │
+                                 ├─► Explicit FluentValidation (Throws on invalid)
+                                 │
+                                 ▼
+                              [MediatR] ──(Dispatches)──► [Command Handler]
+                                                               │
+                                                               ├─► Loads/Creates [Domain Aggregate Root]
+                                                               ├─► Enforces [Business Invariants]
+                                                               ├─► Invokes EF Core [DbContext.SaveChangesAsync()]
+                                                               │
+                                                               ▼
+[RabbitMQ / MassTransit] ◄──(Publishes Integration Event)── [Application Layer]
+```
+
+---
+
+### 🧩 Core Architectural Patterns
+
+| Pattern | Description | Application Context |
+| :--- | :--- | :--- |
+| ![Vertical Slice](https://img.shields.io/badge/Pattern-Vertical_Slice-10B981?style=flat-square) | Feature-centric organization. Everything needed for a single request (Endpoint, Handler, Validator) lives in one folder. | `Catalog.API`, `Basket.API` |
+| ![Clean Architecture](https://img.shields.io/badge/Pattern-Clean_Architecture-3B82F6?style=flat-square) | Strict separation of concerns (Domain, Application, Infrastructure, Presentation) protecting core logic. | `Ordering.API` |
+| ![CQRS](https://img.shields.io/badge/Pattern-CQRS-8B5CF6?style=flat-square) | Segregates Read paths (Queries) from Write paths (Commands) using **MediatR**. | All Microservices |
+| ![Event Driven](https://img.shields.io/badge/Pattern-Event_Driven-F59E0B?style=flat-square) | Asynchronous messaging via RabbitMQ for decoupled cross-service synchronization. | `Basket`, `Ordering` |
+
+---
+
+### 🛡️ Layer Breakdown & Responsibilities
+
+#### 1. Domain Layer (`OrderingDomain`)
+The core of the application containing the business rules, isolated from all external dependencies.
+- **Entities & Aggregate Roots:** Rich objects (e.g., `Order`, `OrderItem`) that protect their invariants. State is mutated strictly through methods, never direct property setters.
+- **Value Objects:** Immutable types (e.g., `Address`, `Payment`) ensuring equality by value.
+- **Enums:** Strongly-typed business statuses (e.g., `OrderStatus`).
+- **Domain Events:** Triggers (e.g., `OrderCreatedEvent`) dispatched internally upon state changes to maintain consistency across the aggregate.
+
+#### 2. Application Layer (`Ordering.Application`)
+Orchestrates business use cases without containing business rules itself.
+- **Explicit Validation:** We utilize **FluentValidation** explicitly inside the Handlers or Minimal APIs (bypassing auto-behaviors) for precise, controlled validation responses.
+- **MediatR Dispatching:** Endpoints send lightweight `Commands` or `Queries` into MediatR, which locates and executes the corresponding Handler.
+- **DTO Projection:** Domain entities are mapped directly to Data Transfer Objects (DTOs) before returning to the presentation layer.
+
+#### 3. Infrastructure Layer (`Ordering.Infrastructure`)
+Handles all external I/O, persistence, and external service communication.
+- **Persistence (EF Core / Marten):** Implements DB contexts, Interceptors (like `DispatchDomainEventInterceptor`), and configurations.
+- **Event Bus:** Configures **MassTransit** over **RabbitMQ**.
+
+#### 4. Presentation / API Layer (`Endpoints`)
+- **Carter & Minimal APIs:** We use Carter modules to map extremely thin, performant Minimal API endpoints. These endpoints contain zero business logic—they simply parse the HTTP request, send it to MediatR, and return the HTTP response.
+
+> [!TIP]
+> **Event-Driven Highlight:** When a user checks out, `Basket.API` publishes a `BasketCheckoutEvent` to RabbitMQ and clears the Redis cache. The `Ordering.API` asynchronously consumes this event via an Integration Event Handler, creating the definitive Order entity in PostgreSQL without any synchronous blocking!
 
 ---
 
