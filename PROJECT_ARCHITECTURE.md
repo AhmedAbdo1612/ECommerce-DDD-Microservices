@@ -134,14 +134,11 @@ erDiagram
 
 To prevent code duplication, cross-cutting concerns are extracted into a shared `BuildingBlocks` library:
 
-1. **MediatR Pipeline Behaviors:**
-   * `ValidationBehavior`: Automatically validates every incoming request using FluentValidation before it ever reaches the handler.
-   * `LoggingBehavior`: Logs request entry, exit, and execution time (warning if execution exceeds 3 seconds).
-2. **Global Exception Handling:**
+1. **Global Exception Handling:**
    * A centralized `CustomExceptionHandler` catches domain exceptions and maps them to RFC 7807 compliant `ProblemDetails` (e.g. mapping `NotFoundException` to a HTTP 404 response).
-3. **Messaging Setup:**
+2. **Messaging Setup:**
    * Standardized MassTransit/RabbitMQ configurations to easily publish and consume events across microservices.
-4. **Authentication:**
+3. **Authentication:**
    * Shared JWT verification extensions to ensure consistent security across all internal APIs.
 
 ---
@@ -162,29 +159,31 @@ graph LR
     YARP -->|/api/media/*| Media[Media.API]
 ```
 
-### 2. Standard API Request (CQRS + Validation)
+### 2. Standard API Request (CQRS + Explicit Validation)
+
+Instead of hiding validation logic inside implicit MediatR pipeline behaviors, we explicitly validate requests right inside the Handlers or Carter Endpoints using **FluentValidation**. This provides granular control and predictability.
+
 ```mermaid
 sequenceDiagram
     autonumber
     actor Client
     participant API as Carter Endpoint
-    participant Pipe as MediatR Pipeline
+    participant Val as FluentValidation
+    participant MediatR as MediatR
     participant Handler as Feature Handler
     participant DB as Database
 
-    Client->>API: HTTP POST /api/products
-    API->>Pipe: Send(CreateProductCommand)
-    Pipe->>Pipe: 1. Logging Behavior (Start)
-    Pipe->>Pipe: 2. Validation Behavior
+    Client->>API: HTTP POST /api/orders
+    API->>Val: Validate Request explicitly
     alt Invalid
-        Pipe-->>Client: 400 Bad Request
+        Val-->>API: Throw ValidationException
+        API-->>Client: 400 Bad Request (via ExceptionHandler)
     else Valid
-        Pipe->>Handler: Handle()
-        Handler->>DB: Save to DB
+        API->>MediatR: Send(Command)
+        MediatR->>Handler: Handle()
+        Handler->>DB: Mutate State & SaveChangesAsync()
         DB-->>Handler: Success
-        Handler-->>Pipe: Return Result
-        Pipe->>Pipe: 1. Logging Behavior (End)
-        Pipe-->>API: Return Result
+        Handler-->>API: Return Result DTO
         API-->>Client: 201 Created
     end
 ```
