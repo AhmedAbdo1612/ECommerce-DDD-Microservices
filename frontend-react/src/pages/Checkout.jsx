@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { useCheckoutMutation } from '../hooks/api/useBasket';
-import { ShoppingBag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CheckCircle, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Checkout = () => {
@@ -29,18 +29,135 @@ const Checkout = () => {
     cvv: '',
     paymentMethod: 1
   });
+  
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   const SHIPPING_COST = 10.0;
   const finalTotal = cartTotal > 99 ? cartTotal : cartTotal + SHIPPING_COST;
 
+  const validateField = (name, value) => {
+    let error = '';
+    switch (name) {
+      case 'firstName':
+        if (!value) error = 'First Name is required';
+        else if (value.length > 50) error = 'First Name must be 50 characters or less';
+        break;
+      case 'lastName':
+        if (!value) error = 'Last Name is required';
+        else if (value.length > 50) error = 'Last Name must be 50 characters or less';
+        break;
+      case 'emailAddress':
+        if (!value) error = 'Email Address is required';
+        else if (value.length > 50) error = 'Email Address must be 50 characters or less';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Invalid email format';
+        break;
+      case 'addressLine':
+        if (!value) error = 'Address Line is required';
+        else if (value.length > 180) error = 'Address Line must be 180 characters or less';
+        break;
+      case 'country':
+        if (!value) error = 'Country is required';
+        else if (value.length > 50) error = 'Country must be 50 characters or less';
+        break;
+      case 'state':
+        if (!value) error = 'State is required';
+        else if (value.length > 50) error = 'State must be 50 characters or less';
+        break;
+      case 'zipCode':
+        if (!value) error = 'Zip Code is required';
+        else if (value.length > 20) error = 'Zip Code must be 20 characters or less';
+        break;
+      case 'cardName':
+        if (!value) error = 'Name on Card is required';
+        else if (value.length > 50) error = 'Name on Card must be 50 characters or less';
+        break;
+      case 'cardNumber':
+        const rawCard = value.replace(/\s/g, '');
+        if (!value) error = 'Card Number is required';
+        else if (rawCard.length !== 16) error = 'Card Number must be 16 digits';
+        break;
+      case 'expiration':
+        if (!value) error = 'Expiration Date is required';
+        else {
+          if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(value)) error = 'Format must be MM/YY';
+          else {
+            const [month, year] = value.split('/');
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear() % 100;
+            const expMonth = parseInt(month, 10);
+            const expYear = parseInt(year, 10);
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+              error = 'Expiration Date must be in the future';
+            }
+          }
+        }
+        break;
+      case 'cvv':
+        if (!value) error = 'CVV is required';
+        else if (!/^\d{3,4}$/.test(value)) error = 'CVV must be 3 or 4 digits';
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    let { name, value } = e.target;
+    
+    // Auto-formatting
+    if (name === 'cardNumber') {
+      value = value.replace(/\D/g, '').substring(0, 16);
+      value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+    } else if (name === 'expiration') {
+      let cleaned = value.replace(/\D/g, '');
+      if (cleaned.length >= 2) {
+        value = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4);
+      } else {
+        value = cleaned;
+      }
+    } else if (name === 'cvv') {
+      value = value.replace(/\D/g, '').substring(0, 4);
+    }
+    
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (touched[name]) {
+      setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       toast.error('Your cart is empty');
+      return;
+    }
+
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      if (key !== 'paymentMethod') {
+        const err = validateField(key, formData[key]);
+        if (err) newErrors[key] = err;
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      const allTouched = Object.keys(formData).reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {});
+      setTouched(allTouched);
+      toast.error('Please fix the errors in the form before submitting.');
       return;
     }
 
@@ -67,18 +184,6 @@ const Checkout = () => {
         }
       }
     });
-  };
-
-  const inputStyle = {
-    padding: '0.8rem 1.2rem',
-    borderRadius: '8px',
-    border: `1px solid ${theme.border}`,
-    background: theme.backgroundCard,
-    color: theme.textPrimary,
-    width: '100%',
-    marginBottom: '1rem',
-    outline: 'none',
-    fontSize: '1rem'
   };
 
   const labelStyle = {
@@ -118,6 +223,49 @@ const Checkout = () => {
 
   return (
     <div style={{ padding: '2rem 5%', maxWidth: '1200px', margin: '0 auto', fontFamily: '"Inter", sans-serif', minHeight: '80vh' }}>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          .checkout-input {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid ${theme.border};
+            background: ${theme.backgroundCard};
+            color: ${theme.textPrimary};
+            width: 100%;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+          }
+          .checkout-input:hover {
+            border-color: ${theme.primary}80;
+          }
+          .checkout-input:focus {
+            border-color: ${theme.primary};
+            box-shadow: 0 0 0 3px ${theme.primary}30;
+          }
+          .checkout-input.error {
+            border-color: #ef4444 !important;
+          }
+          .checkout-input.error:focus {
+            box-shadow: 0 0 0 3px #ef444430 !important;
+          }
+          .input-wrapper {
+            margin-bottom: 1.2rem;
+            width: 100%;
+          }
+          .error-text {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            display: block;
+          }
+        `}
+      </style>
+      
       <div 
         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: theme.textSecondary, cursor: 'pointer', marginBottom: '2rem', fontWeight: '600' }}
         onClick={() => navigate('/cart')}
@@ -134,55 +282,66 @@ const Checkout = () => {
           
           <h2 style={sectionTitleStyle}>Shipping Information</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div>
+            <div className="input-wrapper">
               <label style={labelStyle}>First Name</label>
-              <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} style={inputStyle} required />
+              <input type="text" name="firstName" autoComplete="given-name" value={formData.firstName} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.firstName && touched.firstName ? 'error' : ''}`} />
+              {errors.firstName && touched.firstName && <span className="error-text">{errors.firstName}</span>}
             </div>
-            <div>
+            <div className="input-wrapper">
               <label style={labelStyle}>Last Name</label>
-              <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} style={inputStyle} required />
+              <input type="text" name="lastName" autoComplete="family-name" value={formData.lastName} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.lastName && touched.lastName ? 'error' : ''}`} />
+              {errors.lastName && touched.lastName && <span className="error-text">{errors.lastName}</span>}
             </div>
           </div>
-          <div>
+          <div className="input-wrapper">
             <label style={labelStyle}>Email Address</label>
-            <input type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} style={inputStyle} required />
+            <input type="email" name="emailAddress" autoComplete="email" value={formData.emailAddress} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.emailAddress && touched.emailAddress ? 'error' : ''}`} />
+            {errors.emailAddress && touched.emailAddress && <span className="error-text">{errors.emailAddress}</span>}
           </div>
-          <div>
+          <div className="input-wrapper">
             <label style={labelStyle}>Address Line</label>
-            <input type="text" name="addressLine" value={formData.addressLine} onChange={handleChange} style={inputStyle} required />
+            <input type="text" name="addressLine" autoComplete="street-address" value={formData.addressLine} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.addressLine && touched.addressLine ? 'error' : ''}`} />
+            {errors.addressLine && touched.addressLine && <span className="error-text">{errors.addressLine}</span>}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-            <div>
+            <div className="input-wrapper">
               <label style={labelStyle}>Country</label>
-              <input type="text" name="country" value={formData.country} onChange={handleChange} style={inputStyle} required />
+              <input type="text" name="country" autoComplete="country" value={formData.country} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.country && touched.country ? 'error' : ''}`} />
+              {errors.country && touched.country && <span className="error-text">{errors.country}</span>}
             </div>
-            <div>
+            <div className="input-wrapper">
               <label style={labelStyle}>State</label>
-              <input type="text" name="state" value={formData.state} onChange={handleChange} style={inputStyle} required />
+              <input type="text" name="state" autoComplete="address-level1" value={formData.state} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.state && touched.state ? 'error' : ''}`} />
+              {errors.state && touched.state && <span className="error-text">{errors.state}</span>}
             </div>
-            <div>
+            <div className="input-wrapper">
               <label style={labelStyle}>Zip Code</label>
-              <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} style={inputStyle} required />
+              <input type="text" name="zipCode" autoComplete="postal-code" value={formData.zipCode} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.zipCode && touched.zipCode ? 'error' : ''}`} />
+              {errors.zipCode && touched.zipCode && <span className="error-text">{errors.zipCode}</span>}
             </div>
           </div>
 
           <h2 style={{ ...sectionTitleStyle, marginTop: '2rem' }}>Payment Details</h2>
-          <div>
+          <div className="input-wrapper">
             <label style={labelStyle}>Name on Card</label>
-            <input type="text" name="cardName" value={formData.cardName} onChange={handleChange} style={inputStyle} required />
+            <input type="text" name="cardName" autoComplete="cc-name" value={formData.cardName} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.cardName && touched.cardName ? 'error' : ''}`} />
+            {errors.cardName && touched.cardName && <span className="error-text">{errors.cardName}</span>}
           </div>
-          <div>
+          <div className="input-wrapper">
             <label style={labelStyle}>Card Number</label>
-            <input type="text" name="cardNumber" value={formData.cardNumber} onChange={handleChange} style={inputStyle} required />
+            <input type="text" name="cardNumber" autoComplete="cc-number" value={formData.cardNumber} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.cardNumber && touched.cardNumber ? 'error' : ''}`} placeholder="0000 0000 0000 0000" />
+            {errors.cardNumber && touched.cardNumber && <span className="error-text">{errors.cardNumber}</span>}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div>
-              <label style={labelStyle}>Expiration Date (MM/YY)</label>
-              <input type="text" name="expiration" value={formData.expiration} onChange={handleChange} style={inputStyle} required />
+            <div className="input-wrapper">
+              <label style={labelStyle}>Expiration Date</label>
+              <input type="text" name="expiration" autoComplete="cc-exp" value={formData.expiration} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.expiration && touched.expiration ? 'error' : ''}`} placeholder="MM/YY" />
+              {errors.expiration && touched.expiration && <span className="error-text">{errors.expiration}</span>}
             </div>
-            <div>
+            <div className="input-wrapper">
               <label style={labelStyle}>CVV</label>
-              <input type="text" name="cvv" value={formData.cvv} onChange={handleChange} style={inputStyle} required />
+              <input type="text" name="cvv" autoComplete="cc-csc" value={formData.cvv} onChange={handleChange} onBlur={handleBlur} className={`checkout-input ${errors.cvv && touched.cvv ? 'error' : ''}`} placeholder="123" />
+              {errors.cvv && touched.cvv && <span className="error-text">{errors.cvv}</span>}
             </div>
           </div>
 
@@ -192,12 +351,18 @@ const Checkout = () => {
             style={{ 
               width: '100%', padding: '1.2rem', background: theme.primaryGradient || theme.primary, 
               color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem',
-              marginTop: '2rem', cursor: (checkoutMutation.isPending || cartItems.length === 0) ? 'not-allowed' : 'pointer',
+              marginTop: '1rem', cursor: (checkoutMutation.isPending || cartItems.length === 0) ? 'not-allowed' : 'pointer',
               opacity: (checkoutMutation.isPending || cartItems.length === 0) ? 0.7 : 1,
-              transition: 'transform 0.2s', boxShadow: theme.shadowGlow
+              transition: 'transform 0.2s', boxShadow: theme.shadowGlow,
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}
           >
-            {checkoutMutation.isPending ? 'Processing...' : 'Place Order'}
+            {checkoutMutation.isPending ? (
+              <>
+                <Loader size={20} style={{ animation: 'spin 1s linear infinite', marginRight: '0.5rem' }} />
+                Processing Order...
+              </>
+            ) : 'Place Order'}
           </button>
         </form>
 

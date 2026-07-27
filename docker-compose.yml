@@ -77,6 +77,8 @@ services:
       dockerfile: Services/Media/Media.API/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+    volumes:
+      - media_data:/app/wwwroot/images
 
   discount.grpc:
     image: ${DOCKER_REGISTRY-}discountgrpc
@@ -137,3 +139,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  media_data:

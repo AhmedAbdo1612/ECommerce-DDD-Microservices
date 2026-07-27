@@ -1,4 +1,4 @@
-﻿namespace Ordering.Infrastructure.Data.Extensions;
+namespace Ordering.Infrastructure.Data.Extensions;
 
 public static class InitialData
 {
@@ -53,36 +53,36 @@ public static class InitialData
             var order1 = Order.Create(
                 OrderId.Of(Order1Id),
                 customers[0].Id,
-                OrderName.Of("ORD-001"),
+               
                 Address.Of("Ahmed", "Hassan", "ahmed@test.com", "Cairo", "Egypt", "123 Street", "10001"),
                 Address.Of("Ahmed", "Hassan", "ahmed@test.com", "Cairo", "Egypt", "123 Street", "10001"),
                 Payment.Of("Ahmed Hassan", "4111111111111111", "12/28", "123", 1)
             );
-            order1.Add(products[0].Id, 2, products[0].Price);   // iPhone 17 x2
-            order1.Add(products[1].Id, 1, products[1].Price);   // Samsung S25 x1
+            order1.Add(products[0].Id, products[0].Name, 2, products[0].Price);   // iPhone 17 x2
+            order1.Add(products[1].Id, products[1].Name, 1, products[1].Price);   // Samsung S25 x1
 
             var order2 = Order.Create(
                 OrderId.Of(Order2Id),
                 customers[1].Id,
-                OrderName.Of("ORD-002"),
+              
                 Address.Of("Ali", "Mohamed", "ali@tes.com", "Alexandria", "Egypt", "456 Street", "20002"),
                 Address.Of("Ali", "Mohamed", "ali@tes.com", "Alexandria", "Egypt", "456 Street", "20002"),
                 Payment.Of("Ali Mohamed", "4222222222222222", "11/27", "456", 2)
             );
-            order2.Add(products[2].Id, 1, products[2].Price);   // Pixel 9 x1
-            order2.Add(products[3].Id, 2, products[3].Price);   // OnePlus 13 x2
-            order2.Add(products[4].Id, 1, products[4].Price);   // Xiaomi 15 x1
+            order2.Add(products[2].Id, products[2].Name, 1, products[2].Price);   // Pixel 9 x1
+            order2.Add(products[3].Id, products[3].Name, 2, products[3].Price);   // OnePlus 13 x2
+            order2.Add(products[4].Id, products[4].Name, 1, products[4].Price);   // Xiaomi 15 x1
 
             var order3 = Order.Create(
                 OrderId.Of(Order3Id),
                 customers[0].Id,
-                OrderName.Of("ORD-003"),
+               
                 Address.Of("Ahmed", "Hassan", "ahmed@test.com", "Cairo", "Egypt", "123 Street", "10001"),
                 Address.Of("Ahmed", "Hassan", "ahmed@test.com", "Cairo", "Egypt", "123 Street", "10001"),
                 Payment.Of("Ahmed Hassan", "4333333333333333", "10/29", "789", 1)
             );
-            order3.Add(products[5].Id, 1, products[5].Price);   // iPhone 16 Pro x1
-            order3.Add(products[6].Id, 1, products[6].Price);   // Galaxy Z Fold x1
+            order3.Add(products[5].Id, products[5].Name, 1, products[5].Price);   // iPhone 16 Pro x1
+            order3.Add(products[6].Id, products[6].Name, 1, products[6].Price);   // Galaxy Z Fold x1
 
             return new List<Order> { order1, order2, order3 };
         }

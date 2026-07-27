@@ -1,4 +1,4 @@
-﻿namespace Ordering.Application.Orders.Commands.CreateOrder;
+namespace Ordering.Application.Orders.Commands.CreateOrder;
 
 public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandler<CreateOrderCommand, CreateOrderResult>
 {
@@ -7,27 +7,6 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
         var order = CreateNewOrder(command.Order);
        
 
-        List<ProductId> orderProductsId = command.Order.OrderItems
-            .Select(x => ProductId.Of(x.ProductId))
-            .ToList();
-
-        var productsIdInDb = await dbContext.Products
-            .Where(p => orderProductsId.Contains(p.Id))
-            .Select(x => x.Id).ToHashSetAsync();
-       
-        var missingPoructIds = orderProductsId
-            .Where(x => !productsIdInDb.Contains(x))
-            .Select(x => x.Value).ToList();
-        if(missingPoructIds.Any())
-        {
-            List<Product> newProductsToAdd = command.Order.OrderItems
-            .Where(x => missingPoructIds.Contains(x.ProductId))
-            .Select(x => Product.Create(ProductId.Of(x.ProductId), x.ProductName, x.Price))
-            .ToList();
-
-            await dbContext.Products.AddRangeAsync(newProductsToAdd);
-            
-        }
         await dbContext.Orders.AddAsync(order);
         await dbContext.SaveChangesAsync(cancellationToken);
         return new CreateOrderResult(order.Id.Value);
@@ -57,7 +36,6 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
         var newOrder = Order.Create(
             id: OrderId.Of(Guid.NewGuid()),
             customerId: CustomerId.Of(orderDto.CustomerId),
-            orderName: OrderName.Of(orderDto.OrderName),
             shippingAddress: shippingAddress,
             billingAddress: billingAddress,
             payment: Payment.Of(
@@ -70,7 +48,7 @@ public class CreateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
             );
         foreach (var item in orderDto.OrderItems)
         {
-            newOrder.Add(ProductId.Of(item.ProductId), item.Quantity, item.Price);
+            newOrder.Add(ProductId.Of(item.ProductId), item.ProductName, item.Quantity, item.Price);
         }
         return newOrder;
     }

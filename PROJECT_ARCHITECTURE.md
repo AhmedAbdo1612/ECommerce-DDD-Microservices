@@ -28,6 +28,9 @@ Services are decoupled using **RabbitMQ** and **MassTransit**.
 *   Instead of synchronous HTTP calls (which cause cascading failures), services publish integration events (e.g., `BasketCheckoutEvent`).
 *   Subscribing services react to these events asynchronously, ensuring **eventual consistency** and high fault tolerance.
 
+### 4. Microservices Snapshot Pattern
+Data immutability is maintained across service boundaries using the Snapshot Pattern. For example, when an order is created in the **Ordering** service, data like `ProductName` is copied from the incoming payload (originally from Catalog) and persisted directly into the `OrderItem` table. This decouples the Order from the Catalog, ensuring that historical receipts remain 100% accurate even if the original product is renamed or deleted.
+
 ---
 
 ## 📦 Bounded Contexts & Services
@@ -110,6 +113,7 @@ erDiagram
         guid Id PK
         guid OrderId FK
         guid ProductId
+        string ProductName
         decimal Price
         int Quantity
     }

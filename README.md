@@ -21,6 +21,7 @@
 ## 🌟 Key Features
 - **🏗️ Hybrid Microservices Architecture**: Uses Clean Architecture for complex domains (Ordering) and Vertical Slice Architecture for simpler CRUD domains (Catalog, Basket).
 - **🔄 Event-Driven Communication**: Services communicate asynchronously using **RabbitMQ** and **MassTransit** to ensure eventual consistency and decoupling.
+- **📸 Microservices Snapshot Pattern**: Ensures historical data integrity and inter-service decoupling by snapshotting mutable data (like product names) at the time of order creation.
 - **⚡ High-Performance API Gateway**: Centralized routing, rate limiting, and CORS handling using **YARP (Yet Another Reverse Proxy)**.
 - **🔐 Secure Authentication**: JWT-based authentication using **ASP.NET Core Identity** and RSA-signed tokens.
 - **🚀 Modern React Frontend**: A dynamic, component-based user interface built with React and Vite.

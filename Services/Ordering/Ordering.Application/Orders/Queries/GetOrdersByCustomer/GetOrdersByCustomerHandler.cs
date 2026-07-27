@@ -8,7 +8,7 @@ internal class GetOrdersByCustomerHandler(IApplicationDbContext dbContext) : IQu
             .Include(o => o.OrderItems)
             .AsNoTracking()
             .Where(o => o.CustomerId == CustomerId.Of(query.CustomerId))
-            .OrderBy(o => o.CreatedAt)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(cancellationToken);
 
         //var productIds = orders

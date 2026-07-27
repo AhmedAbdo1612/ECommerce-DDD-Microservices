@@ -10,7 +10,7 @@ public static class OrderExtensions
         IReadOnlyDictionary<Guid, string> productNames)
     {
         var name = productNames.TryGetValue(i.ProductId.Value, out var n) ? n : i.ProductId.Value.ToString();
-        return new OrderItemDto(orderId, i.ProductId.Value, name, i.Quantity, i.Price);
+        return new OrderItemDto(orderId, i.ProductId.Value, i.ProductName, i.Quantity, i.Price);
     }
 
     private static OrderDto ToOrderDto(

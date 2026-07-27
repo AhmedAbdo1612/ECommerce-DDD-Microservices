@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace Ordering.API.Endpoints;
 
-public class GetCustomerOrder : ICarterModule
+public class GetMyOrders : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {

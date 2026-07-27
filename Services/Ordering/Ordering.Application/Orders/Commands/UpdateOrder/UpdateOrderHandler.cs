@@ -94,7 +94,7 @@ public class UpdateOrderHandler(IApplicationDbContext dbContext) : ICommandHandl
             else
             {
                 // 3. Add brand-new items (product was not in the order before)
-                order.Add(ProductId.Of(dto.ProductId), dto.Quantity, dto.Price);
+                order.Add(ProductId.Of(dto.ProductId), dto.ProductName, dto.Quantity, dto.Price);
             }
         }
     }

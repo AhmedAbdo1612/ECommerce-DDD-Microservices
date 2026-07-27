@@ -17,7 +17,7 @@ namespace OrderingDomain.Models
         }
         public static Order Create(OrderId id,
             CustomerId customerId,
-            OrderName orderName,
+           
             Address shippingAddress,
             Address billingAddress,
             Payment payment)
@@ -26,7 +26,7 @@ namespace OrderingDomain.Models
             {
                 Id = id,
                 CustomerId = customerId,
-                OrderName = orderName,
+                OrderName = OrderName.Of(Guid.NewGuid().ToString("N").ToUpper()),
                 ShippingAddress = shippingAddress,
                 BillingAddress = billingAddress,
                 Payment = payment,
@@ -52,11 +52,11 @@ namespace OrderingDomain.Models
             AddDomainEvent(new OrderUpdateEvent(this));
         }
 
-        public void Add(ProductId productId, int quantity, float price)
+        public void Add(ProductId productId, string productName, int quantity, float price)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(price);
-            var orderItem = new OrderItem(Id, productId, quantity, price);
+            var orderItem = new OrderItem(Id, productId, productName, quantity, price);
             OrderItems.Add(orderItem);
         }
         public void Remove(ProductId productId)

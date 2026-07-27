@@ -10,7 +10,7 @@ public class CheckoutEndpoint : ICarterModule
 {
     void ICarterModule.AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket/Checkout", async (ChechoutBasketRequest request, ISender sender, HttpContext context) =>
+        app.MapPost("/basket/Checkout", async (ChechoutBasketRequest request, ISender sender, HttpContext context, IValidator<CheckoutBasketCommand> validator) =>
         {
             if (!context.User.IsInRole("Admin") && context.User.FindFirstValue("username") != request.BasketCheckoutDto.UserName)
             {
@@ -18,6 +18,12 @@ public class CheckoutEndpoint : ICarterModule
             }
 
             var command = request.Adapt<CheckoutBasketCommand>();
+            var validationResult = await validator.ValidateAsync(command);
+
+            if (!validationResult.IsValid)
+            {
+                return Results.ValidationProblem(validationResult.ToDictionary());
+            }
             var result = await sender.Send(command);
             var response = result.Adapt<ChechoutBasketResponse>();
             return Results.Ok(response);

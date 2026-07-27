@@ -155,17 +155,33 @@ const OrdersHistoryContent = () => {
         <div>
           {currentOrders.map(order => {
             const id = order.Id || order.id || '';
+            const orderName = order.OrderName || order.orderName || '';
             const status = order.Status || order.status || 'Pending';
             const dateStr = order.CreatedAt || order.createdAt || order.OrderDate || order.orderDate;
-            const total = order.TotalPrice || order.totalPrice || order.Total || order.total || 0;
             const items = order.OrderItems || order.orderItems || [];
+            
+            let calculatedTotal = 0;
+            if (items && items.length > 0) {
+              calculatedTotal = items.reduce((sum, item) => {
+                const itemQty = item.Quantity || item.quantity || 0;
+                const itemPrice = item.Price || item.price || 0;
+                return sum + (itemQty * itemPrice);
+              }, 0);
+            }
+            
+            let total = order.TotalPrice || order.totalPrice || order.Total || order.total || 0;
+            if (total === 0) {
+              total = calculatedTotal;
+            }
+            
+            const displayTitle = orderName || (id ? `Order #${id.substring(0, 8).toUpperCase()}` : 'Order #UNKNOWN');
             
             return (
             <div key={id || Math.random()} className="order-card" style={cardStyle}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: `1px solid ${theme.border}`, paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
                 <div>
                   <h3 style={{ margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.3rem' }}>
-                    Order #{id ? id.substring(0, 8).toUpperCase() : 'UNKNOWN'}
+                    Order-Name: {displayTitle}
                   </h3>
                   <div style={{ display: 'flex', gap: '1.5rem', color: theme.textSecondary, fontSize: '0.95rem' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
