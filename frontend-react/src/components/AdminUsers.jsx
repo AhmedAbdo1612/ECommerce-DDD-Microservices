@@ -10,6 +10,7 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -199,12 +200,46 @@ const AdminUsers = () => {
     return <div style={{ color: '#ef4444', padding: '2rem', textAlign: 'center' }}>Error: {error}</div>;
   }
 
+  const filteredUsers = users.filter(user => {
+    const query = searchQuery.toLowerCase();
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+    const email = (user.email || '').toLowerCase();
+    const id = (user.userId || user.id || '').toLowerCase();
+    return fullName.includes(query) || email.includes(query) || id.includes(query);
+  });
+
   return (
     <div style={containerStyle}>
       <div style={headerStyle}>
         <h2 style={{ color: theme.textPrimary, margin: 0, fontSize: '1.5rem', fontWeight: '700' }}>User Management</h2>
-        <div style={{ padding: '0.25rem 0.75rem', borderRadius: '9999px', background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.875rem', fontWeight: '500' }}>
-          Total Users: {users.length}
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="Search by name, email, or ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ 
+              padding: '0.5rem 1rem', 
+              borderRadius: '8px', 
+              border: `1px solid ${theme.border}`, 
+              background: theme.backgroundCard, 
+              color: theme.textPrimary, 
+              outline: 'none', 
+              width: '300px',
+              transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = '#6366f1';
+              e.currentTarget.style.boxShadow = '0 0 0 2px rgba(99, 102, 241, 0.2)';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = theme.border;
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          />
+          <div style={{ padding: '0.25rem 0.75rem', borderRadius: '9999px', background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.875rem', fontWeight: '500', whiteSpace: 'nowrap' }}>
+            Users: {filteredUsers.length}
+          </div>
         </div>
       </div>
 
@@ -219,7 +254,7 @@ const AdminUsers = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => {
+            {filteredUsers.map(user => {
               const hasName = user.firstName || user.lastName;
               const fullName = hasName ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Unnamed User';
               const uId = user.userId || user.id;
@@ -352,7 +387,7 @@ const AdminUsers = () => {
               );
             })}
             
-            {users.length === 0 && (
+            {filteredUsers.length === 0 && (
               <tr>
                 <td colSpan="4" style={{ ...tdStyle, padding: '3rem 1rem', textAlign: 'center', color: theme.textSecondary }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>

@@ -126,11 +126,11 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 // Ensure migrations are applied and database is seeded on startup to fix 42P01 error
-//using (var scope = app.Services.CreateScope())
-//{
-//    var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
-//    await initializer.InitializeAsync();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+    await initializer.InitializeAsync();
+}
 
 app.MapHealthChecks("/health");
 

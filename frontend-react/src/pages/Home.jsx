@@ -7,9 +7,9 @@ import { useProducts } from '../hooks/useProducts';
 import Pagination from '../components/Pagination';
 
 const BANNERS = [
-  { id: 1, title: 'Summer Sale', subtitle: 'Up to 50% off on all electronics', color: 'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)' },
-  { id: 2, title: 'New Arrivals', subtitle: 'Check out the latest tech gadgets', color: 'linear-gradient(135deg, #4776E6 0%, #8E54E9 100%)' },
-  { id: 3, title: 'Free Shipping', subtitle: 'On orders over $99', color: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' }
+  { id: 1, title: 'Summer Sale', subtitle: 'Up to 50% off on all electronics', color: 'linear-gradient(to right, #4f46e5, #9333ea, #4338ca)' },
+  { id: 2, title: 'New Arrivals', subtitle: 'Check out the latest tech gadgets', color: 'linear-gradient(to right, #4f46e5, #9333ea, #4338ca)' },
+  { id: 3, title: 'Free Shipping', subtitle: 'On orders over $99', color: 'linear-gradient(to right, #4f46e5, #9333ea, #4338ca)' }
 ];
 
 const Home = () => {
@@ -119,12 +119,13 @@ const Home = () => {
   };
 
   const imgContainerStyle = {
-    height: '220px',
-    background: theme.backgroundAlt,
+    aspectRatio: '1 / 1',
+    background: '#f9fafb',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    width: '100%'
   };
 
   const inputStyle = {
@@ -141,14 +142,15 @@ const Home = () => {
 
   const tabStyle = (active) => ({
     padding: '0.6rem 1.2rem',
-    borderRadius: '20px',
-    border: active ? 'none' : `1px solid ${theme.border}`,
-    background: active ? theme.primary : theme.backgroundAlt,
-    color: active ? '#fff' : theme.textSecondary,
+    borderRadius: '9999px',
+    border: active ? '1px solid #4f46e5' : '1px solid #e5e7eb',
+    background: active ? '#4f46e5' : '#ffffff',
+    color: active ? '#ffffff' : '#4b5563',
     cursor: 'pointer',
-    fontWeight: '600',
-    transition: 'all 0.2s',
-    whiteSpace: 'nowrap'
+    fontWeight: '500',
+    transition: 'all 0.2s ease',
+    whiteSpace: 'nowrap',
+    boxShadow: active ? '0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -1px rgba(79, 70, 229, 0.1)' : '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
   });
 
   const getImageUrl = (imageFile) => {
@@ -233,11 +235,30 @@ const Home = () => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', gap: '0.8rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-            {categories.map(cat => (
-              <button key={cat} style={tabStyle(selectedCategory === cat || (cat === 'All' && !selectedCategory))} onClick={() => setSelectedCategory(cat === 'All' ? '' : cat)}>
-                {cat}
-              </button>
-            ))}
+            {categories.map(cat => {
+              const isActive = selectedCategory === cat || (cat === 'All' && !selectedCategory);
+              return (
+                <button 
+                  key={cat} 
+                  style={tabStyle(isActive)} 
+                  onClick={() => setSelectedCategory(cat === 'All' ? '' : cat)}
+                  onMouseOver={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = '#f9fafb';
+                      e.currentTarget.style.color = '#374151';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = '#ffffff';
+                      e.currentTarget.style.color = '#4b5563';
+                    }
+                  }}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
           <input 
             type="text" 
@@ -304,7 +325,7 @@ const Home = () => {
                       <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#10b981', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1 }}>NEW</div>
                       <div style={imgContainerStyle}>
                         {getDefaultImage(product) ? (
-                          <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                          <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
                         ) : (
                           <span style={{ color: theme.textSecondary }}>No Image</span>
                         )}
@@ -313,7 +334,9 @@ const Home = () => {
                         <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
                         <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '1rem' }}>${Number(product.price || 0).toFixed(2)}</p>
                         <button 
-                          style={{ marginTop: 'auto', width: '100%', padding: '0.8rem', background: theme.primary, color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s' }}
+                          style={{ marginTop: 'auto', width: '100%', padding: '0.5rem', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: '0.5rem', fontWeight: '500', cursor: 'pointer', transition: 'background 0.2s' }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = '#4338ca' }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = '#4f46e5' }}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -360,7 +383,7 @@ const Home = () => {
                   >
                     <div style={imgContainerStyle}>
                       {getDefaultImage(product) ? (
-                        <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                        <img src={getDefaultImage(product)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
                       ) : (
                         <span style={{ color: theme.textSecondary }}>No Image</span>
                       )}
@@ -369,16 +392,19 @@ const Home = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                         <h3 style={{ margin: 0, fontSize: '1.1rem', color: theme.textPrimary }}>{product.name}</h3>
                       </div>
-                      <span style={{ color: theme.textSecondary, fontSize: '0.85rem', marginBottom: '1rem' }}>{product.category?.join(', ')}</span>
+                      <span style={{ color: '#9ca3af', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>{product.category?.join(', ')}</span>
                       <p style={{ margin: 0, color: theme.primary, fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '1.5rem' }}>${Number(product.price || 0).toFixed(2)}</p>
                       
                       <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
                         <button 
                           style={{ 
-                            flex: 1, padding: '0.8rem', background: theme.primary, color: '#fff', 
-                            border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
-                            display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px'
+                            flex: 1, padding: '0.5rem', background: '#4f46e5', color: '#fff', 
+                            border: 'none', borderRadius: '0.5rem', fontWeight: '500', cursor: 'pointer',
+                            display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
+                            transition: 'background 0.2s'
                           }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = '#4338ca' }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = '#4f46e5' }}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();

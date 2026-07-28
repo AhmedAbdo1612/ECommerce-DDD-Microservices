@@ -120,16 +120,31 @@ const NavBar = () => {
             {(isAdmin || isManager) && <Link to="/admin" style={linkStyles}>Admin Dashboard</Link>}
             {(!isAdmin && !isManager) && <Link to="/customer" style={linkStyles}>Customer Dashboard</Link>}
             
-            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
-              <span style={userInfoStyles}>
-                <span style={{width: '8px', height: '8px', background: theme.success, borderRadius: '50%', display: 'inline-block'}}></span>
-                {user?.email || 'User'} ({user?.role})
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: '500', color: theme.textPrimary }}>
+                  {user?.email || 'User'}
+                </span>
+                {user?.role && (
+                  <span style={{ background: '#f3e8ff', color: '#7e22ce', fontSize: '0.75rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', fontWeight: '600' }}>
+                    {Array.isArray(user.role) ? user.role.join(', ') : user.role}
+                  </span>
+                )}
+              </div>
               <button 
                 onClick={handleLogout} 
-                style={buttonStyles}
-                onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 6px 20px ${theme.errorBg}`; }}
-                onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = `0 4px 14px 0 ${theme.errorBg}`; }}
+                style={{
+                  background: 'transparent',
+                  color: '#4b5563',
+                  border: '1px solid #e5e7eb',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 Sign Out
               </button>

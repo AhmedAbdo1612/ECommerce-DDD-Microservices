@@ -26,7 +26,7 @@ namespace OrderingDomain.Models
             {
                 Id = id,
                 CustomerId = customerId,
-                OrderName = OrderName.Of(Guid.NewGuid().ToString("N").ToUpper()),
+                OrderName = OrderName.Of($"ORD-{Guid.NewGuid().ToString("N").ToUpper().Substring(0,16)}"),
                 ShippingAddress = shippingAddress,
                 BillingAddress = billingAddress,
                 Payment = payment,

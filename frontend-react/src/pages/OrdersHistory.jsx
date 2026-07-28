@@ -2,14 +2,21 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../api/services';
 import { useTheme } from '../hooks/useTheme';
-import { Package, Clock, CheckCircle, XCircle, ChevronLeft, ChevronRight, ShoppingBag, Calendar, DollarSign } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, ChevronLeft, ChevronRight, ShoppingBag, Calendar, DollarSign, Copy, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 const OrdersHistoryContent = () => {
   const { theme } = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
+  const [copiedOrderId, setCopiedOrderId] = useState(null);
   const itemsPerPage = 5;
+
+  const handleCopyOrderId = (id) => {
+    navigator.clipboard.writeText(id);
+    setCopiedOrderId(id);
+    setTimeout(() => setCopiedOrderId(null), 2000);
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['myOrders'],
@@ -180,21 +187,33 @@ const OrdersHistoryContent = () => {
             <div key={id || Math.random()} className="order-card" style={cardStyle}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: `1px solid ${theme.border}`, paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
                 <div>
-                  <h3 style={{ margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.3rem' }}>
-                    Order-Name: {displayTitle}
-                  </h3>
-                  <div style={{ display: 'flex', gap: '1.5rem', color: theme.textSecondary, fontSize: '0.95rem' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <Calendar size={18} /> {formatDate(dateStr)}
+                  <h3 style={{ margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.1rem' }}>
+                    {orderName || 'Order'}
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.2rem 0.5rem', background: theme.backgroundAlt, border: `1px solid ${theme.border}`, borderRadius: '6px', fontSize: '0.8rem', fontFamily: 'monospace', color: theme.textSecondary }}>
+                      #{id.substring(0, 8).toUpperCase()}
+                      <button
+                        onClick={() => handleCopyOrderId(id)}
+                        title="Copy Full ID"
+                        style={{ background: 'transparent', border: 'none', color: copiedOrderId === id ? '#10b981' : theme.textSecondary, cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                      >
+                        {copiedOrderId === id ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: '700', color: theme.textPrimary }}>
-                      <DollarSign size={18} /> {formatCurrency(total)}
+                  </h3>
+                  <div style={{ display: 'flex', gap: '1.5rem', color: theme.textSecondary, fontSize: '0.9rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Calendar size={16} /> {formatDate(dateStr)}
                     </span>
                   </div>
                 </div>
-                <div style={getStatusStyle(status)}>
-                  {getStatusIcon(status)}
-                  {String(status)}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: '700', fontSize: '1.25rem', color: theme.textPrimary }}>
+                    <DollarSign size={20} /> {formatCurrency(total)}
+                  </div>
+                  <div style={getStatusStyle(status)}>
+                    {getStatusIcon(status)}
+                    {String(status)}
+                  </div>
                 </div>
               </div>
               
@@ -208,10 +227,14 @@ const OrdersHistoryContent = () => {
                     
                     return (
                     <div key={idx} style={{ display: 'flex', gap: '1rem', background: theme.backgroundAlt, padding: '0.75rem', borderRadius: '10px', alignItems: 'center', border: `1px solid ${theme.border}` }}>
-                      <div style={{ width: '56px', height: '56px', borderRadius: '8px', background: theme.background, border: `1px solid ${theme.border}`, overflow: 'hidden', flexShrink: 0 }}>
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.textSecondary }}>
-                           <Package size={24} />
-                        </div>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '8px', background: theme.background, border: `1px solid ${theme.border}`, overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {(item.pictureUrl || item.imageUrl || item.product?.imageFile) ? (
+                           <img src={(item.pictureUrl || item.imageUrl || item.product?.imageFile).startsWith('http') ? (item.pictureUrl || item.imageUrl || item.product?.imageFile) : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/images/${(item.pictureUrl || item.imageUrl || item.product?.imageFile)}`} alt={itemName} style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#f9fafb' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                        ) : (
+                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.textSecondary, background: '#f9fafb' }}>
+                             <Package size={24} />
+                           </div>
+                        )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontWeight: '600', fontSize: '1rem', color: theme.textPrimary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -228,6 +251,7 @@ const OrdersHistoryContent = () => {
                   )}
                 </div>
               </div>
+              
             </div>
           )})}
 

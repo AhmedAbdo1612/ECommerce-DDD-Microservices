@@ -31,7 +31,7 @@ public class BasketCheckoutEventHandler(ISender sender, ILogger<BasketCheckoutEv
             Id: orderId,
           CreatedAt: DateTime.UtcNow,
             CustomerId: message.CustomerId,
-            OrderName: message.UserName,
+            OrderName: null!,
             ShippingAddress: addressDto,
             BillingAddress: addressDto,
             Payment: paymentDto,

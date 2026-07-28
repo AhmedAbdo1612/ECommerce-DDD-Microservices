@@ -1,0 +1,52 @@
+services:
+  # 1. Identity API
+  - type: web
+    name: instashop-identity-api
+    env: docker
+    dockerfilePath: Services/Identity/Identity.API/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__Database
+        value: Host=ep-plain-fog-ax9n843a.c-4.us-east-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_Z5LxDAv9iJyf;SSL Mode=Require;Trust Server Certificate=true
+
+  # 2. Catalog API
+  - type: web
+    name: instashop-catalog-api
+    env: docker
+    dockerfilePath: Services/Catalog/Catalog.API/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__Database
+        value: Host=ep-plain-fog-ax9n843a.c-4.us-east-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_Z5LxDAv9iJyf;SSL Mode=Require;Trust Server Certificate=true
+
+  # 3. Ordering API
+  - type: web
+    name: instashop-ordering-api
+    env: docker
+    dockerfilePath: Services/Ordering/Ordering.API/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__Database
+        value: Host=ep-plain-fog-ax9n843a.c-4.us-east-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_Z5LxDAv9iJyf;SSL Mode=Require;Trust Server Certificate=true
+
+  # 4. YARP API Gateway
+  - type: web
+    name: instashop-yarp-gateway
+    env: docker
+    dockerfilePath: ApiGateways/YarpApiGateway/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ReverseProxy__Clusters__identity-cluster__Destinations__destination1__Address
+        value: http://instashop-identity-api:8080
+      - key: ReverseProxy__Clusters__catalog-cluster__Destinations__destination1__Address
+        value: http://instashop-catalog-api:8080
+      - key: ReverseProxy__Clusters__ordering-cluster__Destinations__destination1__Address
+        value: http://instashop-ordering-api:8080
