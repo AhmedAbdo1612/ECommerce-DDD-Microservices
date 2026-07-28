@@ -7,7 +7,7 @@ import ThemeToggle from './ThemeToggle';
 import { ShoppingCart } from 'lucide-react';
 
 const NavBar = () => {
-  const { isAuthenticated, isAdmin, isCustomer, logout, user } = useAuth();
+  const { isAuthenticated, isAdmin, isManager, isCustomer, logout, user } = useAuth();
   const { theme } = useTheme();
   const { itemCount } = useCart();
   const navigate = useNavigate();
@@ -117,8 +117,8 @@ const NavBar = () => {
 
         {isAuthenticated ? (
           <>
-            {isAdmin && <Link to="/admin" style={linkStyles}>Admin Dashboard</Link>}
-            {isCustomer && <Link to="/customer" style={linkStyles}>Customer Dashboard</Link>}
+            {(isAdmin || isManager) && <Link to="/admin" style={linkStyles}>Admin Dashboard</Link>}
+            {(!isAdmin && !isManager) && <Link to="/customer" style={linkStyles}>Customer Dashboard</Link>}
             
             <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
               <span style={userInfoStyles}>

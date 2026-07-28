@@ -72,7 +72,7 @@ function App() {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/admin" element={<RoleRoute allowedRoles={['Admin']} />}>
+            <Route path="/admin" element={<RoleRoute allowedRoles={['Admin', 'Manager']} />}>
               <Route index element={<AdminDashboard />} />
             </Route>
             <Route path="/customer" element={<RoleRoute allowedRoles={['Customer']} />}>

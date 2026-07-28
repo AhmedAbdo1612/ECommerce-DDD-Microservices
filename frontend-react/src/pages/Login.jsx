@@ -30,7 +30,13 @@ const Login = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      navigate(from, { replace: true });
+      const userRoles = result.userData?.role;
+      const isStaff = Array.isArray(userRoles) 
+        ? (userRoles.includes('Admin') || userRoles.includes('Manager')) 
+        : (userRoles === 'Admin' || userRoles === 'Manager');
+      
+      const defaultPath = isStaff ? '/admin' : '/customer';
+      navigate(location.state?.from?.pathname || defaultPath, { replace: true });
     } else {
       setError(result.message || 'Failed to login');
     }

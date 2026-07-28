@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
       
-      return { success: true };
+      return { success: true, userData };
     } catch (error) {
       return { 
         success: false, 
@@ -91,8 +91,9 @@ export const AuthProvider = ({ children }) => {
     token,
     loading,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'Admin',
-    isCustomer: user?.role === 'Customer',
+    isAdmin: Array.isArray(user?.role) ? user.role.includes('Admin') : user?.role === 'Admin',
+    isManager: Array.isArray(user?.role) ? user.role.includes('Manager') : user?.role === 'Manager',
+    isCustomer: Array.isArray(user?.role) ? user.role.includes('Customer') : user?.role === 'Customer',
     login,
     register,
     logout

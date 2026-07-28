@@ -13,8 +13,11 @@ const RoleRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Check if user's role is in the allowed roles array
-  if (!allowedRoles.includes(user?.role)) {
+  // Check if user's roles intersect with the allowed roles array
+  const userRoles = Array.isArray(user?.role) ? user.role : [user?.role].filter(Boolean);
+  const hasRole = userRoles.some(role => allowedRoles.includes(role));
+  
+  if (!hasRole) {
     return <Navigate to="/unauthorized" replace />;
   }
 

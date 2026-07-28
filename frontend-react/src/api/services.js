@@ -45,7 +45,8 @@ export const api = {
     login: (email, password) => axiosInstance.post('/api/auth/login', { email, password }),
     register: (data) => axiosInstance.post('/api/auth/register', data),
     getMe: () => axiosInstance.get('/api/auth/me'),
-    getUsers: () => axiosInstance.get('/api/auth/users'),
+    getAllUsers: () => axiosInstance.get('/api/auth/all-users'),
+    updateUserRoles: (userId, roles) => axiosInstance.put(`/api/auth/users/${userId}/roles`, { newRoles: roles }),
     logout: () => axiosInstance.post('/api/auth/logout', {}),
   },
 

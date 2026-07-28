@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import AdminProducts from '../components/AdminProducts';
 import AdminOrders from '../components/AdminOrders';
+import AdminUsers from '../components/AdminUsers';
 const AdminDashboard = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -154,9 +155,8 @@ const AdminDashboard = () => {
         );
       case 'users':
         return (
-          <div style={headerCardStyle}>
-            <h2>User Management</h2>
-            <p style={{ color: theme.textSecondary }}>User management and roles coming soon...</p>
+          <div style={{ background: theme.backgroundCard, borderRadius: '16px', padding: '1.5rem 2rem', border: `1px solid ${theme.border}`, boxShadow: theme.shadow, width: '100%', boxSizing: 'border-box' }}>
+             <AdminUsers />
           </div>
         );
       case 'settings':
